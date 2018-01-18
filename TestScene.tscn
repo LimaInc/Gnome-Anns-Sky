@@ -38,7 +38,7 @@ script = ExtResource( 1 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="." index="2"]
 
-transform = Transform( 0.722154, 0.635346, 0.273549, -0.688237, 0.620232, 0.376355, 0.0694517, -0.460053, 0.885171, 0, 0, 0 )
+transform = Transform( 0.659608, 0.667732, -0.345039, 0.258937, 0.229082, 0.938335, 0.705598, -0.708277, -0.0217967, 0, 0, 0 )
 layers = 1
 light_color = Color( 1, 1, 1, 1 )
 light_energy = 1.0
@@ -62,5 +62,6 @@ directional_shadow_normal_bias = 0.8
 directional_shadow_bias_split_scale = 0.25
 directional_shadow_depth_range = 0
 directional_shadow_max_distance = 200.0
+_sections_unfolded = [ "Light" ]
 
 

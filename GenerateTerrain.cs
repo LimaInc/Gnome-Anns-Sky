@@ -10,62 +10,98 @@ public class GenerateTerrain : MeshInstance
 
     private void AddPosXFace(Vector3 origin)
     {
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, -0.5f));
 
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, 0.5f));
     }
     private void AddNegXFace(Vector3 origin)
     {
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, 0.5f));
 
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, 0.5f));
     }
     private void AddPosYFace(Vector3 origin)
     {
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(1, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(1, 1));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, 0.5f));
 
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(1, 1));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 1));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, 0.5f));
     }
     private void AddNegYFace(Vector3 origin)
     {
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, -0.5f));
 
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, 0.5f));
     }
     private void AddPosZFace(Vector3 origin)
     {
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, 0.5f));
 
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, 0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, 0.5f));
     }
     private void AddNegZFace(Vector3 origin)
     {
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, -0.5f));
 
+        surfaceTool.AddUv(new Vector2(0, 0));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0.5f, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(0.5f, 0.5f, -0.5f));
+        surfaceTool.AddUv(new Vector2(0, 0.5f));
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, -0.5f));
     }
 
@@ -105,11 +141,10 @@ public class GenerateTerrain : MeshInstance
         
         ArrayMesh mesh = new ArrayMesh();
         SpatialMaterial material = new SpatialMaterial();
-        material.AlbedoColor = new Color(1, 0, 0);
+        Texture texture = ResourceLoader.Load("res://tilemap.png") as Texture;
+        material.AlbedoTexture = texture;
 
         BuildTerrain();
-
-        surfaceTool.SetMaterial(material);
 
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
@@ -141,6 +176,8 @@ public class GenerateTerrain : MeshInstance
         }
 
         surfaceTool.GenerateNormals();
+
+        surfaceTool.SetMaterial(material);
 
         mesh = surfaceTool.Commit();
         this.SetMesh(mesh);
