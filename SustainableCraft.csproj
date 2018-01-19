@@ -52,7 +52,9 @@
     <Compile Include="camera.cs" />
     <Compile Include="GenerateTerrain.cs" />
     <Compile Include="FastNoise.cs" />
+    <Compile Include="Noise.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestScene.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
