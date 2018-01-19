@@ -7,10 +7,6 @@ public class Noise
     private Random random = new Random();
     private Dictionary<int, Vector2> randGrads = new Dictionary<int, Vector2>();
 
-    public static void noise()
-    {
-    }
-
     private static int intToNat(int z)
     {
         if (z < 0)

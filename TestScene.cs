@@ -9,7 +9,6 @@ public class TestScene : Node
 
     public override void _Ready()
     {
-        Noise.noise();
         // Called every time the node is added to the scene.
         // Initialization here
         
