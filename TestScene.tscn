@@ -5,7 +5,7 @@
 
 [node name="Node" type="Node" index="0"]
 
-[node name="camera" type="Camera" parent="." index="0"]
+[node name="Camera" type="Camera" parent="." index="0"]
 
 transform = Transform( -0.762931, 0.350292, -0.543352, 0, 0.840478, 0.541846, 0.64648, 0.413391, -0.641227, 0, 19.8708, 0 )
 visible = false
@@ -57,7 +57,7 @@ script = ExtResource( 1 )
 
 [node name="Player" type="Spatial" parent="." index="3"]
 
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75097, 14.475, 8.66835 )
+transform = Transform( -0.894618, 0, -0.446831, 0, 1, 0, 0.446831, 0, -0.894618, 5.75097, 25.028, 8.66835 )
 script = ExtResource( 2 )
 
 [node name="Camera" type="Camera" parent="Player" index="0"]
