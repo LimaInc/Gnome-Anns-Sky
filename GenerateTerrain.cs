@@ -159,6 +159,14 @@ public class GenerateTerrain : Spatial
 
         MeshInstance meshInstance= new MeshInstance();
         this.AddChild(meshInstance);
+
+        StaticBody body = new StaticBody();
+        this.AddChild(body);
+        CollisionShape collider = new CollisionShape();
+        body.AddChild(collider);
+
+        ConcavePolygonShape shape = new ConcavePolygonShape();
+        collider.Shape = shape;
         
         ArrayMesh mesh = new ArrayMesh();
         SpatialMaterial material = new SpatialMaterial();
@@ -202,6 +210,9 @@ public class GenerateTerrain : Spatial
         surfaceTool.SetMaterial(material);
 
         mesh = surfaceTool.Commit();
+
+        shape.Data = mesh.GetFaces();
+
         meshInstance.SetMesh(mesh);
     }
 
