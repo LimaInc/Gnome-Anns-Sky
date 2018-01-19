@@ -49,6 +49,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="camera.cs" />
     <Compile Include="GenerateTerrain.cs" />
     <Compile Include="FastNoise.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
