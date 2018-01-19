@@ -5,11 +5,7 @@ public class Noise
 {
     public static void noise()
     {
-        // for (int i = -100; i < 100; i++)
-        //     GD.Print(i + " ," + natToInt(intToNat(i)));
-
-        // for (int i = 0; i < 200; i++)
-        //     GD.Print(i + " ," + intToNat(natToInt(i)));
+        
     }
 
     public static int intToNat(int z)
@@ -26,8 +22,16 @@ public class Noise
         return -(n + 1) / 2;
     }
 
-    private static int floorMod(int a, int b)
+    public static int cantorPairNats(int x, int y)
     {
-        return (Math.Abs(a * b) + a) % b;
+        return (int) (0.5 * (x + y) * (x + y + 1) + y);
+    }
+
+    public static int[] deCantorPair(int z)
+    {
+        int t = (int) (Math.Floor((Math.Sqrt(8 * z + 1) - 1) / 2));
+        int x = t * (t + 3) / 2 - z;
+        int y = z - t * (t + 1) / 2;
+        return new int[] {x,y};
     }
 }
