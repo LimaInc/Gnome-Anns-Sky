@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class GenerateTerrain : MeshInstance
+public class GenerateTerrain : Spatial
 {
     SurfaceTool surfaceTool = new SurfaceTool();
 
@@ -156,6 +156,9 @@ public class GenerateTerrain : MeshInstance
     {
         // Called every time the node is added to the scene.
         // Initialization here
+
+        MeshInstance meshInstance= new MeshInstance();
+        this.AddChild(meshInstance);
         
         ArrayMesh mesh = new ArrayMesh();
         SpatialMaterial material = new SpatialMaterial();
@@ -199,7 +202,7 @@ public class GenerateTerrain : MeshInstance
         surfaceTool.SetMaterial(material);
 
         mesh = surfaceTool.Commit();
-        this.SetMesh(mesh);
+        meshInstance.SetMesh(mesh);
     }
 
 //    public override void _Process(float delta)

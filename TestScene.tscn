@@ -53,18 +53,4 @@ _sections_unfolded = [ "Light", "Shadow" ]
 
 script = ExtResource( 1 )
 
-[node name="Mesh" type="MeshInstance" parent="Terrain" index="0"]
-
-layers = 1
-material_override = null
-cast_shadow = 1
-extra_cull_margin = 0.0
-use_in_baked_light = false
-lod_min_distance = 0.0
-lod_min_hysteresis = 0.0
-lod_max_distance = 0.0
-lod_max_hysteresis = 0.0
-mesh = null
-skeleton = NodePath("..")
-
 
