@@ -21,22 +21,7 @@ near = 0.05
 far = 100.0
 _sections_unfolded = [ "Transform" ]
 
-[node name="Terrain" type="MeshInstance" parent="." index="1"]
-
-layers = 1
-material_override = null
-cast_shadow = 1
-extra_cull_margin = 0.0
-use_in_baked_light = false
-lod_min_distance = 0.0
-lod_min_hysteresis = 0.0
-lod_max_distance = 0.0
-lod_max_hysteresis = 0.0
-mesh = null
-skeleton = NodePath("..")
-script = ExtResource( 1 )
-
-[node name="DirectionalLight" type="DirectionalLight" parent="." index="2"]
+[node name="DirectionalLight" type="DirectionalLight" parent="." index="1"]
 
 transform = Transform( 0.619674, 0.693489, 0.367528, -0.703591, 0.283331, 0.651677, 0.347799, -0.662417, 0.663505, -0.00488515, 0.0231733, 0.00479742 )
 layers = 1
@@ -63,5 +48,9 @@ directional_shadow_bias_split_scale = 0.25
 directional_shadow_depth_range = 0
 directional_shadow_max_distance = 200.0
 _sections_unfolded = [ "Light", "Shadow" ]
+
+[node name="Terrain" type="Spatial" parent="." index="2"]
+
+script = ExtResource( 1 )
 
 
