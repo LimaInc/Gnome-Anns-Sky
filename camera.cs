@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class camera : Camera
+public class camera : Spatial
 {
     float camSpeed = 0.06f;
     float camRotateSpeed = 0.01f;
