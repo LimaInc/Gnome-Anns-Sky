@@ -1,21 +1,15 @@
 using Godot;
 using System;
 
-public class GenerateTerrain : Spatial
+public class Chunk : Spatial
 {
-    SurfaceTool surfaceTool = new SurfaceTool();
-
-    //Rect at index i tells you the UVs for block i+1 (because air=0 and has no texture)
-    //Hardcoded for now, but we might want a better solution. Perhaps automatic texture packer?
-    //Probably want to support multiple textures for a single block at different rotations, e.g. grass
-    Rect2[] blockUVs = {
-        new Rect2(0.0f, 0.0f, 0.5f, 1.0f),
-        new Rect2(0.5f, 0.0f, 0.5f, 1.0f)
-    };
+    private byte[,,] blocks;
+    private SurfaceTool surfaceTool = new SurfaceTool();
+    private WorldGenerator worldGenerator;
 
     private void AddPosXFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = blockUVs[blockType-1];
+        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + new Vector3(0.5f, -0.5f, -0.5f));
@@ -33,7 +27,7 @@ public class GenerateTerrain : Spatial
     }
     private void AddNegXFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = blockUVs[blockType-1];
+        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
@@ -51,7 +45,7 @@ public class GenerateTerrain : Spatial
     }
     private void AddPosYFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = blockUVs[blockType-1];
+        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, -0.5f));
@@ -69,7 +63,7 @@ public class GenerateTerrain : Spatial
     }
     private void AddNegYFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = blockUVs[blockType-1];
+        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
@@ -87,7 +81,7 @@ public class GenerateTerrain : Spatial
     }
     private void AddPosZFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = blockUVs[blockType-1];
+        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, 0.5f));
@@ -105,7 +99,7 @@ public class GenerateTerrain : Spatial
     }
     private void AddNegZFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = blockUVs[blockType-1];
+        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, -0.5f, -0.5f));
@@ -122,42 +116,25 @@ public class GenerateTerrain : Spatial
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, -0.5f));
     }
 
-    byte[,,] blocks = new byte[64,64,64];
-
-    private void BuildTerrain()
+    public byte GetBlockInChunk(IntVector3 position)
     {
-        //FastNoise noise = new FastNoise();
-        Random r = new Random();
-        for(int x = 0; x < blocks.GetLength(0); x++)
-        {
-            for(int z = 0; z < blocks.GetLength(2); z++)
-            {
-                int height = 10;//(int)(noise.GetSimplex(x * 4, z * 4) * 4) + 16;
-                for(int y = 0; y < blocks.GetLength(1); y++)
-                {
-                    if(y < height)
-                        blocks[x,y,z] = (byte)r.Next(1, 3);
-                    else
-                        blocks[x,y,z] = 0;
-                }
-            }
-        }
+        return GetBlockInChunk(position.x, position.y, position.z);
     }
 
-    byte GetBlock(int x, int y, int z)
+    public byte GetBlockInChunk(int x, int y, int z)
     {
         if(x < 0 || x >= blocks.GetLength(0) || y < 0 || y >= blocks.GetLength(1) || z < 0 || z >= blocks.GetLength(2))
             return 0;
         else
             return blocks[x,y,z];
     }
-
-    public override void _Ready()
+    public Chunk(WorldGenerator worldGenerator, IntVector3 position, IntVector3 size)
     {
-        // Called every time the node is added to the scene.
-        // Initialization here
+        this.Translate(position);
+        this.worldGenerator = worldGenerator;
+        blocks = worldGenerator.GetChunk(position.x, position.y, position.z, size.x, size.y, size.z);
 
-        MeshInstance meshInstance= new MeshInstance();
+        MeshInstance meshInstance = new MeshInstance();
         this.AddChild(meshInstance);
 
         StaticBody body = new StaticBody();
@@ -173,11 +150,6 @@ public class GenerateTerrain : Spatial
         Texture atlas = ResourceLoader.Load("res://tilemap.png") as Texture;
         material.AlbedoTexture = atlas;
 
-        //BuildTerrain();
-        WorldGenerator worldGenerator = new WorldGenerator();
-        blocks = worldGenerator.GetChunk(0, 0, 0, blocks.GetLength(0), blocks.GetLength(1), blocks.GetLength(2));
-        GD.Print(blocks.GetLength(1));
-
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
         for(int x = 0; x < blocks.GetLength(0); x++)
@@ -192,17 +164,17 @@ public class GenerateTerrain : Spatial
 
                     Vector3 blockPos = new Vector3(x,y,z);
 
-                    if(GetBlock(x+1,y,z) == 0)
+                    if(GetBlockInChunk(x+1,y,z) == 0)
                         AddPosXFace(blockPos, blockType);
-                    if(GetBlock(x-1,y,z) == 0)
+                    if(GetBlockInChunk(x-1,y,z) == 0)
                         AddNegXFace(blockPos, blockType);
-                    if(GetBlock(x,y+1,z) == 0)
+                    if(GetBlockInChunk(x,y+1,z) == 0)
                         AddPosYFace(blockPos, blockType);
-                    if(GetBlock(x,y-1,z) == 0)
+                    if(GetBlockInChunk(x,y-1,z) == 0)
                         AddNegYFace(blockPos, blockType);
-                    if(GetBlock(x,y,z+1) == 0)
+                    if(GetBlockInChunk(x,y,z+1) == 0)
                         AddPosZFace(blockPos, blockType);
-                    if(GetBlock(x,y,z-1) == 0)
+                    if(GetBlockInChunk(x,y,z-1) == 0)
                         AddNegZFace(blockPos, blockType);
                 }
             }
@@ -217,6 +189,12 @@ public class GenerateTerrain : Spatial
         shape.Data = mesh.GetFaces();
 
         meshInstance.SetMesh(mesh);
+    }
+    public override void _Ready()
+    {
+        // Called every time the node is added to the scene.
+        // Initialization here
+        
     }
 
 //    public override void _Process(float delta)

@@ -3,7 +3,7 @@ using System;
 
 public class camera : Spatial
 {
-    float camSpeed = 0.06f;
+    float camSpeed = 0.2f;
     float camRotateSpeed = 0.01f;
     public override void _Ready()
     {
