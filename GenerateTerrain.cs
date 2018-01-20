@@ -210,25 +210,7 @@ public class GenerateTerrain : Spatial
 
     byte[,,] blocks = new byte[64,64,64];
 
-    private void BuildTerrain()
-    {
-        //FastNoise noise = new FastNoise();
-        Random r = new Random();
-        for(int x = 0; x < blocks.GetLength(0); x++)
-        {
-            for(int z = 0; z < blocks.GetLength(2); z++)
-            {
-                int height = 10;//(int)(noise.GetSimplex(x * 4, z * 4) * 4) + 16;
-                for(int y = 0; y < blocks.GetLength(1); y++)
-                {
-                    if(y < height)
-                        blocks[x,y,z] = (byte)r.Next(1, 3);
-                    else
-                        blocks[x,y,z] = 0;
-                }
-            }
-        }
-    }
+    
 
     byte GetBlock(int x, int y, int z)
     {
@@ -262,7 +244,6 @@ public class GenerateTerrain : Spatial
         //BuildTerrain();
         WorldGenerator worldGenerator = new WorldGenerator();
         blocks = worldGenerator.GetChunk(0, 0, 0, blocks.GetLength(0), blocks.GetLength(1), blocks.GetLength(2));
-        GD.Print(blocks.GetLength(1));
 
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
