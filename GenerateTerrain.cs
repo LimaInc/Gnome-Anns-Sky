@@ -122,17 +122,17 @@ public class GenerateTerrain : Spatial
         surfaceTool.AddVertex(origin + new Vector3(-0.5f, 0.5f, -0.5f));
     }
 
-    byte[,,] blocks = new byte[32,32,32];
+    byte[,,] blocks = new byte[64,64,64];
 
     private void BuildTerrain()
     {
-        FastNoise noise = new FastNoise();
+        //FastNoise noise = new FastNoise();
         Random r = new Random();
         for(int x = 0; x < blocks.GetLength(0); x++)
         {
             for(int z = 0; z < blocks.GetLength(2); z++)
             {
-                int height = (int)(noise.GetSimplex(x * 4, z * 4) * 4) + 16;
+                int height = 10;//(int)(noise.GetSimplex(x * 4, z * 4) * 4) + 16;
                 for(int y = 0; y < blocks.GetLength(1); y++)
                 {
                     if(y < height)
@@ -173,7 +173,10 @@ public class GenerateTerrain : Spatial
         Texture atlas = ResourceLoader.Load("res://tilemap.png") as Texture;
         material.AlbedoTexture = atlas;
 
-        BuildTerrain();
+        //BuildTerrain();
+        WorldGenerator worldGenerator = new WorldGenerator();
+        blocks = worldGenerator.GetChunk(0, 0, 0, blocks.GetLength(0), blocks.GetLength(1), blocks.GetLength(2));
+        GD.Print(blocks.GetLength(1));
 
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
