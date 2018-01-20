@@ -93,7 +93,7 @@ public struct IntVector3 : IEquatable<IntVector3> //Used for chunk/block positio
     }
 }
 
-public class GenerateTerrain : Spatial
+public class Terrain : Spatial
 {
     SurfaceTool surfaceTool = new SurfaceTool();
 
@@ -129,11 +129,11 @@ public class GenerateTerrain : Spatial
 
     public override void _Ready()
     {
-        for(int x = 0; x < 4; x++)
+        for(int x = -4; x < 4; x++)
         {
             for(int y = 0; y < 1; y++)
             {
-                for(int z = 0; z < 4; z++)
+                for(int z = -4; z < 4; z++)
                 {
                     CreateChunk(new IntVector3(x,y,z));
                 }
@@ -141,10 +141,11 @@ public class GenerateTerrain : Spatial
         }
     }
 
-//    public override void _Process(float delta)
-//    {
-//        // Called every frame. Delta is time since last frame.
-//        // Update game logic here.
-//        
-//    }
+    public override void _Process(float delta)
+    {
+        // Called every frame. Delta is time since last frame.
+        // Update game logic here.
+        
+        
+    }
 }

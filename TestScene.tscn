@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://GenerateTerrain.cs" type="Script" id=1]
+[ext_resource path="res://Terrain.cs" type="Script" id=1]
 [ext_resource path="res://camera.cs" type="Script" id=2]
 
 [node name="Node" type="Node" index="0"]
