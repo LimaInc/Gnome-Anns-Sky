@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public struct IntVector3 : IEquatable<IntVector3> //Used for chunk/block positions
 {
@@ -112,6 +113,14 @@ public class Terrain : Spatial
         return chunk;
     }
 
+    private void RemoveChunk(IntVector3 chunkIndex)
+    {
+        Chunk chunk = loadedChunks[chunkIndex];
+        chunk.Visible = false;
+        chunk.QueueFree();
+        loadedChunks.Remove(chunkIndex);
+    }
+
     public byte GetBlock(int x, int y, int z)
     {
         IntVector3 chunkIndex = new IntVector3(x / chunkSize.x, y / chunkSize.y, z / chunkSize.z);
@@ -135,17 +144,57 @@ public class Terrain : Spatial
             {
                 for(int z = -4; z < 4; z++)
                 {
-                    CreateChunk(new IntVector3(x,y,z));
+                    //CreateChunk(new IntVector3(x,y,z));
                 }
             }
         }
+
+        player = GetNode("/root/Node/Player") as Spatial;
     }
 
+    Spatial player;
+    IntVector3 chunkLoadRadius = new IntVector3(2, 1, 2);
+
+    Vector3 playerPosLastUpdate = new Vector3(-50, -50, -50); //Forces update on first frame
+    float updateDistance = 10;
     public override void _Process(float delta)
     {
         // Called every frame. Delta is time since last frame.
         // Update game logic here.
         
-        
+        //Update visible chunks only when the player has moved a certain distance
+        Vector3 playerPos = player.Translation;
+        if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))
+        {
+            playerPosLastUpdate = playerPos;
+            GD.Print("Updating");
+            UpdateVisibleChunks();
+        }
+    }
+
+    private void UpdateVisibleChunks()
+    {
+        Vector3 playerPos = player.Translation;
+
+        IntVector3 playerChunk = new IntVector3((int)playerPos.x / chunkSize.x, (int)playerPos.y / chunkSize.y, (int)playerPos.z / chunkSize.z);
+
+        List<IntVector3> chunksLoadedThisUpdate = new List<IntVector3>();
+
+        for (int x = playerChunk.x - chunkLoadRadius.x; x <= playerChunk.x + chunkLoadRadius.x; x++)
+        {
+            for (int y = playerChunk.y - chunkLoadRadius.y; y <= playerChunk.y + chunkLoadRadius.y; y++)
+            {
+                for (int z = playerChunk.z - chunkLoadRadius.z; z <= playerChunk.z + chunkLoadRadius.z; z++)
+                {
+                    IntVector3 thisChunkIndex = new IntVector3(x,y,z);
+                    chunksLoadedThisUpdate.Add(thisChunkIndex);
+                    if(!loadedChunks.ContainsKey(thisChunkIndex))
+                        loadedChunks[thisChunkIndex] = CreateChunk(thisChunkIndex);
+                    
+                }
+            }
+        }
+
+        loadedChunks.Keys.Except(chunksLoadedThisUpdate).ToList().ForEach(x => RemoveChunk(x));
     }
 }
