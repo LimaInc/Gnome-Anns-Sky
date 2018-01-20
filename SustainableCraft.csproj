@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="camera.cs" />
+    <Compile Include="Chunk.cs" />
     <Compile Include="GenerateTerrain.cs" />
     <Compile Include="FastNoise.cs" />
     <Compile Include="WorldGenerator.cs" />

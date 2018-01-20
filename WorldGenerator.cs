@@ -1,7 +1,16 @@
 using System;
+using Godot;
 
 public class WorldGenerator
 {
+    //Rect at index i tells you the UVs for block i+1 (because air=0 and has no texture)
+    //Hardcoded for now, but we might want a better solution. Perhaps automatic texture packer?
+    //Probably want to support multiple textures for a single block at different rotations, e.g. grass
+    public Rect2[] blockUVs = {
+        new Rect2(0.0f, 0.0f, 0.5f, 1.0f),
+        new Rect2(0.5f, 0.0f, 0.5f, 1.0f)
+    };
+
     Noise noise = new Noise();
     private float GetNoise(int x, int z)
     {
@@ -14,17 +23,17 @@ public class WorldGenerator
     {
         byte[,,] chunk = new byte[sX, sY, sZ];
 
-        for(int i = x; i < x + sX; i++)
+        for(int i = 0; i < sX; i++)
         {
-            for(int k = z; k < z + sZ; k++)
+            for(int k = 0; k < sZ; k++)
             {
-                int height = (int)GetNoise(i,k);
+                int height = (int)GetNoise(x + i, z + k);
 
-                for(int j = y; j < y + sY; j++)
+                for(int j = 0; j < sY; j++)
                 {
-                    if(j < height)
+                    if((j + y) < height)
                         chunk[i,j,k] = 1;
-                    else if(j < height + 3) //3 layers of grass on top of rock
+                    else if((j + y) < height + 3) //3 layers of grass on top of rock
                         chunk[i,j,k] = 2;
                     else
                         chunk[i,j,k] = 0;
