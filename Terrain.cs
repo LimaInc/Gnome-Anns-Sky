@@ -98,7 +98,7 @@ public class Terrain : Spatial
 {
     SurfaceTool surfaceTool = new SurfaceTool();
 
-    IntVector3 chunkSize = new IntVector3(16, 64, 16);
+    IntVector3 chunkSize = new IntVector3(16, 32, 16);
 
     Dictionary<IntVector3, Chunk> loadedChunks = new Dictionary<IntVector3, Chunk>(); //Maybe we should just store an array of chunks?
 
@@ -158,7 +158,7 @@ public class Terrain : Spatial
     }
 
     Spatial player;
-    IntVector3 chunkLoadRadius = new IntVector3(2, 1, 2);
+    IntVector3 chunkLoadRadius = new IntVector3(2, 2, 2);
 
     Vector3 playerPosLastUpdate = new Vector3(-50, -50, -50); //Forces update on first frame
     float updateDistance = 10;
