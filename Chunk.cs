@@ -133,6 +133,11 @@ public class Chunk : Spatial
             return blocks[x,y,z];
     }
 
+    public void SetBlockInChunk(IntVector3 position, byte block)
+    {
+        SetBlockInChunk(position.x, position.y, position.z, block);
+    }
+
     public void SetBlockInChunk(int x, int y, int z, byte block)
     {
         if(x < 0 || x >= blocks.GetLength(0) || y < 0 || y >= blocks.GetLength(1) || z < 0 || z >= blocks.GetLength(2))

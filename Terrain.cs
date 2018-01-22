@@ -123,12 +123,17 @@ public class Terrain : Spatial
 
     public byte GetBlock(int x, int y, int z)
     {
-        IntVector3 chunkIndex = new IntVector3(x / chunkSize.x, y / chunkSize.y, z / chunkSize.z);
+        //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
+        IntVector3 chunkIndex = new IntVector3((int)Mathf.Floor((float)x / chunkSize.x),
+                                               (int)Mathf.Floor((float)y / chunkSize.y),
+                                               (int)Mathf.Floor((float)z / chunkSize.z));
 
         Chunk chunk;
         if(loadedChunks.TryGetValue(chunkIndex, out chunk))
         {
-            return chunk.GetBlockInChunk(x % chunkSize.x, y % chunkSize.y, z % chunkSize.z);
+            IntVector3 positionInChunk = new IntVector3(x,y,z) - chunkIndex * chunkSize;
+
+            return chunk.GetBlockInChunk(positionInChunk);
         }
         else //Chunk isn't loaded, so return 0?
         {
@@ -173,11 +178,20 @@ public class Terrain : Spatial
 
     public void SetBlock(IntVector3 pos, byte block)
     {
-        IntVector3 chunkIndex = new IntVector3(pos.x / chunkSize.x, pos.y / chunkSize.y, pos.z / chunkSize.z);
+        //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
+        IntVector3 chunkIndex = new IntVector3((int)Mathf.Floor((float)pos.x / chunkSize.x),
+                                               (int)Mathf.Floor((float)pos.y / chunkSize.y),
+                                               (int)Mathf.Floor((float)pos.z / chunkSize.z));
+
+        GD.Print("Setting block " + pos + " to " + block + " in chunk " + chunkIndex);
 
         Chunk chunk = loadedChunks[chunkIndex];
 
-        chunk.SetBlockInChunk(pos.x % chunkSize.x, pos.y % chunkSize.y, pos.z % chunkSize.z, block);
+        IntVector3 positionInChunk = pos - chunkIndex * chunkSize;
+
+        GD.Print("Position in chunk is " + positionInChunk);
+
+        chunk.SetBlockInChunk(positionInChunk, block);
 
         chunk.UpdateMesh();
     }
