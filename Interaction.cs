@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class ModifyTerrain : Camera
+public class Interaction : Camera
 {
     // Member variables here, example:
     // private int a = 2;

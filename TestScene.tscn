@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Terrain.cs" type="Script" id=1]
 [ext_resource path="res://camera.cs" type="Script" id=2]
-[ext_resource path="res://ModifyTerrain.cs" type="Script" id=3]
+[ext_resource path="res://Interaction.cs" type="Script" id=3]
 
 [node name="Node" type="Node" index="0"]
 
