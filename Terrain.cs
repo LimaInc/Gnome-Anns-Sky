@@ -167,9 +167,19 @@ public class Terrain : Spatial
         if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))
         {
             playerPosLastUpdate = playerPos;
-            GD.Print("Updating");
             UpdateVisibleChunks();
         }
+    }
+
+    public void SetBlock(IntVector3 pos, byte block)
+    {
+        IntVector3 chunkIndex = new IntVector3(pos.x / chunkSize.x, pos.y / chunkSize.y, pos.z / chunkSize.z);
+
+        Chunk chunk = loadedChunks[chunkIndex];
+
+        chunk.SetBlockInChunk(pos.x % chunkSize.x, pos.y % chunkSize.y, pos.z % chunkSize.z, block);
+
+        chunk.UpdateMesh();
     }
 
     private void UpdateVisibleChunks()
