@@ -1672,7 +1672,7 @@
         </member>
         <member name="F:Godot.Error.Ok">
             <summary>
-            Functions that return Error return OK when no error occured. Most functions don't return errors and/or just print errors to STDOUT.
+            Functions that return Error return OK when no error occurred. Most functions don't return errors and/or just print errors to STDOUT.
             </summary>
         </member>
         <member name="F:Godot.Error.Failed">
@@ -2687,6 +2687,11 @@
         <member name="P:Godot.AnimationPlayer.CurrentAnimation">
             <summary>
             The name of the current animation, "" if not playing anything. When being set, does not restart the animation. See also [method play]. Default value: [code]""[/code].
+            </summary>
+        </member>
+        <member name="P:Godot.AnimationPlayer.AssignedAnimation">
+            <summary>
+            If playing, the current animation; otherwise, the animation last played. When set, would change the animation, but would not play it unless currently playing. See also [member current_animation].
             </summary>
         </member>
         <member name="P:Godot.AnimationPlayer.Autoplay">
@@ -3749,7 +3754,7 @@
         </member>
         <member name="M:Godot.ARVRServer.GetInterfaceCount">
             <summary>
-            Get the number of interfaces currently registered with the AR/VR server. If you're game supports multiple AR/VR platforms you can look throught the available interface and either present the user with a selection or simply try an initialize each interface and use the first one that returns true.
+            Get the number of interfaces currently registered with the AR/VR server. If you're game supports multiple AR/VR platforms you can look through the available interface and either present the user with a selection or simply try an initialize each interface and use the first one that returns true.
             </summary>
         </member>
         <member name="M:Godot.ARVRServer.GetInterface(System.Int32)">
@@ -6673,7 +6678,7 @@
             For more information on Godot's UI system, anchors, margins, and containers, see the related tutorials in the manual. To build flexible UIs, you'll need a mix of UI elements that inherit from [code]Control[/code] and [Container] nodes.
             [b]User Interface nodes and input[/b]
             Godot sends input events to the scene's root node first, by calling [method Node._input]. [method Node._input] forwards the event down the node tree to the nodes under the mouse cursor, or on keyboard focus. To do so, it calls [method MainLoop._input_event]. Call [method accept_event] so no other node receives the event. Once you accepted an input, it becomes handled so [method Node._unhandled_input] will not process it.
-            Only one [code]Control[/code] node can be in keyboard focus. Only the node in focus will receive keyboard events. To get the foucs, call [method set_focus_mode]. [code]Control[/code] nodes lose focus when another node grabs it, or if you hide the node in focus.
+            Only one [code]Control[/code] node can be in keyboard focus. Only the node in focus will receive keyboard events. To get the focus, call [method set_focus_mode]. [code]Control[/code] nodes lose focus when another node grabs it, or if you hide the node in focus.
             Call [method set_ignore_mouse] to tell a [code]Control[/code] node to ignore mouse or touch events. You'll need it if you place an icon on top of a button.
             [Theme] resources change the Control's appearance. If you change the [Theme] on a [code]Control[/code] node, it affects all of its children. To override some of the theme's parameters, call one of the [code]add_*_override[/code] methods, like [method add_font_override]. You can override the theme with the inspector.
             </summary>
@@ -8768,12 +8773,12 @@
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitX__upperAngle">
             <summary>
-            The minimum rotation in positive direction to break loose and rotate arround the x-axis.
+            The minimum rotation in positive direction to break loose and rotate around the x-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitX__lowerAngle">
             <summary>
-            The minimum rotation in negative direction to break loose and rotate arround the x-axis.
+            The minimum rotation in negative direction to break loose and rotate around the x-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitX__softness">
@@ -8794,7 +8799,7 @@
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitX__forceLimit">
             <summary>
-            The maximum amount of force that can occur, when rotating arround x-axis.
+            The maximum amount of force that can occur, when rotating around x-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitX__erp">
@@ -8854,12 +8859,12 @@
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitY__upperAngle">
             <summary>
-            The minimum rotation in positive direction to break loose and rotate arround the y-axis.
+            The minimum rotation in positive direction to break loose and rotate around the y-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitY__lowerAngle">
             <summary>
-            The minimum rotation in negative direction to break loose and rotate arround the y-axis.
+            The minimum rotation in negative direction to break loose and rotate around the y-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitY__softness">
@@ -8879,7 +8884,7 @@
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitY__forceLimit">
             <summary>
-            The maximum amount of force that can occur, when rotating arround y-axis.
+            The maximum amount of force that can occur, when rotating around y-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitY__erp">
@@ -8939,12 +8944,12 @@
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitZ__upperAngle">
             <summary>
-            The minimum rotation in positive direction to break loose and rotate arround the z-axis.
+            The minimum rotation in positive direction to break loose and rotate around the z-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitZ__lowerAngle">
             <summary>
-            The minimum rotation in negative direction to break loose and rotate arround the z-axis.
+            The minimum rotation in negative direction to break loose and rotate around the z-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitZ__softness">
@@ -8964,7 +8969,7 @@
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitZ__forceLimit">
             <summary>
-            The maximum amount of force that can occur, when rotating arround z-axis.
+            The maximum amount of force that can occur, when rotating around z-axis.
             </summary>
         </member>
         <member name="P:Godot.Generic6DOFJoint.AngularLimitZ__erp">
@@ -9659,12 +9664,12 @@
         </member>
         <member name="T:Godot.HingeJoint">
             <summary>
-            Normaly uses the z-axis of body A as the hinge axis, another axis can be specified when adding it manually though.
+            Normally uses the z-axis of body A as the hinge axis, another axis can be specified when adding it manually though.
             </summary>
         </member>
         <member name="P:Godot.HingeJoint.Params__bias">
             <summary>
-            The speed with wich the two bodies get pulled together when they move in different directions.
+            The speed with which the two bodies get pulled together when they move in different directions.
             </summary>
         </member>
         <member name="P:Godot.HingeJoint.AngularLimit__enable">
@@ -10396,7 +10401,7 @@
         </member>
         <member name="M:Godot.Input.ActionPress(System.String)">
             <summary>
-            This will simulate pressing the specificed action.
+            This will simulate pressing the specified action.
             </summary>
         </member>
         <member name="M:Godot.Input.ActionRelease(System.String)">
@@ -10562,7 +10567,7 @@
         </member>
         <member name="T:Godot.InputEventMouse">
             <summary>
-            Stores general mouse events informations.
+            Stores general mouse events information.
             </summary>
         </member>
         <member name="P:Godot.InputEventMouse.ButtonMask">
@@ -10572,7 +10577,7 @@
         </member>
         <member name="P:Godot.InputEventMouse.Position">
             <summary>
-            Mouse local position relative to the [Viewport]. If used in [method Control._gui_input] the position is relative to the current [Control] wich is under the mouse.
+            Mouse local position relative to the [Viewport]. If used in [method Control._gui_input] the position is relative to the current [Control] which is under the mouse.
             </summary>
         </member>
         <member name="P:Godot.InputEventMouse.GlobalPosition">
@@ -10582,7 +10587,7 @@
         </member>
         <member name="T:Godot.InputEventMouseButton">
             <summary>
-            Contains mouse click informations. See [method Node._input].
+            Contains mouse click information. See [method Node._input].
             </summary>
         </member>
         <member name="P:Godot.InputEventMouseButton.Factor">
@@ -10607,7 +10612,7 @@
         </member>
         <member name="T:Godot.InputEventMouseMotion">
             <summary>
-            Contains mouse motion informations. Supports relative, absolute positions and speed. See [method Node._input].
+            Contains mouse motion information. Supports relative, absolute positions and speed. See [method Node._input].
             </summary>
         </member>
         <member name="P:Godot.InputEventMouseMotion.Relative">
@@ -10626,7 +10631,7 @@
         </member>
         <member name="T:Godot.InputEventScreenDrag">
             <summary>
-            Contains screen drag informations. See [method Node._input].
+            Contains screen drag information. See [method Node._input].
             </summary>
         </member>
         <member name="P:Godot.InputEventScreenDrag.Index">
@@ -10671,7 +10676,7 @@
         </member>
         <member name="T:Godot.InputEventWithModifiers">
             <summary>
-            Contains keys events informations with modifiers support like [code]SHIFT[/code] or [code]ALT[/code]. See [method Node._input].
+            Contains keys events information with modifiers support like [code]SHIFT[/code] or [code]ALT[/code]. See [method Node._input].
             </summary>
         </member>
         <member name="P:Godot.InputEventWithModifiers.Alt">
@@ -11058,7 +11063,7 @@
         </member>
         <member name="P:Godot.Joint.Solver__priority">
             <summary>
-            The order in wich the solver is executed compared to the other [Joints], the lower, the earlier.
+            The order in which the solver is executed compared to the other [Joints], the lower, the earlier.
             </summary>
         </member>
         <member name="P:Godot.Joint.Collision__excludeNodes">
@@ -11188,7 +11193,7 @@
             If the body is standing on a slope and the horizontal speed (relative to the floor's speed) goes below [code]slope_stop_min_velocity[/code], the body will stop completely. This prevents the body from sliding down slopes when you include gravity in [code]linear_velocity[/code]. When set to lower values, the body will not be able to stand still on steep slopes.
             If the body collides, it will change direction a maximum of [code]max_bounces[/code] times before it stops.
             [code]floor_max_angle[/code] is the maximum angle (in radians) where a slope is still considered a floor (or a ceiling), rather than a wall. The default value equals 45 degrees.
-            Returns the movement that remained when the body stopped. To get more detailed information about collisions that occured, use [method get_slide_collision].
+            Returns the movement that remained when the body stopped. To get more detailed information about collisions that occurred, use [method get_slide_collision].
             &lt;param name="floorNormal"&gt;If the param is null, then the default value is new Vector3(0, 0, 0)&lt;/param&gt;
             </summary>
         </member>
@@ -11224,7 +11229,7 @@
         </member>
         <member name="M:Godot.KinematicBody.GetSlideCollision(System.Int32)">
             <summary>
-            Returns a [KinematicCollision], which contains information about a collision that occured during the last [method move_and_slide] call. Since the body can collide several times in a single call to [method move_and_slide], you must specify the index of the collision in the range 0 to ([method get_slide_count] - 1).
+            Returns a [KinematicCollision], which contains information about a collision that occurred during the last [method move_and_slide] call. Since the body can collide several times in a single call to [method move_and_slide], you must specify the index of the collision in the range 0 to ([method get_slide_count] - 1).
             </summary>
         </member>
         <member name="T:Godot.KinematicBody2D">
@@ -11252,7 +11257,7 @@
             If the body is standing on a slope and the horizontal speed (relative to the floor's speed) goes below [code]slope_stop_min_velocity[/code], the body will stop completely. This prevents the body from sliding down slopes when you include gravity in [code]linear_velocity[/code]. When set to lower values, the body will not be able to stand still on steep slopes.
             If the body collides, it will change direction a maximum of [code]max_bounces[/code] times before it stops.
             [code]floor_max_angle[/code] is the maximum angle (in radians) where a slope is still considered a floor (or a ceiling), rather than a wall. The default value equals 45 degrees.
-            Returns the movement that remained when the body stopped. To get more detailed information about collisions that occured, use [method get_slide_collision].
+            Returns the movement that remained when the body stopped. To get more detailed information about collisions that occurred, use [method get_slide_collision].
             &lt;param name="floorNormal"&gt;If the param is null, then the default value is new Vector2(0, 0)&lt;/param&gt;
             </summary>
         </member>
@@ -11288,7 +11293,7 @@
         </member>
         <member name="M:Godot.KinematicBody2D.GetSlideCollision(System.Int32)">
             <summary>
-            Returns a [KinematicCollision2D], which contains information about a collision that occured during the last [method move_and_slide] call. Since the body can collide several times in a single call to [method move_and_slide], you must specify the index of the collision in the range 0 to ([method get_slide_count] - 1).
+            Returns a [KinematicCollision2D], which contains information about a collision that occurred during the last [method move_and_slide] call. Since the body can collide several times in a single call to [method move_and_slide], you must specify the index of the collision in the range 0 to ([method get_slide_count] - 1).
             </summary>
         </member>
         <member name="T:Godot.KinematicCollision">
@@ -11754,7 +11759,7 @@
         </member>
         <member name="P:Godot.Line2D.JointMode">
             <summary>
-            The style for the points inbetween the start and the end.
+            The style for the points between the start and the end.
             </summary>
         </member>
         <member name="P:Godot.Line2D.BeginCapMode">
@@ -11869,7 +11874,7 @@
         </member>
         <member name="P:Godot.LineEdit.CaretPosition">
             <summary>
-            The cursor's position inside the [code]LineEdit[/code]. When set, the text may scroll to accomodate it.
+            The cursor's position inside the [code]LineEdit[/code]. When set, the text may scroll to accommodate it.
             </summary>
         </member>
         <member name="M:Godot.LineEdit.Clear">
@@ -12475,11 +12480,13 @@
         </member>
         <member name="T:Godot.MultiMeshInstance">
             <summary>
-            MultiMeshInstance is a [Node] that takes a [MultiMesh] resource and adds it to the current scenario by creating an instance of it (yes, this is an instance of instances).
+            [code]MultiMeshInstance[/code] is a specialized node to instance [GeometryInstance]s based on a [MultiMesh] resource.
+            This is useful to optimize the rendering of a high amount of instances of a given mesh (for example tree in a forest or grass strands).
             </summary>
         </member>
         <member name="P:Godot.MultiMeshInstance.Multimesh">
             <summary>
+            The [MultiMesh] resource that will be used and shared among all instances of the [code]MultiMeshInstance[/code].
             </summary>
         </member>
         <member name="T:Godot.Mutex">
@@ -12922,20 +12929,20 @@
         <member name="M:Godot.Node._Input(Godot.InputEvent)">
             <summary>
             Called when there is an input event. The input event propagates through the node tree until a node consumes it.
-            It is only called if input processing is enabled, which is done automatically if this method is overriden, and can be toggled with [method set_process_input].
+            It is only called if input processing is enabled, which is done automatically if this method is overridden, and can be toggled with [method set_process_input].
             </summary>
         </member>
         <member name="M:Godot.Node._PhysicsProcess(System.Single)">
             <summary>
             Called during the physics processing step of the main loop. Physics processing means that the frame rate is synced to the physics, i.e. the [code]delta[/code] variable should be constant.
-            It is only called if physics processing is enabled, which is done automatically if this method is overriden, and can be toggled with [method set_physics_process].
+            It is only called if physics processing is enabled, which is done automatically if this method is overridden, and can be toggled with [method set_physics_process].
             Corresponds to the NOTIFICATION_PHYSICS_PROCESS notification in [method Object._notification].
             </summary>
         </member>
         <member name="M:Godot.Node._Process(System.Single)">
             <summary>
             Called during the processing step of the main loop. Processing happens at every frame and as fast as possible, so the [code]delta[/code] time since the previous frame is not constant.
-            It is only called if processing is enabled, which is done automatically if this method is overriden, and can be toggled with [method set_process].
+            It is only called if processing is enabled, which is done automatically if this method is overridden, and can be toggled with [method set_process].
             Corresponds to the NOTIFICATION_PROCESS notification in [method Object._notification].
             </summary>
         </member>
@@ -12948,7 +12955,7 @@
         <member name="M:Godot.Node._UnhandledInput(Godot.InputEvent)">
             <summary>
             Propagated to all nodes when the previous InputEvent is not consumed by any nodes.
-            It is only called if unhandled input processing is enabled, which is done automatically if this method is overriden, and can be toggled with [method set_process_unhandled_input].
+            It is only called if unhandled input processing is enabled, which is done automatically if this method is overridden, and can be toggled with [method set_process_unhandled_input].
             </summary>
         </member>
         <member name="M:Godot.Node._UnhandledKeyInput(Godot.InputEventKey)">
@@ -13117,7 +13124,7 @@
         </member>
         <member name="M:Godot.Node.SetPhysicsProcess(System.Boolean)">
             <summary>
-            Enables or disables physics (i.e. fixed framerate) processing. When a node is being processed, it will receive a NOTIFICATION_PHYSICS_PROCESS at a fixed (usually 60 fps, see [OS] to change) interval (and the [method _physics_process] callback will be called if exists). Enabled automatically if [method _physics_process] is overriden. Any calls to this before [method _ready] will be ignored.
+            Enables or disables physics (i.e. fixed framerate) processing. When a node is being processed, it will receive a NOTIFICATION_PHYSICS_PROCESS at a fixed (usually 60 fps, see [OS] to change) interval (and the [method _physics_process] callback will be called if exists). Enabled automatically if [method _physics_process] is overridden. Any calls to this before [method _ready] will be ignored.
             </summary>
         </member>
         <member name="M:Godot.Node.GetPhysicsProcessDeltaTime">
@@ -13137,7 +13144,7 @@
         </member>
         <member name="M:Godot.Node.SetProcess(System.Boolean)">
             <summary>
-            Enables or disables processing. When a node is being processed, it will receive a NOTIFICATION_PROCESS on every drawn frame (and the [method _process] callback will be called if exists). Enabled automatically if [method _process] is overriden. Any calls to this before [method _ready] will be ignored.
+            Enables or disables processing. When a node is being processed, it will receive a NOTIFICATION_PROCESS on every drawn frame (and the [method _process] callback will be called if exists). Enabled automatically if [method _process] is overridden. Any calls to this before [method _ready] will be ignored.
             </summary>
         </member>
         <member name="M:Godot.Node.IsProcessing">
@@ -13147,7 +13154,7 @@
         </member>
         <member name="M:Godot.Node.SetProcessInput(System.Boolean)">
             <summary>
-            Enables or disables input processing. This is not required for GUI controls! Enabled automatically if [method _input] is overriden. Any calls to this before [method _ready] will be ignored.
+            Enables or disables input processing. This is not required for GUI controls! Enabled automatically if [method _input] is overridden. Any calls to this before [method _ready] will be ignored.
             </summary>
         </member>
         <member name="M:Godot.Node.IsProcessingInput">
@@ -13157,7 +13164,7 @@
         </member>
         <member name="M:Godot.Node.SetProcessUnhandledInput(System.Boolean)">
             <summary>
-            Enables unhandled input processing. This is not required for GUI controls! It enables the node to receive all input that was not previously handled (usually by a [Control]). Enabled automatically if [method _unhandled_input] is overriden. Any calls to this before [method _ready] will be ignored.
+            Enables unhandled input processing. This is not required for GUI controls! It enables the node to receive all input that was not previously handled (usually by a [Control]). Enabled automatically if [method _unhandled_input] is overridden. Any calls to this before [method _ready] will be ignored.
             </summary>
         </member>
         <member name="M:Godot.Node.IsProcessingUnhandledInput">
@@ -13167,7 +13174,7 @@
         </member>
         <member name="M:Godot.Node.SetProcessUnhandledKeyInput(System.Boolean)">
             <summary>
-            Enables unhandled key input processing. Enabled automatically if [method _unhandled_key_input] is overriden. Any calls to this before [method _ready] will be ignored.
+            Enables unhandled key input processing. Enabled automatically if [method _unhandled_key_input] is overridden. Any calls to this before [method _ready] will be ignored.
             </summary>
         </member>
         <member name="M:Godot.Node.IsProcessingUnhandledKeyInput">
@@ -16681,13 +16688,13 @@
         </member>
         <member name="P:Godot.PinJoint.Params__bias">
             <summary>
-            The force with wich the pinned objects stay in positional relation to each other.
+            The force with which the pinned objects stay in positional relation to each other.
             The higher, the stronger.
             </summary>
         </member>
         <member name="P:Godot.PinJoint.Params__damping">
             <summary>
-            The force with wich the pinned objects stay in velocity relation to each other.
+            The force with which the pinned objects stay in velocity relation to each other.
             The higher, the stronger.
             </summary>
         </member>
@@ -16969,7 +16976,7 @@
         </member>
         <member name="M:Godot.PopupMenu.SetItemAsSeparator(System.Int32,System.Boolean)">
             <summary>
-            Mark the item at index "idx" as a seperator, which means that it would be displayed as a mere line.
+            Mark the item at index "idx" as a separator, which means that it would be displayed as a mere line.
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.SetItemAsCheckable(System.Int32,System.Boolean)">
@@ -17044,7 +17051,7 @@
         </member>
         <member name="M:Godot.PopupMenu.IsItemSeparator(System.Int32)">
             <summary>
-            Return whether the item is a seperator. If it is, it would be displayed as a line.
+            Return whether the item is a separator. If it is, it would be displayed as a line.
             </summary>
         </member>
         <member name="M:Godot.PopupMenu.IsItemCheckable(System.Int32)">
@@ -17583,10 +17590,12 @@
         </member>
         <member name="M:Godot.RayCast2D.SetCollisionMaskBit(System.Int32,System.Boolean)">
             <summary>
+            Set/clear individual bits on the collision mask. This makes selecting the areas scanned easier.
             </summary>
         </member>
         <member name="M:Godot.RayCast2D.GetCollisionMaskBit(System.Int32)">
             <summary>
+            Return an individual bit on the collision mask.
             </summary>
         </member>
         <member name="T:Godot.RayShape">
@@ -19111,7 +19120,7 @@
         </member>
         <member name="P:Godot.SliderJoint.LinearLimit__softness">
             <summary>
-            A factor applied to the movement accross the slider axis once the limits get surpassed. The lower, the slower the movement.
+            A factor applied to the movement across the slider axis once the limits get surpassed. The lower, the slower the movement.
             </summary>
         </member>
         <member name="P:Godot.SliderJoint.LinearLimit__restitution">
@@ -19126,7 +19135,7 @@
         </member>
         <member name="P:Godot.SliderJoint.LinearMotion__softness">
             <summary>
-            A factor applied to the movement accross the slider axis as long as the slider is in the limits. The lower, the slower the movement.
+            A factor applied to the movement across the slider axis as long as the slider is in the limits. The lower, the slower the movement.
             </summary>
         </member>
         <member name="P:Godot.SliderJoint.LinearMotion__restitution">
@@ -19141,17 +19150,17 @@
         </member>
         <member name="P:Godot.SliderJoint.LinearOrtho__softness">
             <summary>
-            A factor applied to the movement accross axes orthogonal to the slider.
+            A factor applied to the movement across axes orthogonal to the slider.
             </summary>
         </member>
         <member name="P:Godot.SliderJoint.LinearOrtho__restitution">
             <summary>
-            The amount of restitution when movement is accross axes orthogonal to the slider.
+            The amount of restitution when movement is across axes orthogonal to the slider.
             </summary>
         </member>
         <member name="P:Godot.SliderJoint.LinearOrtho__damping">
             <summary>
-            The amount of damping when movement is accross axes orthogonal to the slider.
+            The amount of damping when movement is across axes orthogonal to the slider.
             </summary>
         </member>
         <member name="P:Godot.SliderJoint.AngularLimit__upperAngle">
@@ -24296,7 +24305,7 @@
         </member>
         <member name="M:Godot.VisualServer.TextureGetData(Godot.RID,Godot.VisualServer.CubeMapSide)">
             <summary>
-            Returns a copy of a texture's image unless it's a CubeMap, in wich case it returns the [RID] of the image at one of the cubes sides.
+            Returns a copy of a texture's image unless it's a CubeMap, in which case it returns the [RID] of the image at one of the cubes sides.
             </summary>
         </member>
         <member name="M:Godot.VisualServer.TextureSetFlags(Godot.RID,System.Int32)">
@@ -24783,7 +24792,7 @@
         </member>
         <member name="M:Godot.VisualServer.CanvasItemAddPolyline(Godot.RID,Godot.Vector2[],Godot.Color[],System.Single,System.Boolean)">
             <summary>
-            Adds a polyline, which is a line from mutliple points with a width, to the [CanvasItem]'s draw commands.
+            Adds a polyline, which is a line from multiple points with a width, to the [CanvasItem]'s draw commands.
             </summary>
         </member>
         <member name="M:Godot.VisualServer.CanvasItemAddRect(Godot.RID,Godot.Rect2,Godot.Color)">
@@ -24971,7 +24980,7 @@
         </member>
         <member name="M:Godot.VisualServer.CanvasLightSetItemShadowCullMask(Godot.RID,System.Int32)">
             <summary>
-            The shadow mask. binary about wich layers this canvas light affects wich canvas item's shadows. See [LightOccluder2D] for more information on light masks.
+            The shadow mask. binary about which layers this canvas light affects which canvas item's shadows. See [LightOccluder2D] for more information on light masks.
             </summary>
         </member>
         <member name="M:Godot.VisualServer.CanvasLightSetMode(Godot.RID,Godot.VisualServer.CanvasLightMode)">
@@ -25248,11 +25257,14 @@
         </member>
         <member name="T:Godot.WorldEnvironment">
             <summary>
-            The [code]WorldEnvironment[/code] node can be added to a scene in order to set default [Environment] variables for the scene. The [code]WorldEnvironment[/code] can be overridden by an [Environment] node set on the current [Camera]. Additionally, only one [code]WorldEnvironment[/code] may be instanced in a given scene at a time. The [code]WorldEnvironment[/code] allows the user to specify default lighting parameters (e.g. ambient lighting), various post-processing effects (e.g. SSAO, DOF, Tonemapping), and how to draw the background (e.g. solid color, skybox).
+            The [code]WorldEnvironment[/code] node is used to configure the default [Environment] for the scene.
+            The parameters defined in the [code]WorldEnvironment[/code] can be overridden by an [Environment] node set on the current [Camera]. Additionally, only one [code]WorldEnvironment[/code] may be instanced in a given scene at a time.
+            The [code]WorldEnvironment[/code] allows the user to specify default lighting parameters (e.g. ambient lighting), various post-processing effects (e.g. SSAO, DOF, Tonemapping), and how to draw the background (e.g. solid color, skybox). Usually, these are added in order to improve the realism/color balance of the scene.
             </summary>
         </member>
         <member name="P:Godot.WorldEnvironment.Environment">
             <summary>
+            The [Environment] resource used by this [code]WorldEnvironment[/code], defining the default properties.
             </summary>
         </member>
         <member name="T:Godot.XMLParser">
