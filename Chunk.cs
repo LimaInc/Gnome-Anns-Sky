@@ -7,6 +7,10 @@ public class Chunk : Spatial
     private SurfaceTool surfaceTool = new SurfaceTool();
     private WorldGenerator worldGenerator;
 
+    private MeshInstance meshInstance;
+    private StaticBody body;
+    private CollisionShape collider;
+
     private void AddPosXFace(Vector3 origin, byte blockType)
     {
         Rect2 uvs = worldGenerator.blockUVs[blockType-1];
@@ -124,33 +128,32 @@ public class Chunk : Spatial
     public byte GetBlockInChunk(int x, int y, int z)
     {
         if(x < 0 || x >= blocks.GetLength(0) || y < 0 || y >= blocks.GetLength(1) || z < 0 || z >= blocks.GetLength(2))
-            return 0;
+            return 0; //Maybe should throw exception/return null here ??
         else
             return blocks[x,y,z];
     }
-    public Chunk(WorldGenerator worldGenerator, IntVector3 position, IntVector3 size)
+
+    public void SetBlockInChunk(IntVector3 position, byte block)
     {
-        this.Translate(position);
-        this.worldGenerator = worldGenerator;
-        blocks = worldGenerator.GetChunk(position.x, position.y, position.z, size.x, size.y, size.z);
+        SetBlockInChunk(position.x, position.y, position.z, block);
+    }
 
-        MeshInstance meshInstance = new MeshInstance();
-        this.AddChild(meshInstance);
+    public void SetBlockInChunk(int x, int y, int z, byte block)
+    {
+        if(x < 0 || x >= blocks.GetLength(0) || y < 0 || y >= blocks.GetLength(1) || z < 0 || z >= blocks.GetLength(2))
+            return; //Maybe should return false here?
+        else
+            blocks[x,y,z] = block;
+    }
 
-        StaticBody body = new StaticBody();
-        this.AddChild(body);
-        CollisionShape collider = new CollisionShape();
-        body.AddChild(collider);
-
-        ConcavePolygonShape shape = new ConcavePolygonShape();
-        collider.Shape = shape;
-        
+    public void UpdateMesh()
+    {
         ArrayMesh mesh = new ArrayMesh();
         SpatialMaterial material = new SpatialMaterial();
         Texture atlas = ResourceLoader.Load("res://tilemap.png") as Texture;
         material.AlbedoTexture = atlas;
 
-        surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
+        surfaceTool.Begin(Mesh.PrimitiveType.Triangles);        
 
         for(int x = 0; x < blocks.GetLength(0); x++)
         {
@@ -184,11 +187,30 @@ public class Chunk : Spatial
 
         surfaceTool.SetMaterial(material);
 
+        surfaceTool.Index();
+
         mesh = surfaceTool.Commit();
 
-        shape.Data = mesh.GetFaces();
+        collider.Shape = mesh.CreateTrimeshShape();
 
         meshInstance.SetMesh(mesh);
+    }
+
+    public Chunk(WorldGenerator worldGenerator, IntVector3 position, IntVector3 size)
+    {
+        this.Translate(position);
+        this.worldGenerator = worldGenerator;
+        blocks = worldGenerator.GetChunk(position.x, position.y, position.z, size.x, size.y, size.z);
+
+        meshInstance = new MeshInstance();
+        this.AddChild(meshInstance);
+
+        body = new StaticBody();
+        this.AddChild(body);
+        collider = new CollisionShape();
+        body.AddChild(collider);
+        
+        UpdateMesh();
     }
     public override void _Ready()
     {

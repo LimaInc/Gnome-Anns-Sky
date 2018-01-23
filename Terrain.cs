@@ -98,7 +98,7 @@ public class Terrain : Spatial
 {
     SurfaceTool surfaceTool = new SurfaceTool();
 
-    IntVector3 chunkSize = new IntVector3(16, 64, 16);
+    IntVector3 chunkSize = new IntVector3(16, 32, 16);
 
     Dictionary<IntVector3, Chunk> loadedChunks = new Dictionary<IntVector3, Chunk>(); //Maybe we should just store an array of chunks?
 
@@ -123,12 +123,17 @@ public class Terrain : Spatial
 
     public byte GetBlock(int x, int y, int z)
     {
-        IntVector3 chunkIndex = new IntVector3(x / chunkSize.x, y / chunkSize.y, z / chunkSize.z);
+        //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
+        IntVector3 chunkIndex = new IntVector3((int)Mathf.Floor((float)x / chunkSize.x),
+                                               (int)Mathf.Floor((float)y / chunkSize.y),
+                                               (int)Mathf.Floor((float)z / chunkSize.z));
 
         Chunk chunk;
         if(loadedChunks.TryGetValue(chunkIndex, out chunk))
         {
-            return chunk.GetBlockInChunk(x % chunkSize.x, y % chunkSize.y, z % chunkSize.z);
+            IntVector3 positionInChunk = new IntVector3(x,y,z) - chunkIndex * chunkSize;
+
+            return chunk.GetBlockInChunk(positionInChunk);
         }
         else //Chunk isn't loaded, so return 0?
         {
@@ -153,7 +158,7 @@ public class Terrain : Spatial
     }
 
     Spatial player;
-    IntVector3 chunkLoadRadius = new IntVector3(2, 1, 2);
+    IntVector3 chunkLoadRadius = new IntVector3(2, 2, 2);
 
     Vector3 playerPosLastUpdate = new Vector3(-50, -50, -50); //Forces update on first frame
     float updateDistance = 10;
@@ -167,9 +172,28 @@ public class Terrain : Spatial
         if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))
         {
             playerPosLastUpdate = playerPos;
-            GD.Print("Updating");
             UpdateVisibleChunks();
         }
+    }
+
+    public void SetBlock(IntVector3 pos, byte block)
+    {
+        //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
+        IntVector3 chunkIndex = new IntVector3((int)Mathf.Floor((float)pos.x / chunkSize.x),
+                                               (int)Mathf.Floor((float)pos.y / chunkSize.y),
+                                               (int)Mathf.Floor((float)pos.z / chunkSize.z));
+
+        GD.Print("Setting block " + pos + " to " + block + " in chunk " + chunkIndex);
+
+        Chunk chunk = loadedChunks[chunkIndex];
+
+        IntVector3 positionInChunk = pos - chunkIndex * chunkSize;
+
+        GD.Print("Position in chunk is " + positionInChunk);
+
+        chunk.SetBlockInChunk(positionInChunk, block);
+
+        chunk.UpdateMesh();
     }
 
     private void UpdateVisibleChunks()

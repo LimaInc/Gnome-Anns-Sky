@@ -52,6 +52,7 @@
     <Compile Include="camera.cs" />
     <Compile Include="Chunk.cs" />
     <Compile Include="FastNoise.cs" />
+    <Compile Include="Interaction.cs" />
     <Compile Include="Terrain.cs" />
     <Compile Include="WorldGenerator.cs" />
     <Compile Include="Noise.cs" />
