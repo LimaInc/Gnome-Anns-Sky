@@ -11,15 +11,9 @@ public class WorldGenerator
         new Rect2(0.5f, 0.0f, 0.5f, 1.0f)
     };
 
-    Noise noise = new Noise();
-    private float GetNoise(int x, int z)
-    {
-        float fx = x * 1.1f; float fz = z * 1.1f; //Because perlin noise is the same value at integer samples
+    OctaveNoise noise = new OctaveNoise(16);
 
-        return noise.sample(fx / 16, fz / 16) * 8 + noise.sample(fx / 4, fz / 4) * 1 + 16;
-    }
-
-    public byte[,,] GetChunk(int x, int y, int z, int sX, int sY, int sZ)
+    public byte[,,] GetChunk(int x, int z, int sX, int sY, int sZ)
     {
         byte[,,] chunk = new byte[sX, sY, sZ];
 
@@ -27,13 +21,15 @@ public class WorldGenerator
         {
             for(int k = 0; k < sZ; k++)
             {
-                int height = (int)GetNoise(x + i, z + k);
+                float xs = (x * sX + i) / 256.0f;
+                float zs = (z * sZ + k) / 256.0f;
+                int height = (int) (noise.sample(xs, zs) * 128) + 50;
 
                 for(int j = 0; j < sY; j++)
                 {
-                    if((j + y) < height)
+                    if(j < height)
                         chunk[i,j,k] = 1;
-                    else if((j + y) < height + 3) //3 layers of grass on top of rock
+                    else if(j < height + 3) //3 layers of grass on top of rock
                         chunk[i,j,k] = 2;
                     else
                         chunk[i,j,k] = 0;

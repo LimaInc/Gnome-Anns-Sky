@@ -56,6 +56,7 @@
     <Compile Include="Terrain.cs" />
     <Compile Include="WorldGenerator.cs" />
     <Compile Include="Noise.cs" />
+    <Compile Include="OctaveNoise.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
