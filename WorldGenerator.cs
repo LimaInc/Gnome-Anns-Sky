@@ -11,13 +11,7 @@ public class WorldGenerator
         new Rect2(0.5f, 0.0f, 0.5f, 1.0f)
     };
 
-    Noise noise = new Noise();
-    private float GetNoise(int x, int z)
-    {
-        float fx = x * 1.1f; float fz = z * 1.1f; //Because perlin noise is the same value at integer samples
-
-        return noise.sample(fx / 16, fz / 16) * 8 + noise.sample(fx / 4, fz / 4) * 1 + 16;
-    }
+    OctaveNoise noise = new OctaveNoise(16);
 
     public byte[,,] GetChunk(int x, int y, int z, int sX, int sY, int sZ)
     {
@@ -27,7 +21,9 @@ public class WorldGenerator
         {
             for(int k = 0; k < sZ; k++)
             {
-                int height = (int)GetNoise(x + i, z + k);
+                float xs = (x + i) / 512.0f;
+                float zs = (z + k) / 512.0f;
+                int height = (int) (noise.sample(xs, zs) * 128);
 
                 for(int j = 0; j < sY; j++)
                 {

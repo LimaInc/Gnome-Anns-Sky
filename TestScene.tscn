@@ -75,7 +75,7 @@ current = true
 fov = 70.0
 size = 1.0
 near = 0.05
-far = 100.0
+far = 10000.0
 script = ExtResource( 3 )
 
 
