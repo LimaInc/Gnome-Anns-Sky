@@ -3,7 +3,7 @@ using System;
 
 public class Chunk : Spatial
 {
-    public static IntVector3 CHUNK_SIZE = new IntVector3(16, 64, 16);
+    public static IntVector3 CHUNK_SIZE = new IntVector3(16, 256, 16);
 
     private byte[,,] blocks;
     private SurfaceTool surfaceTool = new SurfaceTool();
@@ -14,7 +14,7 @@ public class Chunk : Spatial
     private CollisionShape collider;
 
     private Terrain terrain;
-    private IntVector3 chunkCoords;
+    private IntVector2 chunkCoords;
 
     private void AddPosXFace(Vector3 origin, byte blockType)
     {
@@ -160,11 +160,11 @@ public class Chunk : Spatial
 
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);        
 
-        for(int x = 0; x < blocks.GetLength(0); x++)
+        for(int x = 0; x < CHUNK_SIZE.x; x++)
         {
-            for(int y = 0; y < blocks.GetLength(1); y++)
+            for(int y = 0; y < CHUNK_SIZE.y; y++)
             {
-                for(int z = 0; z < blocks.GetLength(2); z++)
+                for(int z = 0; z < CHUNK_SIZE.z; z++)
                 {
                     byte blockType = blocks[x,y,z];
                     if(blockType == 0)
@@ -172,50 +172,11 @@ public class Chunk : Spatial
 
                     Vector3 blockPos = new Vector3(x,y,z);
 
-                    Vector3 worldBlockPos = blockPos + new Vector3(chunkCoords.x * CHUNK_SIZE.x, chunkCoords.y * CHUNK_SIZE.y, chunkCoords.z * CHUNK_SIZE.z);
+                    Vector3 worldBlockPos = blockPos + new Vector3(chunkCoords.x * CHUNK_SIZE.x, 0, chunkCoords.y * CHUNK_SIZE.z);
 
                     int sx = (int) worldBlockPos.x;
                     int sy = (int) worldBlockPos.y;
                     int sz = (int) worldBlockPos.z;
-
-                    if (x == 1 && y == 3)
-                    {
-                        GD.Print("S: " + sx + ", " + sy + ", " + sz);
-                        GD.Print("C: " + x + ", " + y + ", " + z);
-                        GD.Print("CC: " + chunkCoords.x + ", " + chunkCoords.y + ", " + chunkCoords.z);
-                    }
-
-                    // if(GetBlockInChunk(x+1,y,z) == 0)
-                    //     if (sx != CHUNK_SIZE.x - 1 || terrain.GetBlock(sx+1,sy,sz) == 0)
-                    //         AddPosXFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x-1,y,z) == 0)
-                    //     if (sx != 0 || terrain.GetBlock(sx-1,sy,sz) == 0)
-                    //         AddNegXFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x,y+1,z) == 0)
-                    //     if (sy != CHUNK_SIZE.y - 1 || terrain.GetBlock(sx,sy+1,sz) == 0)
-                    //         AddPosYFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x,y-1,z) == 0 && y != 0)
-                    //     if (sy != 0 || terrain.GetBlock(sx,sy-1,sz) == 0)
-                    //         AddNegYFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x,y,z+1) == 0)
-                    //     if (sz != CHUNK_SIZE.z + 1 || terrain.GetBlock(sx,sy,sz+1) == 0)
-                    //         AddPosZFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x,y,z-1) == 0)
-                    //     if (sz != 0 || terrain.GetBlock(sx,sy,sz-1) == 0)
-                    //         AddNegZFace(blockPos, blockType);
-
-                    // if(GetBlockInChunk(x+1,y,z) == 0)
-                    //     AddPosXFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x-1,y,z) == 0)
-                    //     AddNegXFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x,y+1,z) == 0)
-                    //     AddPosYFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x,y-1,z) == 0 && y != 0)
-                    //     AddNegYFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x,y,z+1) == 0)
-                    //     AddPosZFace(blockPos, blockType);
-                    // if(GetBlockInChunk(x,y,z-1) == 0)
-                    //     AddNegZFace(blockPos, blockType);
                     
                     if(terrain.GetBlock(sx+1,sy,sz) == 0)
                         AddPosXFace(blockPos, blockType);
@@ -249,7 +210,7 @@ public class Chunk : Spatial
     //Just generate terrain data
     public void SoftLoad()
     {
-        blocks = worldGenerator.GetChunk(chunkCoords.x, chunkCoords.y, chunkCoords.z, CHUNK_SIZE.x, CHUNK_SIZE.y, CHUNK_SIZE.z);
+        blocks = worldGenerator.GetChunk(chunkCoords.x, chunkCoords.y, CHUNK_SIZE.x, CHUNK_SIZE.y, CHUNK_SIZE.z);
     }
 
     //Generate graphical data aswell
@@ -266,10 +227,10 @@ public class Chunk : Spatial
         UpdateMesh();
     }
 
-    public Chunk(Terrain terrain, WorldGenerator worldGenerator, IntVector3 coords, IntVector3 size)
+    public Chunk(Terrain terrain, WorldGenerator worldGenerator, IntVector2 coords)
     {
         this.terrain = terrain;
-        this.Translate(coords * CHUNK_SIZE);
+        this.Translate(new IntVector3(coords.x * CHUNK_SIZE.x, 0, coords.y * CHUNK_SIZE.z));
         this.worldGenerator = worldGenerator;
 
         this.chunkCoords = coords;
