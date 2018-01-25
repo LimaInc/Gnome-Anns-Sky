@@ -305,15 +305,15 @@ public class Terrain : Spatial
     {
         Vector3 playerPos = player.Translation;
 
-        IntVector2 playerChunk = new IntVector2((int) (playerPos.x / Chunk.CHUNK_SIZE.x), (int) (playerPos.y / Chunk.CHUNK_SIZE.y));
+        IntVector2 playerChunk = new IntVector2((int) (playerPos.x / Chunk.CHUNK_SIZE.x), (int) (playerPos.z / Chunk.CHUNK_SIZE.z));
 
         List<IntVector2> chunksLoadedThisUpdate = new List<IntVector2>();
 
         for (int x = playerChunk.x - chunkLoadRadius.x; x <= playerChunk.x + chunkLoadRadius.x; x++)
         {
-            for (int y = playerChunk.y - chunkLoadRadius.y; y <= playerChunk.y + chunkLoadRadius.y; y++)
+            for (int z = playerChunk.y - chunkLoadRadius.y; z <= playerChunk.y + chunkLoadRadius.y; z++)
             {
-                IntVector2 thisChunkIndex = new IntVector2(x,y);
+                IntVector2 thisChunkIndex = new IntVector2(x,z);
                 chunksLoadedThisUpdate.Add(thisChunkIndex);
                 if(!hardLoadedChunks.ContainsKey(thisChunkIndex))
                     hardLoadedChunks[thisChunkIndex] = CreateChunkAndHardLoad(thisChunkIndex);
