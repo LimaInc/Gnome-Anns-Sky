@@ -132,7 +132,7 @@ public class Chunk : Spatial
 
     public byte GetBlockInChunk(int x, int y, int z)
     {
-        if(x < 0 || x >= blocks.GetLength(0) || y < 0 || y >= blocks.GetLength(1) || z < 0 || z >= blocks.GetLength(2))
+        if(x < 0 || x >= CHUNK_SIZE.x || y < 0 || y >= CHUNK_SIZE.y || z < 0 || z >= CHUNK_SIZE.z)
             return 0; //Maybe should throw exception/return null here ??
         else
             return blocks[x,y,z];
@@ -145,7 +145,7 @@ public class Chunk : Spatial
 
     public void SetBlockInChunk(int x, int y, int z, byte block)
     {
-        if(x < 0 || x >= blocks.GetLength(0) || y < 0 || y >= blocks.GetLength(1) || z < 0 || z >= blocks.GetLength(2))
+        if(x < 0 || x >= CHUNK_SIZE.x || y < 0 || y >= CHUNK_SIZE.y || z < 0 || z >= CHUNK_SIZE.z)
             return; //Maybe should return false here?
         else
             blocks[x,y,z] = block;
