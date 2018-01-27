@@ -158,6 +158,10 @@ public class Chunk : Spatial
         SpatialMaterial material = new SpatialMaterial();
         Texture atlas = ResourceLoader.Load("res://tilemap.png") as Texture;
         material.AlbedoTexture = atlas;
+        material.SetDiffuseMode(SpatialMaterial.DiffuseMode.Lambert);
+        material.SetSpecularMode(SpatialMaterial.SpecularMode.Disabled);
+        material.SetMetallic(0);
+        material.SetRoughness(1);
 
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);        
 
