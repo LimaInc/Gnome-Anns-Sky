@@ -66,7 +66,14 @@ public class Player : Spatial
 
             Vector3 rotd = new Vector3(relX * camRotateSpeed, relY * camRotateSpeed, 0.0f);
 
-            myCam.SetRotation(myCam.GetRotation() + rotd);
+            Vector3 targetRotation = myCam.GetRotation() + rotd;
+
+            //Clamp x rotation between -180 and 180 degrees
+            float xRot = targetRotation.x;
+            xRot = Mathf.Clamp(xRot, -Mathf.PI / 2, Mathf.PI / 2);
+            targetRotation = new Vector3(xRot, targetRotation.y, targetRotation.z);
+
+            myCam.SetRotation(targetRotation);
         }
     }
 
