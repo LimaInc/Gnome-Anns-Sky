@@ -49,7 +49,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="camera.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Chunk.cs" />
     <Compile Include="FastNoise.cs" />
     <Compile Include="Interaction.cs" />
