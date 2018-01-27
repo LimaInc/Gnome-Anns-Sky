@@ -20,7 +20,7 @@ current = false
 fov = 70.0
 size = 1.0
 near = 0.05
-far = 100.0
+far = 10.0
 _sections_unfolded = [ "Transform" ]
 
 [node name="DirectionalLight" type="DirectionalLight" parent="." index="1"]
@@ -36,7 +36,7 @@ light_bake_mode = 1
 light_cull_mask = -1
 shadow_enabled = true
 shadow_color = Color( 0, 0, 0, 1 )
-shadow_bias = 0.1
+shadow_bias = 0.01
 shadow_contact = 0.0
 shadow_reverse_cull_face = false
 editor_only = false
@@ -74,7 +74,7 @@ current = true
 fov = 70.0
 size = 1.0
 near = 0.05
-far = 10000.0
+far = 100.0
 script = ExtResource( 3 )
 _sections_unfolded = [ "Transform" ]
 

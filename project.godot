@@ -8,6 +8,8 @@
 
 config_version=3
 
+shadow=false
+
 [application]
 
 config/name="SustainableCraft"
@@ -32,3 +34,7 @@ sprint=[ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":""
 [rendering]
 
 environment/default_environment="res://default_env.tres"
+
+[shadow]
+
+=false
