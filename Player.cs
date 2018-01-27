@@ -3,13 +3,16 @@ using System;
 
 public class Player : Spatial
 {
-    private float moveSpeed = 10000.0f;
-    private float jumpPower = 20000.0f;
+    private float moveSpeed = 30.0f;
+    private float jumpPower = 550.0f;
     private float camRotateSpeed = 0.01f;
+
+    private float xz_inertia = 0.85f;
+    private float y_intertia = 1;
 
     private Vector3 velocity = new Vector3();
 
-    private float gravity = 16000.0f;
+    private float gravity = 40.0f;
 
     private CollisionShape collisionShape;
     private KinematicBody physicsBody;
@@ -82,14 +85,12 @@ public class Player : Spatial
         }
         if (Input.IsActionJustPressed("jump"))
         {
-            velocity += new Vector3(0.0f, jumpPower, 0.0f);
+            velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
         }
 
-        velocity *= delta;
+        velocity = new Vector3(velocity.x * xz_inertia, velocity.y * y_intertia, velocity.z * xz_inertia);
 
-        GD.Print(delta);
-
-        this.physicsBody.MoveAndSlide(velocity);
+        velocity = this.physicsBody.MoveAndSlide(velocity);
 
         // KinematicCollision kc = this.physicsBody.MoveAndCollide(velocity);
 
