@@ -33,8 +33,8 @@ public class camera : Spatial
     {   
         Vector3 rot = this.GetRotation();
 
-        float sin = (float) (camSpeed * Math.Sin(rot.y));
-        float cos = (float) (camSpeed * Math.Cos(rot.y));
+        float sin = (float) (camSpeed * delta * Math.Sin(rot.y));
+        float cos = (float) (camSpeed * delta * Math.Cos(rot.y));
 
         if (Input.IsActionPressed("forward"))
         {
