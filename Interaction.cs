@@ -50,7 +50,8 @@ public class Interaction : Camera
             if(hitInfo.Count != 0) //Hit something
             {
                 Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f;
-                IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
+                pos -= this.ProjectRayNormal(midScreenPoint) * 0.25f * Chunk.BLOCK_SIZE;
+                IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
 
                 terrain.SetBlock(blockPos, 0);
             }
