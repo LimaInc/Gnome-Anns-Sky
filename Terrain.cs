@@ -71,10 +71,10 @@ public class Terrain : Spatial
 
     public override void _Ready()
     {
-        player = GetNode("/root/Node/Player") as Spatial;
+        player = GetNode("/root/Node/Player") as Player;
     }
 
-    Spatial player;
+    Player player;
     IntVector2 chunkLoadRadius = new IntVector2(8, 8);
 
     Vector3 playerPosLastUpdate = new Vector3(-50, -50, -50); //Forces update on first frame
@@ -85,7 +85,7 @@ public class Terrain : Spatial
         // Update game logic here.
         
         //Update visible chunks only when the player has moved a certain distance
-        Vector3 playerPos = player.Translation;
+        Vector3 playerPos = player.GetPosition();
         if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))
         {
             playerPosLastUpdate = playerPos;
@@ -131,7 +131,9 @@ public class Terrain : Spatial
 
     private void UpdateVisibleChunks()
     {
-        Vector3 playerPos = player.Translation;
+        Vector3 playerPos = player.GetPosition();
+
+        GD.Print(playerPos);
 
         IntVector2 playerChunk = new IntVector2((int) (playerPos.x / Chunk.CHUNK_SIZE.x), (int) (playerPos.z / Chunk.CHUNK_SIZE.z));
 
