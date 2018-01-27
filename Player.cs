@@ -3,13 +3,13 @@ using System;
 
 public class Player : Spatial
 {
-    private float moveSpeed = 1f;
-    private float jumpPower = 1f;
+    private float moveSpeed = 10000.0f;
+    private float jumpPower = 20000.0f;
     private float camRotateSpeed = 0.01f;
 
     private Vector3 velocity = new Vector3();
 
-    private float gravity = 0.2f;
+    private float gravity = 16000.0f;
 
     private CollisionShape collisionShape;
     private KinematicBody physicsBody;
@@ -85,11 +85,13 @@ public class Player : Spatial
             velocity += new Vector3(0.0f, jumpPower, 0.0f);
         }
 
-        velocity *= 0.95f;
+        velocity *= delta;
 
-        // this.physicsBody.MoveAndSlide(velocity);
+        GD.Print(delta);
 
-        KinematicCollision kc = this.physicsBody.MoveAndCollide(velocity);
+        this.physicsBody.MoveAndSlide(velocity);
+
+        // KinematicCollision kc = this.physicsBody.MoveAndCollide(velocity);
 
         myCam.SetTranslation(this.physicsBody.GetTranslation() + new Vector3(0.0f, 0.5f,0.0f));
     }
