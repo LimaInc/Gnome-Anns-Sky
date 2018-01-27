@@ -102,6 +102,10 @@ public class Player : Spatial
             movDir += new Vector3(cos,0.0f,-sin);
         }
         movDir = movDir.Normalized();
+        if(Input.IsActionPressed("sprint"))
+        {
+            movDir *= 3f;
+        }
 
         velocity += movDir * moveSpeed * delta;
 
