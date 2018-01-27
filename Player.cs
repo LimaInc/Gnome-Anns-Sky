@@ -12,6 +12,8 @@ public class Player : Spatial
 
     private Vector3 velocity = new Vector3();
 
+    private Vector3 camOffset = new Vector3(0.0f, 0.5f, 0.0f);
+
     private float gravity = 40.0f;
 
     private CollisionShape collisionShape;
@@ -19,10 +21,13 @@ public class Player : Spatial
 
     private Camera myCam;
 
+    public Vector3 GetPosition()
+    {
+        return physicsBody.GetTranslation();
+    }
+
     public override void _Ready()
     {
-        this.SetTranslation(new Vector3(0.0f, 40.0f, 0.0f));
-
         Input.SetMouseMode(Input.MouseMode.Captured);
 
         BoxShape b = new BoxShape();
@@ -33,6 +38,8 @@ public class Player : Spatial
         physicsBody = new KinematicBody();
 
         physicsBody.AddChild(collisionShape);
+        physicsBody.SetName("physicsBody");
+        physicsBody.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
 
         myCam = (Camera) this.GetChild(0);
 
@@ -94,6 +101,6 @@ public class Player : Spatial
 
         // KinematicCollision kc = this.physicsBody.MoveAndCollide(velocity);
 
-        myCam.SetTranslation(this.physicsBody.GetTranslation() + new Vector3(0.0f, 0.5f,0.0f));
+        myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
     }
 }

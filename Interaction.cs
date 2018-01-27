@@ -45,12 +45,19 @@ public class Interaction : Camera
             removeBlock = false;
 
             Vector3 from = this.ProjectRayOrigin(midScreenPoint);
-            Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength);
+            GD.Print(from + ", " + (GetNode("/root/Node/Player") as Player).GetPosition());
+            Node[] exc = new Node[1];
+            exc[0] = GetNode("/root/Node/Player/physicsBody");
+            Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
+
+            foreach(KeyValuePair<object, object> entry in hitInfo)
+            {
+                // do something with entry.Value or entry.Key
+            }
 
             if(hitInfo.Count != 0) //Hit something
             {
                 Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
-                // pos -= this.ProjectRayNormal(midScreenPoint) * 0.25f * Chunk.BLOCK_SIZE;
                 IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
 
                 terrain.SetBlock(blockPos, 0);
