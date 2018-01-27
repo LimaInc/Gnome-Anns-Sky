@@ -12,7 +12,7 @@ public class Interaction : Camera
 
     Terrain terrain;
 
-    Vector2 midScreenPoint;
+    public static Vector2 midScreenPoint;
 
     public override void _Ready()
     {

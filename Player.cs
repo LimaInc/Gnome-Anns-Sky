@@ -3,12 +3,37 @@ using System;
 
 public class Player : Spatial
 {
-    float camSpeed = 0.2f;
-    float camRotateSpeed = 0.01f;
+    private float moveSpeed = 1f;
+    private float jumpPower = 1f;
+    private float camRotateSpeed = 0.01f;
+
+    private Vector3 velocity = new Vector3();
+
+    private float gravity = 0.2f;
+
+    private CollisionShape collisionShape;
+    private KinematicBody physicsBody;
+
+    private Camera myCam;
 
     public override void _Ready()
     {
+        this.SetTranslation(new Vector3(0.0f, 40.0f, 0.0f));
+
         Input.SetMouseMode(Input.MouseMode.Captured);
+
+        BoxShape b = new BoxShape();
+        b.SetExtents(new Vector3(0.4f,0.4f,0.4f));
+        collisionShape = new CollisionShape();
+        collisionShape.SetShape(b);
+
+        physicsBody = new KinematicBody();
+
+        physicsBody.AddChild(collisionShape);
+
+        myCam = (Camera) this.GetChild(0);
+
+        this.AddChild(physicsBody);
     }
 
     public override void _Input(InputEvent e)
@@ -26,32 +51,46 @@ public class Player : Spatial
 
             Vector3 rotd = new Vector3(relX * camRotateSpeed, relY * camRotateSpeed, 0.0f);
 
-            this.SetRotation(this.GetRotation() + rotd);
+            myCam.SetRotation(myCam.GetRotation() + rotd);
         }
     }
 
     public override void _Process(float delta)
-    {   
-        Vector3 rot = this.GetRotation();
+    {
+        velocity += new Vector3(0,-gravity * delta,0);
 
-        float sin = (float) (camSpeed * delta * Math.Sin(rot.y));
-        float cos = (float) (camSpeed * delta * Math.Cos(rot.y));
+        Vector3 rot = myCam.GetRotation();
+
+        float sin = (float) (moveSpeed * delta * Math.Sin(rot.y));
+        float cos = (float) (moveSpeed * delta * Math.Cos(rot.y));
 
         if (Input.IsActionPressed("forward"))
         {
-            this.Translate(new Vector3(0.0f,0.0f,-camSpeed));
+            velocity += new Vector3(-sin,0.0f,-cos);
         }
         if (Input.IsActionPressed("backward"))
         {
-            this.Translate(new Vector3(0.0f,0.0f,camSpeed));
+            velocity += new Vector3(sin,0.0f,cos);
         }
         if (Input.IsActionPressed("left"))
         {
-            this.Translate(new Vector3(-camSpeed,0.0f,0.0f));
+            velocity += new Vector3(-cos,0.0f,sin);
         }
         if (Input.IsActionPressed("right"))
         {
-            this.Translate(new Vector3(camSpeed,0.0f,0.0f));
+            velocity += new Vector3(cos,0.0f,-sin);
         }
+        if (Input.IsActionJustPressed("jump"))
+        {
+            velocity += new Vector3(0.0f, jumpPower, 0.0f);
+        }
+
+        velocity *= 0.95f;
+
+        // this.physicsBody.MoveAndSlide(velocity);
+
+        KinematicCollision kc = this.physicsBody.MoveAndCollide(velocity);
+
+        myCam.SetTranslation(this.physicsBody.GetTranslation() + new Vector3(0.0f, 0.5f,0.0f));
     }
 }
