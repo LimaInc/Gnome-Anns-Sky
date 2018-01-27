@@ -71,25 +71,30 @@ public class Player : Spatial
 
         Vector3 rot = myCam.GetRotation();
 
-        float sin = (float) (moveSpeed * delta * Math.Sin(rot.y));
-        float cos = (float) (moveSpeed * delta * Math.Cos(rot.y));
+        float sin = (float) Math.Sin(rot.y);
+        float cos = (float) Math.Cos(rot.y);
 
+        Vector3 movDir = new Vector3();
         if (Input.IsActionPressed("forward"))
         {
-            velocity += new Vector3(-sin,0.0f,-cos);
+            movDir += new Vector3(-sin,0.0f,-cos);
         }
         if (Input.IsActionPressed("backward"))
         {
-            velocity += new Vector3(sin,0.0f,cos);
+            movDir += new Vector3(sin,0.0f,cos);
         }
         if (Input.IsActionPressed("left"))
         {
-            velocity += new Vector3(-cos,0.0f,sin);
+            movDir += new Vector3(-cos,0.0f,sin);
         }
         if (Input.IsActionPressed("right"))
         {
-            velocity += new Vector3(cos,0.0f,-sin);
+            movDir += new Vector3(cos,0.0f,-sin);
         }
+        movDir = movDir.Normalized();
+
+        velocity += movDir * moveSpeed * delta;
+
         if (Input.IsActionJustPressed("jump"))
         {
             velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
@@ -98,8 +103,6 @@ public class Player : Spatial
         velocity = new Vector3(velocity.x * xz_inertia, velocity.y * y_intertia, velocity.z * xz_inertia);
 
         velocity = this.physicsBody.MoveAndSlide(velocity);
-
-        // KinematicCollision kc = this.physicsBody.MoveAndCollide(velocity);
 
         myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
     }

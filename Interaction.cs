@@ -45,7 +45,6 @@ public class Interaction : Camera
             removeBlock = false;
 
             Vector3 from = this.ProjectRayOrigin(midScreenPoint);
-            GD.Print(from + ", " + (GetNode("/root/Node/Player") as Player).GetPosition());
             Node[] exc = new Node[1];
             exc[0] = GetNode("/root/Node/Player/physicsBody");
             Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
