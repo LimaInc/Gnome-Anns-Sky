@@ -12,7 +12,7 @@ public class Player : Spatial
 
     private Vector3 velocity = new Vector3();
 
-    private Vector3 camOffset = new Vector3(0.0f, 0.5f, 0.0f);
+    private Vector3 camOffset = new Vector3(0.0f, 0.4f, 0.0f);
 
     private float gravity = 40.0f;
 
@@ -31,7 +31,7 @@ public class Player : Spatial
         Input.SetMouseMode(Input.MouseMode.Captured);
 
         BoxShape b = new BoxShape();
-        b.SetExtents(new Vector3(0.4f,0.4f,0.4f));
+        b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         collisionShape = new CollisionShape();
         collisionShape.SetShape(b);
 
@@ -42,6 +42,11 @@ public class Player : Spatial
         physicsBody.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
 
         myCam = (Camera) this.GetChild(0);
+
+        this.RemoveChild(myCam);
+        physicsBody.AddChild(myCam);
+
+        myCam.SetTranslation(camOffset);
 
         this.AddChild(physicsBody);
     }
@@ -67,6 +72,11 @@ public class Player : Spatial
 
     public override void _Process(float delta)
     {
+        if (Input.IsActionJustPressed("jump") && velocity.y == 0)
+        {
+            velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
+        }
+
         velocity += new Vector3(0,-gravity * delta,0);
 
         Vector3 rot = myCam.GetRotation();
@@ -95,15 +105,10 @@ public class Player : Spatial
 
         velocity += movDir * moveSpeed * delta;
 
-        if (Input.IsActionJustPressed("jump"))
-        {
-            velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
-        }
-
         velocity = new Vector3(velocity.x * xz_inertia, velocity.y * y_intertia, velocity.z * xz_inertia);
 
         velocity = this.physicsBody.MoveAndSlide(velocity);
 
-        myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
+        // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
     }
 }
