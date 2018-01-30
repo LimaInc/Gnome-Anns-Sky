@@ -1,7 +1,6 @@
 # SustainableCraft
 
-I was using Godot v3.0.rc2.official.mono
-Might not work with a different version, especially if it's without mono and C#
+Using Godot version v3.0.stable.official.mono
 
 Should really add a .gitignore for all the project file stuff
 
