@@ -21,7 +21,6 @@ public class Terrain : Spatial
             chunk.SoftLoad();
             chunk.HardLoad();
             this.AddChild(chunk);
-            GD.Print("hit");
             softLoadedChunks[chunkIndex] = chunk;
             hardLoadedChunks.Add(chunkIndex, chunk);
             return chunk;
@@ -99,13 +98,9 @@ public class Terrain : Spatial
         IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.CHUNK_SIZE.x),
                                                (int)Mathf.Floor((float)pos.z / Chunk.CHUNK_SIZE.z));
 
-        GD.Print("Setting block " + pos + " to " + block + " in chunk " + chunkIndex);
-
         Chunk chunk = hardLoadedChunks[chunkIndex];
 
         IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.CHUNK_SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.CHUNK_SIZE.z);
-
-        GD.Print("Position in chunk is " + positionInChunk);
 
         chunk.SetBlockInChunk(positionInChunk, block);
 
@@ -132,8 +127,6 @@ public class Terrain : Spatial
     private void UpdateVisibleChunks()
     {
         Vector3 playerPos = player.GetPosition();
-
-        GD.Print(playerPos);
 
         IntVector2 playerChunk = new IntVector2((int) (playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int) (playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
 
