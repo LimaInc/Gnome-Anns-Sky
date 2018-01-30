@@ -135,7 +135,7 @@ public class Terrain : Spatial
 
         GD.Print(playerPos);
 
-        IntVector2 playerChunk = new IntVector2((int) (playerPos.x / Chunk.CHUNK_SIZE.x), (int) (playerPos.z / Chunk.CHUNK_SIZE.z));
+        IntVector2 playerChunk = new IntVector2((int) (playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int) (playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
 
         List<IntVector2> chunksLoadedThisUpdate = new List<IntVector2>();
 
