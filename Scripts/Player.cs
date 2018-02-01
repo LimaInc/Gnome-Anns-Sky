@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Player : Spatial
+public class Player : KinematicBody
 {
     private float moveSpeed = 30.0f;
     private float jumpPower = 550.0f;
@@ -17,14 +17,9 @@ public class Player : Spatial
     private float gravity = 40.0f;
 
     private CollisionShape collisionShape;
-    private KinematicBody physicsBody;
+    // private KinematicBody physicsBody;
 
     private Camera myCam;
-
-    public Vector3 GetPosition()
-    {
-        return physicsBody.GetTranslation();
-    }
 
     public override void _Ready()
     {
@@ -35,20 +30,20 @@ public class Player : Spatial
         collisionShape = new CollisionShape();
         collisionShape.SetShape(b);
 
-        physicsBody = new KinematicBody();
+        // physicsBody = new KinematicBody();
 
-        physicsBody.AddChild(collisionShape);
-        physicsBody.SetName("physicsBody");
-        physicsBody.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
+        this.AddChild(collisionShape);
+        // this.SetName("physicsBody");
+        this.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
 
         myCam = (Camera) this.GetChild(0);
 
-        this.RemoveChild(myCam);
-        physicsBody.AddChild(myCam);
+        // this.RemoveChild(myCam);
+        // this.AddChild(myCam);
 
         myCam.SetTranslation(camOffset);
 
-        this.AddChild(physicsBody);
+        // this.AddChild(physicsBody);
     }
 
     public override void _Input(InputEvent e)
@@ -118,7 +113,7 @@ public class Player : Spatial
 
         velocity = new Vector3(velocity.x * xz_inertia, velocity.y * y_intertia, velocity.z * xz_inertia);
 
-        velocity = this.physicsBody.MoveAndSlide(velocity);
+        velocity = this.MoveAndSlide(velocity);
 
         // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
     }
