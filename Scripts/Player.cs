@@ -42,6 +42,11 @@ public class Player : KinematicBody
         myCam.SetTranslation(camOffset);
     }
 
+    public bool isInventoryOpen()
+    {
+        return inventoryOpen;
+    }
+
     public override void _Input(InputEvent e)
     {
         if (e is InputEventMouseMotion && !inventoryOpen)

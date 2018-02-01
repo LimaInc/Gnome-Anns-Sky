@@ -8,14 +8,18 @@ public class Interaction : Camera
     // private int a = 2;
     // private string b = "textvar";
 
-    PhysicsDirectSpaceState spaceState;
+    private PhysicsDirectSpaceState spaceState;
 
-    Terrain terrain;
+    private Terrain terrain;
+
+    private Player player;
 
     public static Vector2 midScreenPoint;
 
     public override void _Ready()
     {
+        player = GetNode("/root/Node/Player") as Player;
+
         // Called every time the node is added to the scene.
         // Initialization here
         spaceState = GetWorld().DirectSpaceState;
@@ -29,7 +33,7 @@ public class Interaction : Camera
     bool placeBlock = false;
     public override void _Input(InputEvent e)
     {
-        if(e is InputEventMouseButton)
+        if(e is InputEventMouseButton && !player.isInventoryOpen())
         {
             InputEventMouseButton inputEvent = (InputEventMouseButton)e;
 
