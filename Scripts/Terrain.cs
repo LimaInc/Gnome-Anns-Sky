@@ -76,11 +76,10 @@ public class Terrain : Spatial
         player = GetNode("/root/Node/Player") as Player;
 
         //Generate texture atlas
-        Texture[] textures = { ResourceLoader.Load("res://stone.png") as Texture,
-                               ResourceLoader.Load("res://grass.png") as Texture
+        Texture[] textures = { ResourceLoader.Load("res://Images/stone.png") as Texture,
+                               ResourceLoader.Load("res://Images/grass.png") as Texture
         };
         textureAtlas = TextureManager.PackTextures(textures, out textureUVs);
-        GD.Print(textureUVs[0] + ", " + textureUVs[1]);
     }
 
     Player player;
