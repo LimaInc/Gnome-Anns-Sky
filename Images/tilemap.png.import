@@ -2,14 +2,14 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/tilemap.png-838486f2ee5f5764f6a08fbb86e9df3c.stex"
+path="res://.import/tilemap.png-0b2d8e223b040aa296542dd5715adba9.stex"
 
 [deps]
 
-source_file="res://tilemap.png"
+source_file="res://Images/tilemap.png"
 source_md5="f4b00857df382e5cacbd2dc62a303515"
 
-dest_files=[ "res://.import/tilemap.png-838486f2ee5f5764f6a08fbb86e9df3c.stex" ]
+dest_files=[ "res://.import/tilemap.png-0b2d8e223b040aa296542dd5715adba9.stex" ]
 dest_md5="e51e0c0c006c74773eecd8abfb881fc0"
 
 [params]
