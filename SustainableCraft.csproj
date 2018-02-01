@@ -56,6 +56,7 @@
     <Compile Include="Scripts\IntVector3.cs" />
     <Compile Include="Scripts\Interaction.cs" />
     <Compile Include="Scripts\Terrain.cs" />
+    <Compile Include="Scripts\TextureManager.cs" />
     <Compile Include="Scripts\WorldGenerator.cs" />
     <Compile Include="Scripts\Noise.cs" />
     <Compile Include="Scripts\OctaveNoise.cs" />

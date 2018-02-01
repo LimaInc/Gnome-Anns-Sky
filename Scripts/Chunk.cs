@@ -9,6 +9,8 @@ public class Chunk : Spatial
     private byte[,,] blocks;
     private SurfaceTool surfaceTool = new SurfaceTool();
     private WorldGenerator worldGenerator;
+    private Texture textureAtlas;
+    private Rect2[] textureUVs;
 
     private MeshInstance meshInstance;
     private StaticBody body;
@@ -19,7 +21,7 @@ public class Chunk : Spatial
 
     private void AddPosXFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
+        Rect2 uvs = textureUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, -0.5f));
@@ -37,7 +39,7 @@ public class Chunk : Spatial
     }
     private void AddNegXFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
+        Rect2 uvs = textureUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
@@ -55,7 +57,7 @@ public class Chunk : Spatial
     }
     private void AddPosYFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
+        Rect2 uvs = textureUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, -0.5f));
@@ -73,7 +75,7 @@ public class Chunk : Spatial
     }
     private void AddNegYFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
+        Rect2 uvs = textureUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
@@ -91,7 +93,7 @@ public class Chunk : Spatial
     }
     private void AddPosZFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
+        Rect2 uvs = textureUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, 0.5f));
@@ -109,7 +111,7 @@ public class Chunk : Spatial
     }
     private void AddNegZFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = worldGenerator.blockUVs[blockType-1];
+        Rect2 uvs = textureUVs[blockType-1];
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
@@ -156,8 +158,7 @@ public class Chunk : Spatial
     {
         ArrayMesh mesh = new ArrayMesh();
         SpatialMaterial material = new SpatialMaterial();
-        Texture atlas = ResourceLoader.Load("res://Images/tilemap.png") as Texture;
-        material.AlbedoTexture = atlas;
+        material.AlbedoTexture = textureAtlas;
         material.SetDiffuseMode(SpatialMaterial.DiffuseMode.Lambert);
         material.SetSpecularMode(SpatialMaterial.SpecularMode.Disabled);
         material.SetMetallic(0);
@@ -234,11 +235,13 @@ public class Chunk : Spatial
         UpdateMesh();
     }
 
-    public Chunk(Terrain terrain, WorldGenerator worldGenerator, IntVector2 coords)
+    public Chunk(Terrain terrain, WorldGenerator worldGenerator, Texture textureAtlas, Rect2[] textureUVs, IntVector2 coords)
     {
         this.terrain = terrain;
         this.Translate(new IntVector3((int) (coords.x * CHUNK_SIZE.x * BLOCK_SIZE), 0, (int) (coords.y * CHUNK_SIZE.z * BLOCK_SIZE)));
         this.worldGenerator = worldGenerator;
+        this.textureAtlas = textureAtlas;
+        this.textureUVs = textureUVs;
 
         this.chunkCoords = coords;
     }
