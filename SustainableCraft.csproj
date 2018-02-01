@@ -49,17 +49,17 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Player.cs" />
-    <Compile Include="Chunk.cs" />
-    <Compile Include="FastNoise.cs" />
-    <Compile Include="Interaction.cs" />
-    <Compile Include="IntVector2.cs" />
-    <Compile Include="IntVector3.cs" />
-    <Compile Include="Terrain.cs" />
-    <Compile Include="TextureManager.cs" />
-    <Compile Include="WorldGenerator.cs" />
-    <Compile Include="Noise.cs" />
-    <Compile Include="OctaveNoise.cs" />
+    <Compile Include="Scripts\Player.cs" />
+    <Compile Include="Scripts\Chunk.cs" />
+    <Compile Include="Scripts\FastNoise.cs" />
+    <Compile Include="Scripts\IntVector2.cs" />
+    <Compile Include="Scripts\IntVector3.cs" />
+    <Compile Include="Scripts\Interaction.cs" />
+    <Compile Include="Scripts\Terrain.cs" />
+    <Compile Include="Scripts\TextureManager.cs" />
+    <Compile Include="Scripts\WorldGenerator.cs" />
+    <Compile Include="Scripts\Noise.cs" />
+    <Compile Include="Scripts\OctaveNoise.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
