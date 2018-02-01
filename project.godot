@@ -13,7 +13,7 @@ shadow=null
 [application]
 
 config/name="SustainableCraft"
-run/main_scene="res://Scenes/TestScene.tscn"
+run/main_scene="res://Scenes/MainScene.tscn"
 config/icon="res://icon.png"
 
 [input]
