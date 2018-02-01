@@ -9,11 +9,15 @@ public abstract class TextureManager
         Image[] images = new Image[textures.Length];
         images = textures.Select(t => t.GetData()).ToArray(); //Select is like map in ML
 
+        uvs = new Rect2[textures.Length];
+
         Image atlasImage = new Image();
         atlasImage.Create(images[0].GetWidth() * images.Length, images[0].GetHeight(), false, Image.Format.Rgb8);
         atlasImage.Lock();
         for(int i = 0; i < images.Length; i++)
         {
+            uvs[i] = new Rect2((float)i / images.Length, 0, 1f / images.Length, 1);
+
             images[i].Lock();
             for(int x = 0; x < images[i].GetWidth(); x++)
             {
@@ -28,8 +32,6 @@ public abstract class TextureManager
 
         ImageTexture textureAtlas = new ImageTexture();
         textureAtlas.CreateFromImage(atlasImage, 0);
-        
-        uvs = null;
 
         return textureAtlas;
     }

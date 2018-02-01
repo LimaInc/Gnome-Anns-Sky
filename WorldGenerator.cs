@@ -3,14 +3,6 @@ using Godot;
 
 public class WorldGenerator
 {
-    //Rect at index i tells you the UVs for block i+1 (because air=0 and has no texture)
-    //Hardcoded for now, but we might want a better solution. Perhaps automatic texture packer?
-    //Probably want to support multiple textures for a single block at different rotations, e.g. grass
-    public Rect2[] blockUVs = {
-        new Rect2(0.0f, 0.0f, 0.5f, 1.0f),
-        new Rect2(0.5f, 0.0f, 0.5f, 1.0f)
-    };
-
     OctaveNoise noise = new OctaveNoise(16);
 
     public byte[,,] GetChunk(int x, int z, int sX, int sY, int sZ)

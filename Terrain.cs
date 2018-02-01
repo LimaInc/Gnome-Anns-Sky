@@ -12,12 +12,15 @@ public class Terrain : Spatial
 
     WorldGenerator worldGenerator = new WorldGenerator(); //Passed to chunks so they know how to generate their terrain
 
+    private Texture textureAtlas; //Texture passed to all chunks, generated from texture files
+    private Rect2[] textureUVs;
+
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
     private Chunk CreateChunkAndHardLoad(IntVector2 chunkIndex)
     {
         if (!softLoadedChunks.ContainsKey(chunkIndex))
         {
-            Chunk chunk = new Chunk(this,worldGenerator, chunkIndex);
+            Chunk chunk = new Chunk(this,worldGenerator, textureAtlas, textureUVs, chunkIndex);
             chunk.SoftLoad();
             chunk.HardLoad();
             this.AddChild(chunk);
@@ -59,7 +62,7 @@ public class Terrain : Spatial
         }
         else //Chunk isn't loaded, so return 0?
         {
-            Chunk c = new Chunk(this,worldGenerator, chunkIndex);
+            Chunk c = new Chunk(this, worldGenerator, textureAtlas, textureUVs, chunkIndex);
             c.SoftLoad();
 
             softLoadedChunks.Add(chunkIndex, c);
@@ -71,6 +74,13 @@ public class Terrain : Spatial
     public override void _Ready()
     {
         player = GetNode("/root/Node/Player") as Player;
+
+        //Generate texture atlas
+        Texture[] textures = { ResourceLoader.Load("res://stone.png") as Texture,
+                               ResourceLoader.Load("res://grass.png") as Texture
+        };
+        textureAtlas = TextureManager.PackTextures(textures, out textureUVs);
+        GD.Print(textureUVs[0] + ", " + textureUVs[1]);
     }
 
     Player player;
