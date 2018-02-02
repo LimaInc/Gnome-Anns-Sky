@@ -49,8 +49,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\Chunk.cs" />
+    <Compile Include="Scripts\Block.cs" />
     <Compile Include="Scripts\IntVector2.cs" />
     <Compile Include="Scripts\IntVector3.cs" />
     <Compile Include="Scripts\Interaction.cs" />

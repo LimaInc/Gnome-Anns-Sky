@@ -53,11 +53,6 @@ public class Interaction : Camera
             exc[0] = GetNode("/root/Node/Player/physicsBody");
             Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
 
-            foreach(KeyValuePair<object, object> entry in hitInfo)
-            {
-                // do something with entry.Value or entry.Key
-            }
-
             if(hitInfo.Count != 0) //Hit something
             {
                 Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
@@ -89,11 +84,4 @@ public class Interaction : Camera
             }
         }
     }
-
-//    public override void _Process(float delta)
-//    {
-//        // Called every frame. Delta is time since last frame.
-//        // Update game logic here.
-//        
-//    }
 }
