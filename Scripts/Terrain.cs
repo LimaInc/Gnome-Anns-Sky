@@ -82,7 +82,7 @@ public class Terrain : Spatial
         // Update game logic here.
         
         //Update visible chunks only when the player has moved a certain distance
-        Vector3 playerPos = player.GetPosition();
+        Vector3 playerPos = player.GetTranslation();
         if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))
         {
             playerPosLastUpdate = playerPos;
@@ -124,7 +124,7 @@ public class Terrain : Spatial
 
     private void UpdateVisibleChunks()
     {
-        Vector3 playerPos = player.GetPosition();
+        Vector3 playerPos = player.GetTranslation();
 
         IntVector2 playerChunk = new IntVector2((int) (playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int) (playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
 

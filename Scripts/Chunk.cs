@@ -22,18 +22,18 @@ public class Chunk : Spatial
         Rect2 uvs = Game.GetBlockUVs(blockType);
 
         surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE *new Vector3(0.5f, 0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, -0.5f));
 
         surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, +0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
     }
     private void AddNegXFace(Vector3 origin, byte blockType)
     {
@@ -42,34 +42,34 @@ public class Chunk : Spatial
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, +0.5f));
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, +0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
     }
     private void AddPosYFace(Vector3 origin, byte blockType)
     {
         Rect2 uvs = Game.GetBlockUVs(blockType);
 
         surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, -0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
 
         surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, +0.5f));
     }
     private void AddNegYFace(Vector3 origin, byte blockType)
     {
@@ -77,35 +77,35 @@ public class Chunk : Spatial
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, 0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, +0.5f));
+        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, 0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
+        surfaceTool.AddUv(uvs.End);
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, +0.5f));
     }
     private void AddPosZFace(Vector3 origin, byte blockType)
     {
         Rect2 uvs = Game.GetBlockUVs(blockType);
 
         surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, 0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
+        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, +0.5f));
 
         surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, 0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, 0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, +0.5f));
+        surfaceTool.AddUv(uvs.End);
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
     }
     private void AddNegZFace(Vector3 origin, byte blockType)
     {
@@ -114,16 +114,16 @@ public class Chunk : Spatial
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, -0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, -0.5f));
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
         surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(0.5f, 0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, -0.5f));
         surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, 0.5f, -0.5f));
+        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
     }
 
     public byte GetBlockInChunk(IntVector3 position)
