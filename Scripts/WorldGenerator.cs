@@ -5,6 +5,9 @@ public class WorldGenerator
 {
     OctaveNoise noise = new OctaveNoise(16);
 
+    private byte stoneId = Game.GetBlockId<Stone>();
+    private byte grassId = Game.GetBlockId<Grass>();
+
     public byte[,,] GetChunk(int x, int z, int sX, int sY, int sZ)
     {
         byte[,,] chunk = new byte[sX, sY, sZ];
@@ -20,9 +23,9 @@ public class WorldGenerator
                 for(int j = 0; j < sY; j++)
                 {
                     if(j < height)
-                        chunk[i,j,k] = 1;
+                        chunk[i,j,k] = stoneId;
                     else if(j < height + 3) //3 layers of grass on top of rock
-                        chunk[i,j,k] = 2;
+                        chunk[i,j,k] = grassId;
                     else
                         chunk[i,j,k] = 0;
                 }

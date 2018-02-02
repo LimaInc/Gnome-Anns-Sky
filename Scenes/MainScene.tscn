@@ -1,11 +1,14 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Scripts/Terrain.cs" type="Script" id=1]
-[ext_resource path="res://Scripts/Player.cs" type="Script" id=2]
-[ext_resource path="res://default_env.tres" type="Environment" id=3]
-[ext_resource path="res://Scripts/Interaction.cs" type="Script" id=4]
+[ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
+[ext_resource path="res://Scripts/Terrain.cs" type="Script" id=2]
+[ext_resource path="res://Scripts/Player.cs" type="Script" id=3]
+[ext_resource path="res://default_env.tres" type="Environment" id=4]
+[ext_resource path="res://Scripts/Interaction.cs" type="Script" id=5]
 
 [node name="Node" type="Node" index="0"]
+
+script = ExtResource( 1 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="." index="0"]
 
@@ -37,11 +40,22 @@ _sections_unfolded = [ "Light", "Shadow" ]
 
 [node name="Terrain" type="Spatial" parent="." index="1"]
 
-script = ExtResource( 1 )
-
-[node name="Player" type="Spatial" parent="." index="2"]
-
 script = ExtResource( 2 )
+
+[node name="Player" type="KinematicBody" parent="." index="2"]
+
+input_ray_pickable = true
+input_capture_on_drag = false
+collision_layer = 1
+collision_mask = 1
+axis_lock_linear_x = false
+axis_lock_linear_y = false
+axis_lock_linear_z = false
+axis_lock_angular_x = false
+axis_lock_angular_y = false
+axis_lock_angular_z = false
+collision/safe_margin = 0.001
+script = ExtResource( 3 )
 _sections_unfolded = [ "Transform" ]
 
 [node name="Camera" type="Camera" parent="Player" index="0"]
@@ -49,7 +63,7 @@ _sections_unfolded = [ "Transform" ]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.38419e-07 )
 keep_aspect = 1
 cull_mask = 1048575
-environment = ExtResource( 3 )
+environment = ExtResource( 4 )
 h_offset = 0.0
 v_offset = 0.0
 doppler_tracking = 0
@@ -59,7 +73,7 @@ fov = 70.0
 size = 1.0
 near = 0.05
 far = 100.0
-script = ExtResource( 4 )
+script = ExtResource( 5 )
 _sections_unfolded = [ "Transform" ]
 
 
