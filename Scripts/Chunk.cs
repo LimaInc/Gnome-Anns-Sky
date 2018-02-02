@@ -8,8 +8,6 @@ public class Chunk : Spatial
 
     private byte[,,] blocks;
     private SurfaceTool surfaceTool = new SurfaceTool();
-    private WorldGenerator worldGenerator;
-
     private MeshInstance meshInstance;
     private StaticBody body;
     private CollisionShape collider;
@@ -216,7 +214,7 @@ public class Chunk : Spatial
     //Just generate terrain data
     public void SoftLoad()
     {
-        blocks = worldGenerator.GetChunk(chunkCoords.x, chunkCoords.y, CHUNK_SIZE.x, CHUNK_SIZE.y, CHUNK_SIZE.z);
+        blocks = terrain.WorldGenerator.GetChunk(chunkCoords.x, chunkCoords.y, CHUNK_SIZE.x, CHUNK_SIZE.y, CHUNK_SIZE.z);
     }
 
     //Generate graphical data aswell
@@ -233,11 +231,10 @@ public class Chunk : Spatial
         UpdateMesh();
     }
 
-    public Chunk(Terrain terrain, WorldGenerator worldGenerator, IntVector2 coords)
+    public Chunk(Terrain terrain, IntVector2 coords)
     {
         this.terrain = terrain;
         this.Translate(new IntVector3((int) (coords.x * CHUNK_SIZE.x * BLOCK_SIZE), 0, (int) (coords.y * CHUNK_SIZE.z * BLOCK_SIZE)));
-        this.worldGenerator = worldGenerator;
 
         this.chunkCoords = coords;
     }
