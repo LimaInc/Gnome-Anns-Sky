@@ -54,9 +54,9 @@ public class Game : Node
         blocks[nextId++] = block;
     }
 
-    public static Rect2 GetBlockUVs(byte id)
+    public static Block GetBlock(byte id)
     {
-        return blocks[id].UVs;
+        return blocks[id];
     }
 
     public static byte GetBlockId<T>() where T : Block
