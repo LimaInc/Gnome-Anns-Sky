@@ -3,12 +3,11 @@ using Godot;
 
 public class InventoryGUI : Node
 {
-    private GUIButton btn;
+    private GuiInventorySlot test;
 
     public InventoryGUI()
     {
-        btn = new GUIButton();
-        btn.SetSize(new Vector2(10.0f, 10.0f));
-        this.AddChild(btn);
+        test = new GuiInventorySlot(new Rect2(0.0f, 0.0f, 10.0f, 10.0f));
+        this.AddChild(test);
     }
 }
