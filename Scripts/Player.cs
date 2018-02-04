@@ -97,6 +97,7 @@ public class Player : KinematicBody
             } else 
             {
                 inventoryOpen = false;
+                inventoryGUI.HandleClose();
                 this.RemoveChild(inventoryGUI);
                 Input.SetMouseMode(Input.MouseMode.Captured);
             }
@@ -106,7 +107,7 @@ public class Player : KinematicBody
         {
             if (Input.IsActionJustPressed("jump") && velocity.y == 0)
             {
-            velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
+                velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
             }
         }
 

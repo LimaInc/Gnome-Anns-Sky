@@ -93,6 +93,21 @@ public class InventoryGUI : Node
         this.AddChild(floatingSlot);
     }
 
+    public void HandleClose()
+    {
+        Item i = floatingSlot.GetCurItem();
+        if (i != null)
+        {
+            Item.Type type = i.GetType();
+            if (type == Item.Type.CONSUMABLE)
+                consumableInventory.AddItem(i);
+            if (type == Item.Type.FOSSIL)
+                fossilInventory.AddItem(i);
+            if (type == Item.Type.BLOCK)
+                blockInventory.AddItem(i);
+        }
+    }
+
     public void HandleSlotClick(int index, Item.Type type)
     {
         GUIInventorySlot slot = null;
