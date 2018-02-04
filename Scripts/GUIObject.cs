@@ -33,10 +33,10 @@ public class GUIObject : Node
         {
             InputEventMouseButton iemb = (InputEventMouseButton) e;
             Vector2 pos = iemb.GetPosition();
-            GD.Print(pos);
+            // GD.Print(pos);
             if (rect.HasPoint(pos))
             {
-                // GD.Print("hit");
+                GD.Print("hit");
             }
         }
     }

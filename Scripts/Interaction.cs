@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 public class Interaction : Camera
 {
-    // Member variables here, example:
-    // private int a = 2;
-    // private string b = "textvar";
-
     private PhysicsDirectSpaceState spaceState;
 
     private Terrain terrain;
