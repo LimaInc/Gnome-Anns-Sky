@@ -24,8 +24,11 @@ public class Player : KinematicBody
     private InventoryGUI inventoryGUI;
     private Inventory inventory;
 
+    public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
+
     public override void _Ready()
     {
+        Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
 
         BoxShape b = new BoxShape();
@@ -80,7 +83,7 @@ public class Player : KinematicBody
         {
             if (!inventoryOpen)
             {
-                inventoryGUI = new InventoryGUI(this.GetViewport().Size);
+                inventoryGUI = new InventoryGUI(inventory, this.GetViewport().Size);
                 inventoryOpen = true;
                 this.AddChild(inventoryGUI);
                 Input.SetMouseMode(Input.MouseMode.Visible);

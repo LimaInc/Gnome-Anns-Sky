@@ -22,13 +22,13 @@ public class Inventory
     {
         if (item.GetType() == Item.Type.CONSUMABLE)
         {
-
+            AddConsumable(item);
         } if (item.GetType() == Item.Type.FOSSIL)
         {
-            
+            AddFossil(item);
         } if (item.GetType() == Item.Type.BLOCK)
         {
-            
+            AddBlock(item);
         }
     }
 
@@ -54,6 +54,7 @@ public class Inventory
             if (consumables[i] == 0)
             {
                 consumables[i] = item.GetID();
+                return;
             }
         }
     }
@@ -65,6 +66,7 @@ public class Inventory
             if (fossils[i] == 0)
             {
                 fossils[i] = item.GetID();
+                return;
             }
         }
     }
@@ -76,6 +78,7 @@ public class Inventory
             if (blocks[i] == 0)
             {
                 blocks[i] = item.GetID();
+                return;
             }
         }
     }

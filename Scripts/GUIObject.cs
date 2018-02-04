@@ -12,7 +12,7 @@ public class GUIObject : Node
         this.sprite = new Sprite();
         if (t != null)
             sprite.SetTexture(t);
-        sprite.SetPosition(r.Position);
+        sprite.SetPosition(r.Position + r.Size / 2.0f);
         sprite.SetScale(new Vector2(r.Size.x / t.GetSize().x, r.Size.y / t.GetSize().y));
         this.AddChild(sprite);
     }
@@ -28,16 +28,20 @@ public class GUIObject : Node
         this.AddChild(sprite);
     }
 
+    public virtual void onClick()
+    {
+
+    }
+
     public override void _Input(InputEvent e)
     {
         if (e is InputEventMouseButton)
         {
             InputEventMouseButton iemb = (InputEventMouseButton) e;
             Vector2 pos = iemb.GetPosition();
-            // GD.Print(pos);
-            if (rect.HasPoint(pos))
+            if (iemb.ButtonIndex == 1 && iemb.Pressed && rect.HasPoint(pos))
             {
-                GD.Print("hit");
+                onClick();
             }
         }
     }

@@ -11,6 +11,8 @@ public class InventoryGUI : Node
 
     private static Vector2 BOX_SIZE = new Vector2(550.0f, 400.0f);
 
+    private Inventory inventory;
+
     private Vector2 viewportSize;
 
     //This follows the mouse to allow the player to move items around
@@ -26,8 +28,10 @@ public class InventoryGUI : Node
 
     private GUIBox box;
 
-    public InventoryGUI(Vector2 vSize)
+    public InventoryGUI(Inventory inv, Vector2 vSize)
     {
+        this.inventory = inv;
+
         this.viewportSize = vSize;
 
         box = new GUIBox(new Rect2(viewportSize / 2,BOX_SIZE));
@@ -45,14 +49,19 @@ public class InventoryGUI : Node
             {
                 Vector2 pos = totOff + new Vector2(x, y) * (GUIInventorySlot.SIZE + SLOT_SPACING) + GUIInventorySlot.SIZE / 2.0f;
 
-                Vector2 consPos = pos;
-                Node cons = consSlots[x + y * SLOT_COUNT.x] = new GUIInventorySlot(consPos);
+                int ind = x + y * SLOT_COUNT.x;
 
-                Vector2 fossPos = pos + new Vector2(sectionSize.x + sectionSpacing, 0.0f);
-                Node foss = fossSlots[x + y * SLOT_COUNT.x] = new GUIInventorySlot(fossPos);
+                Vector2 consPos = pos - GUIInventorySlot.SIZE / 2.0f;
+                GUIInventorySlot cons = consSlots[ind] = new GUIInventorySlot(this, Item.Type.CONSUMABLE, ind, consPos);
+                cons.AssignItem(inventory.getConsumable(ind));
 
-                Vector2 blocPos = pos + (new Vector2(sectionSize.x + sectionSpacing, 0.0f)) * 2.0f;
-                Node bloc = blocSlots[x + y * SLOT_COUNT.x] = new GUIInventorySlot(blocPos);
+                Vector2 fossPos = consPos + new Vector2(sectionSize.x + sectionSpacing, 0.0f);
+                GUIInventorySlot foss = fossSlots[ind] = new GUIInventorySlot(this, Item.Type.FOSSIL, ind, fossPos);
+                foss.AssignItem(inventory.getFossil(ind));
+
+                Vector2 blocPos = consPos + (new Vector2(sectionSize.x + sectionSpacing, 0.0f)) * 2.0f;
+                GUIInventorySlot bloc = blocSlots[ind] = new GUIInventorySlot(this, Item.Type.BLOCK, ind, blocPos);
+                bloc.AssignItem(inventory.getBlock(ind));
 
                 this.AddChild(cons);
                 this.AddChild(foss);
@@ -75,8 +84,56 @@ public class InventoryGUI : Node
         blocLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 2 - new Vector2(0.0f, 16.0f));
         this.AddChild(blocLabel);
 
+        // floatingSlot = new GUIInventorySlot(this, Item.Type.CONSUMABLE, 0, new Vector2());
         floatingSlot = new GUIInventorySlot();
         this.AddChild(floatingSlot);
+    }
+
+    public void HandleSlotClick(int index, Item.Type type)
+    {
+        GD.Print("Swapping " + index + " of type " + type);
+
+        GUIInventorySlot slot = null;
+
+        if (type == Item.Type.CONSUMABLE)
+        {
+            slot = consSlots[index];
+        }
+        if (type == Item.Type.FOSSIL)
+        {
+            slot = fossSlots[index];
+        }
+        if (type == Item.Type.BLOCK)
+        {
+            slot = blocSlots[index];
+        }
+
+        Item i = slot.GetCurItem();
+        Item floatingItem = floatingSlot.GetCurItem();
+
+        if (i == null && floatingItem == null)
+            return;
+
+        if (floatingItem == null)
+        {
+            floatingSlot.AssignItem(i);
+            slot.ClearItem();
+            return;
+        }
+
+        if (i == null)
+        {
+            slot.AssignItem(floatingItem);
+            floatingSlot.ClearItem();
+            return;
+        }
+
+        //Both slots contain something
+        slot.ClearItem();
+        floatingSlot.ClearItem();
+
+        slot.AssignItem(floatingItem);
+        floatingSlot.AssignItem(i);
     }
 
     public override void _Input(InputEvent e)
