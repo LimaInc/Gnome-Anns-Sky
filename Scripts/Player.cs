@@ -46,9 +46,9 @@ public class Player : KinematicBody
 
         myCam.SetTranslation(camOffset);
 
-        consumableInventory = new Inventory(Item.Type.CONSUMABLE);
-        fossilInventory = new Inventory(Item.Type.FOSSIL);
-        blockInventory = new Inventory(Item.Type.BLOCK);
+        consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
+        fossilInventory = new Inventory(this, Item.Type.FOSSIL);
+        blockInventory = new Inventory(this, Item.Type.BLOCK);
 
         blockInventory.AddItem(Item.itemBlock);
     }

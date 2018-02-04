@@ -3,14 +3,31 @@ using System;
 
 public class Inventory
 {
+    private Player player;
+
     public static int SLOT_COUNT = 40;
     private Item.Type type;
     private byte[] items;
 
-    public Inventory(Item.Type type)
+    public Inventory(Player p, Item.Type type)
     {
+        this.player = p;
         this.type = type;
         this.items = new byte[256];
+    }
+
+    public void RemoveItem(int ind)
+    {
+        items[ind] = 0;
+    }
+
+    //Add item at specific index, used in GUI
+    public void AddItem(Item item, int ind)
+    {
+        if (items[ind] != 0) //hopefully, this shouldn't happen...
+            return;
+
+        items[ind] = item.GetID();
     }
 
     public void AddItem(Item item)

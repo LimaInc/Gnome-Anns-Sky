@@ -120,6 +120,20 @@ public class InventoryGUI : Node
         {
             floatingSlot.AssignItem(i);
             slot.ClearItem();
+            
+            if (i.GetType() == Item.Type.CONSUMABLE)
+            {
+                consumableInventory.RemoveItem(index);
+            }
+            if (i.GetType() == Item.Type.FOSSIL)
+            {
+                fossilInventory.RemoveItem(index);
+            }
+            if (i.GetType() == Item.Type.BLOCK)
+            {
+                blockInventory.RemoveItem(index);
+            }
+
             return;
         }
 
@@ -127,6 +141,19 @@ public class InventoryGUI : Node
         {
             if (floatingItem.GetType() != slot.GetItemType())
                 return;
+            
+            if (floatingItem.GetType() == Item.Type.CONSUMABLE)
+            {
+                consumableInventory.AddItem(floatingItem, index);
+            }
+            if (floatingItem.GetType() == Item.Type.FOSSIL)
+            {
+                fossilInventory.AddItem(floatingItem, index);
+            }
+            if (floatingItem.GetType() == Item.Type.BLOCK)
+            {
+                blockInventory.AddItem(floatingItem, index);
+            }
 
             slot.AssignItem(floatingItem);
             floatingSlot.ClearItem();
@@ -142,6 +169,22 @@ public class InventoryGUI : Node
 
         slot.AssignItem(floatingItem);
         floatingSlot.AssignItem(i);
+            
+        if (i.GetType() == Item.Type.CONSUMABLE)
+        {
+            consumableInventory.RemoveItem(index);
+            consumableInventory.AddItem(floatingItem, index);
+        }
+        if (i.GetType() == Item.Type.FOSSIL)
+        {
+            fossilInventory.RemoveItem(index);
+            fossilInventory.AddItem(floatingItem, index);
+        }
+        if (i.GetType() == Item.Type.BLOCK)
+        {
+            blockInventory.RemoveItem(index);
+            blockInventory.AddItem(floatingItem, index);
+        }
     }
 
     public override void _Input(InputEvent e)
