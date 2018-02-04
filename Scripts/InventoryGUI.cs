@@ -95,8 +95,6 @@ public class InventoryGUI : Node
 
     public void HandleSlotClick(int index, Item.Type type)
     {
-        GD.Print("Swapping " + index + " of type " + type);
-
         GUIInventorySlot slot = null;
 
         if (type == Item.Type.CONSUMABLE)
@@ -127,10 +125,16 @@ public class InventoryGUI : Node
 
         if (i == null)
         {
+            if (floatingItem.GetType() != slot.GetItemType())
+                return;
+
             slot.AssignItem(floatingItem);
             floatingSlot.ClearItem();
             return;
         }
+
+        if (floatingItem.GetType() != slot.GetItemType())
+            return;
 
         //Both slots contain something
         slot.ClearItem();

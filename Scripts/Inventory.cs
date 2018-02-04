@@ -15,6 +15,11 @@ public class Inventory
 
     public void AddItem(Item item)
     {
+        if (item.GetType() != type)
+        {
+            GD.Print("Something just tried to add a " + item + " to a " + this.type + " inventory!");
+        }
+        
         for (int i = 0; i < SLOT_COUNT; i++)
         {
             if (items[i] == 0)

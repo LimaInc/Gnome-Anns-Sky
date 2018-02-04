@@ -28,10 +28,7 @@ public class GUIObject : Node
         this.AddChild(sprite);
     }
 
-    public virtual void onClick()
-    {
-
-    }
+    public virtual void onClick() { }
 
     public override void _Input(InputEvent e)
     {

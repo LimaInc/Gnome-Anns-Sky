@@ -50,6 +50,11 @@ public class GUIInventorySlot : GUIObject
         }
     }
 
+    public Item.Type GetItemType()
+    {
+        return this.type;
+    }
+
     public Item GetCurItem()
     {
         return curItem;
@@ -67,7 +72,7 @@ public class GUIInventorySlot : GUIObject
             curItemChild.SetPosition(this.rect.Position + GUIInventorySlot.SIZE / 2.0f);
         else
             this.curItemChild.SetPosition(this.rect.Position);
-            
+
         this.AddChild(curItemChild);
     }
 

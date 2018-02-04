@@ -49,6 +49,8 @@ public class Player : KinematicBody
         consumableInventory = new Inventory(Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(Item.Type.FOSSIL);
         blockInventory = new Inventory(Item.Type.BLOCK);
+
+        blockInventory.AddItem(Item.itemBlock);
     }
 
     public bool isInventoryOpen()
