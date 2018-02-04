@@ -22,6 +22,7 @@ public class Player : KinematicBody
     private bool inventoryOpen = false;
 
     private InventoryGUI inventoryGUI;
+    private Inventory inventory;
 
     public override void _Ready()
     {
@@ -38,6 +39,8 @@ public class Player : KinematicBody
         myCam = (Camera) this.GetChild(0);
 
         myCam.SetTranslation(camOffset);
+
+        inventory = new Inventory();
     }
 
     public bool isInventoryOpen()

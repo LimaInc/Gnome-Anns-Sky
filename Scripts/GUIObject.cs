@@ -10,7 +10,8 @@ public class GUIObject : Node
     {
         this.rect = r;
         this.sprite = new Sprite();
-        sprite.SetTexture(t);
+        if (t != null)
+            sprite.SetTexture(t);
         sprite.SetPosition(r.Position);
         sprite.SetScale(new Vector2(r.Size.x / t.GetSize().x, r.Size.y / t.GetSize().y));
         this.AddChild(sprite);

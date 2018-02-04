@@ -13,6 +13,9 @@ public class InventoryGUI : Node
 
     private Vector2 viewportSize;
 
+    //This follows the mouse to allow the player to move items around
+    private GUIInventorySlot floatingSlot;
+
     private GUIInventorySlot[] consSlots = new GUIInventorySlot[40];
     private GUIInventorySlot[] fossSlots = new GUIInventorySlot[40];
     private GUIInventorySlot[] blocSlots = new GUIInventorySlot[40];
@@ -71,5 +74,18 @@ public class InventoryGUI : Node
         blocLabel.SetText("Blocks");
         blocLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 2 - new Vector2(0.0f, 16.0f));
         this.AddChild(blocLabel);
+
+        floatingSlot = new GUIInventorySlot();
+        this.AddChild(floatingSlot);
+    }
+
+    public override void _Input(InputEvent e)
+    {
+        if (e is InputEventMouseMotion)
+        {
+            InputEventMouseMotion iemm = (InputEventMouseMotion) e;
+
+            floatingSlot.SetPosition(iemm.GetPosition());
+        }
     }
 }

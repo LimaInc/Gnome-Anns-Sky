@@ -12,4 +12,13 @@ public class GUIInventorySlot : GUIObject
     public static Vector2 SIZE = new Vector2(32.0f, 32.0f);
 
     public GUIInventorySlot(Vector2 pos) : base(new Rect2(pos, SIZE), TEX) { }
+
+    //For floating slot use ONLY
+    public GUIInventorySlot() : base(new Rect2(new Vector2(), SIZE), new ImageTexture()) { }
+
+    public void SetPosition(Vector2 pos)
+    {
+        this.rect.Position = pos;
+        this.sprite.SetPosition(pos);
+    }
 }
