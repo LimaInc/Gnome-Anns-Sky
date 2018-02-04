@@ -3,14 +3,27 @@ using Godot;
 
 public class GUIObject : Node
 {
-    private Rect2 rect;
-    private Sprite sprite;
+    protected Rect2 rect;
+    protected Sprite sprite;
 
-    public GUIObject(Rect2 r)
+    public GUIObject(Rect2 r, Texture t)
     {
         this.rect = r;
         this.sprite = new Sprite();
-        sprite.SetTexture();
+        sprite.SetTexture(t);
+        sprite.SetPosition(r.Position);
+        sprite.SetScale(new Vector2(r.Size.x / t.GetSize().x, r.Size.y / t.GetSize().y));
+        this.AddChild(sprite);
+    }
+
+    //For GUI objects that need manual scalling
+    public GUIObject(Rect2 r, Texture t, Vector2 scale)
+    {
+        this.rect = r;
+        this.sprite = new Sprite();
+        sprite.SetTexture(t);
+        sprite.SetPosition(r.Position);
+        sprite.SetScale(scale);
         this.AddChild(sprite);
     }
 
@@ -23,7 +36,7 @@ public class GUIObject : Node
             GD.Print(pos);
             if (rect.HasPoint(pos))
             {
-                GD.Print("hit");
+                // GD.Print("hit");
             }
         }
     }

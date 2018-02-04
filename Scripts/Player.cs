@@ -25,8 +25,6 @@ public class Player : KinematicBody
 
     public override void _Ready()
     {
-        inventoryGUI = new InventoryGUI();
-
         Input.SetMouseMode(Input.MouseMode.Captured);
 
         BoxShape b = new BoxShape();
@@ -79,6 +77,7 @@ public class Player : KinematicBody
         {
             if (!inventoryOpen)
             {
+                inventoryGUI = new InventoryGUI(this.GetViewport().Size);
                 inventoryOpen = true;
                 this.AddChild(inventoryGUI);
                 Input.SetMouseMode(Input.MouseMode.Visible);

@@ -49,6 +49,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Scripts\GUIBox.cs" />
     <Compile Include="Scripts\GUIObject.cs" />
     <Compile Include="Scripts\InventoryGUI.cs" />
     <Compile Include="Scripts\GUIInventorySlot.cs" />
