@@ -22,7 +22,10 @@ public class Player : KinematicBody
     private bool inventoryOpen = false;
 
     private InventoryGUI inventoryGUI;
-    private Inventory inventory;
+
+    private Inventory consumableInventory;
+    private Inventory fossilInventory;
+    private Inventory blockInventory;
 
     public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
 
@@ -43,7 +46,9 @@ public class Player : KinematicBody
 
         myCam.SetTranslation(camOffset);
 
-        inventory = new Inventory();
+        consumableInventory = new Inventory(Item.Type.CONSUMABLE);
+        fossilInventory = new Inventory(Item.Type.FOSSIL);
+        blockInventory = new Inventory(Item.Type.BLOCK);
     }
 
     public bool isInventoryOpen()
@@ -83,7 +88,7 @@ public class Player : KinematicBody
         {
             if (!inventoryOpen)
             {
-                inventoryGUI = new InventoryGUI(inventory, this.GetViewport().Size);
+                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this.GetViewport().Size);
                 inventoryOpen = true;
                 this.AddChild(inventoryGUI);
                 Input.SetMouseMode(Input.MouseMode.Visible);

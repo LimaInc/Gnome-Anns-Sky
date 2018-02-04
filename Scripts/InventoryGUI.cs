@@ -11,7 +11,9 @@ public class InventoryGUI : Node
 
     private static Vector2 BOX_SIZE = new Vector2(550.0f, 400.0f);
 
-    private Inventory inventory;
+    private Inventory consumableInventory;
+    private Inventory fossilInventory;
+    private Inventory blockInventory;
 
     private Vector2 viewportSize;
 
@@ -28,9 +30,11 @@ public class InventoryGUI : Node
 
     private GUIBox box;
 
-    public InventoryGUI(Inventory inv, Vector2 vSize)
+    public InventoryGUI(Inventory cinv, Inventory finv, Inventory binv, Vector2 vSize)
     {
-        this.inventory = inv;
+        this.consumableInventory = cinv;
+        this.fossilInventory = finv;
+        this.blockInventory = binv;
 
         this.viewportSize = vSize;
 
@@ -53,15 +57,15 @@ public class InventoryGUI : Node
 
                 Vector2 consPos = pos - GUIInventorySlot.SIZE / 2.0f;
                 GUIInventorySlot cons = consSlots[ind] = new GUIInventorySlot(this, Item.Type.CONSUMABLE, ind, consPos);
-                cons.AssignItem(inventory.getConsumable(ind));
+                cons.AssignItem(consumableInventory.GetItem(ind));
 
                 Vector2 fossPos = consPos + new Vector2(sectionSize.x + sectionSpacing, 0.0f);
                 GUIInventorySlot foss = fossSlots[ind] = new GUIInventorySlot(this, Item.Type.FOSSIL, ind, fossPos);
-                foss.AssignItem(inventory.getFossil(ind));
+                foss.AssignItem(fossilInventory.GetItem(ind));
 
                 Vector2 blocPos = consPos + (new Vector2(sectionSize.x + sectionSpacing, 0.0f)) * 2.0f;
                 GUIInventorySlot bloc = blocSlots[ind] = new GUIInventorySlot(this, Item.Type.BLOCK, ind, blocPos);
-                bloc.AssignItem(inventory.getBlock(ind));
+                bloc.AssignItem(blockInventory.GetItem(ind));
 
                 this.AddChild(cons);
                 this.AddChild(foss);
