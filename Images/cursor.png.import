@@ -7,10 +7,10 @@ path="res://.import/cursor.png-e2783060d73e14915b2f4ad8c619f242.stex"
 [deps]
 
 source_file="res://Images/cursor.png"
-source_md5="ee409e35843cbfb23ec376ced07193f2"
+source_md5="444291bfd2af1d9b99ef2eb8468b6301"
 
 dest_files=[ "res://.import/cursor.png-e2783060d73e14915b2f4ad8c619f242.stex" ]
-dest_md5="bf11e0b5c670cbcef2617c58993d0bae"
+dest_md5="afe34f9565f5643f8a08e055abd314e2"
 
 [params]
 
