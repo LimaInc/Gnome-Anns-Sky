@@ -5,22 +5,17 @@ using System.Linq;
 
 public class Terrain : Spatial
 {
-    SurfaceTool surfaceTool = new SurfaceTool();
-
     Dictionary<IntVector2, Chunk> hardLoadedChunks = new Dictionary<IntVector2, Chunk>(); //Maybe we should just store an array of chunks?
     Dictionary<IntVector2, Chunk> softLoadedChunks = new Dictionary<IntVector2, Chunk>(); //Maybe we should just store an array of chunks?
 
-    WorldGenerator worldGenerator = new WorldGenerator(); //Passed to chunks so they know how to generate their terrain
-
-    private Texture textureAtlas; //Texture passed to all chunks, generated from texture files
-    private Rect2[] textureUVs;
+    public readonly WorldGenerator WorldGenerator = new WorldGenerator();
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
     private Chunk CreateChunkAndHardLoad(IntVector2 chunkIndex)
     {
         if (!softLoadedChunks.ContainsKey(chunkIndex))
         {
-            Chunk chunk = new Chunk(this,worldGenerator, textureAtlas, textureUVs, chunkIndex);
+            Chunk chunk = new Chunk(this, chunkIndex);
             chunk.SoftLoad();
             chunk.HardLoad();
             this.AddChild(chunk);
@@ -62,7 +57,7 @@ public class Terrain : Spatial
         }
         else //Chunk isn't loaded, so return 0?
         {
-            Chunk c = new Chunk(this, worldGenerator, textureAtlas, textureUVs, chunkIndex);
+            Chunk c = new Chunk(this, chunkIndex);
             c.SoftLoad();
 
             softLoadedChunks.Add(chunkIndex, c);
@@ -74,12 +69,6 @@ public class Terrain : Spatial
     public override void _Ready()
     {
         player = GetNode("/root/Node/Player") as Player;
-
-        //Generate texture atlas
-        Texture[] textures = { ResourceLoader.Load("res://Images/stone.png") as Texture,
-                               ResourceLoader.Load("res://Images/grass.png") as Texture
-        };
-        textureAtlas = TextureManager.PackTextures(textures, out textureUVs);
     }
 
     Player player;

@@ -49,14 +49,8 @@ public class Interaction : Camera
             removeBlock = false;
 
             Vector3 from = this.ProjectRayOrigin(midScreenPoint);
-            Node[] exc = new Node[1];
-            exc[0] = GetNode("/root/Node/Player/physicsBody");
+            Node[] exc = { this };
             Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
-
-            foreach(KeyValuePair<object, object> entry in hitInfo)
-            {
-                // do something with entry.Value or entry.Key
-            }
 
             if(hitInfo.Count != 0) //Hit something
             {
@@ -71,8 +65,7 @@ public class Interaction : Camera
             placeBlock = false;
 
             Vector3 from = this.ProjectRayOrigin(midScreenPoint);
-            Node[] exc = new Node[1];
-            exc[0] = GetNode("/root/Node/Player/physicsBody");
+            Node[] exc = { this };
             Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
 
             foreach(KeyValuePair<object, object> entry in hitInfo)
@@ -89,11 +82,4 @@ public class Interaction : Camera
             }
         }
     }
-
-//    public override void _Process(float delta)
-//    {
-//        // Called every frame. Delta is time since last frame.
-//        // Update game logic here.
-//        
-//    }
 }
