@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Scripts\ItemStorage.cs" />
     <Compile Include="Scripts\Item.cs" />
+    <Compile Include="Scripts\ItemStack.cs" />
     <Compile Include="Scripts\GUIBox.cs" />
     <Compile Include="Scripts\GUIObject.cs" />
     <Compile Include="Scripts\InventoryGUI.cs" />

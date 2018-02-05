@@ -13,17 +13,21 @@ public class Item
     private byte id;
     private Texture texture;
     private Type type;
+    private String name;
 
-    public Item(byte id, Texture tex, Type type)
+    private bool stackable = false;
+
+    public Item(byte id, String name, Texture tex, Type type)
     {
         this.id = id;
         this.texture = tex;
         this.type = type;
+        this.name = name;
 
         items[id] = this;
     }
 
-    public Sprite generateGUISprite()
+    public Sprite GenerateGUISprite()
     {
         Sprite s = new Sprite();
         s.SetTexture(texture);
@@ -38,5 +42,21 @@ public class Item
     new public Type GetType()
     {
         return this.type;
+    }
+
+    public Item SetStackable(bool s)
+    {
+        this.stackable = s;
+        return this;
+    }
+
+    public bool IsStackable()
+    {
+        return this.stackable;
+    }
+
+    public String GetName()
+    {
+        return name;
     }
 }

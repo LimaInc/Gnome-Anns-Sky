@@ -17,6 +17,11 @@ public class GUIInventorySlot : GUIObject
     private int index;
     private Item.Type type;
 
+    private ItemStack stack;
+
+    private Sprite curItemChild;
+    private Label curLabelChild;
+
     public GUIInventorySlot(InventoryGUI inv, Item.Type t, int ind, Vector2 pos) : base(new Rect2(pos, SIZE), TEX) 
     { 
         this.inventory = inv;
@@ -36,17 +41,17 @@ public class GUIInventorySlot : GUIObject
             inventory.HandleSlotClick(index, type);
     }
 
-    private Sprite curItemChild; //if any
-    private Item curItem; //if any
-
     public void SetPosition(Vector2 pos)
     {
         this.rect.Position = pos;
         this.sprite.SetPosition(pos);
 
-        if (this.curItemChild != null)
+        if (this.stack != null)
         {
             this.curItemChild.SetPosition(pos);
+
+            if (this.stack.GetCount() > 1)
+                this.curLabelChild.SetPosition(pos);
         }
     }
 
@@ -55,33 +60,47 @@ public class GUIInventorySlot : GUIObject
         return this.type;
     }
 
-    public Item GetCurItem()
+    public ItemStack GetCurItemStack()
     {
-        return curItem;
+        return stack;
     }
 
-    public void AssignItem(Item i)
+    public void AssignItemStack(ItemStack i)
     {
         if (i == null) 
             return;
 
-        curItem = i;
-        curItemChild = i.generateGUISprite();
+        stack = i;
+        curItemChild = i.GetItem().GenerateGUISprite();
 
         if (this.index != -1)
             curItemChild.SetPosition(this.rect.Position + GUIInventorySlot.SIZE / 2.0f);
         else
-            this.curItemChild.SetPosition(this.rect.Position);
+            curItemChild.SetPosition(this.rect.Position);
 
         this.AddChild(curItemChild);
+
+        if (i.GetCount()  > 1)
+        {
+            curLabelChild = new Label();
+            curLabelChild.SetText("" + i.GetCount());
+
+            if (this.index != -1)
+                curLabelChild.SetPosition(this.rect.Position + GUIInventorySlot.SIZE / 2.0f);
+            else
+                curLabelChild.SetPosition(this.rect.Position);
+
+            this.AddChild(curLabelChild);
+        }
     }
 
-    public void ClearItem()
+    public void ClearItemStack()
     {
-        if (curItemChild == null)
-            return;
+        stack = null;
 
-        curItem = null;
+        if (curLabelChild != null)
+            this.RemoveChild(curLabelChild);
+            
         this.RemoveChild(curItemChild);
     }
 }
