@@ -17,12 +17,21 @@ public class Player : KinematicBody
     private float gravity = 40.0f;
 
     private CollisionShape collisionShape;
-    // private KinematicBody physicsBody;
-
     private Camera myCam;
+
+    private bool inventoryOpen = false;
+
+    private InventoryGUI inventoryGUI;
+
+    private Inventory consumableInventory;
+    private Inventory fossilInventory;
+    private Inventory blockInventory;
+
+    public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
 
     public override void _Ready()
     {
+        Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
 
         BoxShape b = new BoxShape();
@@ -30,25 +39,32 @@ public class Player : KinematicBody
         collisionShape = new CollisionShape();
         collisionShape.SetShape(b);
 
-        // physicsBody = new KinematicBody();
-
         this.AddChild(collisionShape);
-        // this.SetName("physicsBody");
         this.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
 
         myCam = (Camera) this.GetChild(0);
 
-        // this.RemoveChild(myCam);
-        // this.AddChild(myCam);
-
         myCam.SetTranslation(camOffset);
 
-        // this.AddChild(physicsBody);
+        consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
+        fossilInventory = new Inventory(this, Item.Type.FOSSIL);
+        blockInventory = new Inventory(this, Item.Type.BLOCK);
+
+        blockInventory.AddItem(ItemStorage.block, 20);
+        fossilInventory.AddItem(ItemStorage.fossil, 10);
+        consumableInventory.AddItem(ItemStorage.chocoloate, 10);
+        blockInventory.AddItem(ItemStorage.block, 15);
+        blockInventory.AddItem(ItemStorage.block, 34);
+    }
+
+    public bool isInventoryOpen()
+    {
+        return inventoryOpen;
     }
 
     public override void _Input(InputEvent e)
     {
-        if (e is InputEventMouseMotion)
+        if (e is InputEventMouseMotion && !inventoryOpen)
         {
             Vector3 rot = this.GetRotation();
 
@@ -74,9 +90,29 @@ public class Player : KinematicBody
 
     public override void _Process(float delta)
     {
-        if (Input.IsActionJustPressed("jump") && velocity.y == 0)
+        if (Input.IsActionJustPressed("inventory"))
         {
-            velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
+            if (!inventoryOpen)
+            {
+                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this.GetViewport().Size);
+                inventoryOpen = true;
+                this.AddChild(inventoryGUI);
+                Input.SetMouseMode(Input.MouseMode.Visible);
+            } else 
+            {
+                inventoryOpen = false;
+                inventoryGUI.HandleClose();
+                this.RemoveChild(inventoryGUI);
+                Input.SetMouseMode(Input.MouseMode.Captured);
+            }
+        }
+
+        if (!inventoryOpen)
+        {
+            if (Input.IsActionJustPressed("jump") && velocity.y == 0)
+            {
+                velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
+            }
         }
 
         velocity += new Vector3(0,-gravity * delta,0);
@@ -86,30 +122,33 @@ public class Player : KinematicBody
         float sin = (float) Math.Sin(rot.y);
         float cos = (float) Math.Cos(rot.y);
 
-        Vector3 movDir = new Vector3();
-        if (Input.IsActionPressed("forward"))
+        if (!inventoryOpen)
         {
-            movDir += new Vector3(-sin,0.0f,-cos);
-        }
-        if (Input.IsActionPressed("backward"))
-        {
-            movDir += new Vector3(sin,0.0f,cos);
-        }
-        if (Input.IsActionPressed("left"))
-        {
-            movDir += new Vector3(-cos,0.0f,sin);
-        }
-        if (Input.IsActionPressed("right"))
-        {
-            movDir += new Vector3(cos,0.0f,-sin);
-        }
-        movDir = movDir.Normalized();
-        if(Input.IsActionPressed("sprint"))
-        {
-            movDir *= 3f;
-        }
+            Vector3 movDir = new Vector3();
+            if (Input.IsActionPressed("forward"))
+            {
+                movDir += new Vector3(-sin,0.0f,-cos);
+            }
+            if (Input.IsActionPressed("backward"))
+            {
+                movDir += new Vector3(sin,0.0f,cos);
+            }
+            if (Input.IsActionPressed("left"))
+            {
+                movDir += new Vector3(-cos,0.0f,sin);
+            }
+            if (Input.IsActionPressed("right"))
+            {
+                movDir += new Vector3(cos,0.0f,-sin);
+            }
+            movDir = movDir.Normalized();
+            if(Input.IsActionPressed("sprint"))
+            {
+                movDir *= 3f;
+            }
 
-        velocity += movDir * moveSpeed * delta;
+            velocity += movDir * moveSpeed * delta;
+        }
 
         velocity = new Vector3(velocity.x * xz_inertia, velocity.y * y_intertia, velocity.z * xz_inertia);
 
