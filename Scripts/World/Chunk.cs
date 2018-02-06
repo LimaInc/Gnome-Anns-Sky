@@ -17,7 +17,7 @@ public class Chunk : Spatial
 
     private void AddPosXFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = Game.GetBlock(blockType).UVs;
+        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Left);
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
@@ -35,7 +35,7 @@ public class Chunk : Spatial
     }
     private void AddNegXFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = Game.GetBlock(blockType).UVs;
+        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Right);
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
@@ -53,7 +53,7 @@ public class Chunk : Spatial
     }
     private void AddPosYFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = Game.GetBlock(blockType).UVs;
+        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Top);
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
@@ -71,7 +71,7 @@ public class Chunk : Spatial
     }
     private void AddNegYFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = Game.GetBlock(blockType).UVs;
+        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Bottom);
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
@@ -89,7 +89,7 @@ public class Chunk : Spatial
     }
     private void AddPosZFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = Game.GetBlock(blockType).UVs;
+        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Front);
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
@@ -107,7 +107,7 @@ public class Chunk : Spatial
     }
     private void AddNegZFace(Vector3 origin, byte blockType)
     {
-        Rect2 uvs = Game.GetBlock(blockType).UVs;
+        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Back);
 
         surfaceTool.AddUv(uvs.Position);
         surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
