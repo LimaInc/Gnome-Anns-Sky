@@ -1,6 +1,0 @@
-/home/james/godot/projects/.mono/temp/bin/Tools/evaluation.dll
-/home/james/godot/projects/.mono/temp/bin/Tools/evaluation.pdb
-/home/james/godot/projects/.mono/temp/obj/Tools/evaluation.csprojResolveAssemblyReference.cache
-/home/james/godot/projects/.mono/temp/obj/Tools/evaluation.csproj.CoreCompileInputs.cache
-/home/james/godot/projects/.mono/temp/obj/Tools/evaluation.dll
-/home/james/godot/projects/.mono/temp/obj/Tools/evaluation.pdb

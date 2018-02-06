@@ -22,7 +22,6 @@ public class Interaction : Camera
 
         terrain = GetNode("/root/Node/Terrain") as Terrain;
 
-        midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
     }
 
     bool removeBlock = false;
@@ -44,6 +43,7 @@ public class Interaction : Camera
     float rayLength = 5;
     public override void _PhysicsProcess(float delta)
     {
+        midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
         if(removeBlock)
         {
             removeBlock = false;
