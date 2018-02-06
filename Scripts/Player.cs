@@ -57,6 +57,11 @@ public class Player : KinematicBody
         blockInventory.AddItem(ItemStorage.block, 34);
     }
 
+    public CollisionShape GetCollisionShape()
+    {
+        return this.collisionShape;
+    }
+
     public bool isInventoryOpen()
     {
         return inventoryOpen;
