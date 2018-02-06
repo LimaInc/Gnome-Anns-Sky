@@ -78,6 +78,32 @@ public class Interaction : Camera
                 Vector3 pos = (Vector3)hitInfo["position"] + (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
                 IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
 
+                Vector3 blockCollisionPos = new Vector3(blockPos.x, blockPos.y, blockPos.z) * Chunk.BLOCK_SIZE;
+
+                BoxShape bs = new BoxShape();
+                bs.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f));
+
+                PhysicsShapeQueryParameters psqp = new PhysicsShapeQueryParameters();
+                psqp.SetShape(bs);
+                Transform t = new Transform(new Vector3(1.0f, 0.0f, 0.0f),new Vector3(0.0f, 1.0f, 0.0f),new Vector3(0.0f, 0.0f, 1.0f), new Vector3(0.0f, 0.0f ,0.0f)).Translated(blockCollisionPos);
+                psqp.SetTransform(t);
+
+                object[] res = spaceState.IntersectShape(psqp);
+
+                if (res.Length > 0)
+                {
+                    for (int i = 0; i < res.Length; i++)
+                    {
+                        Dictionary<object,object> info = (Dictionary<object,object>) spaceState.IntersectShape(psqp)[i];
+
+                        if (info["collider"] is KinematicBody)
+                        {
+                            //A moving body (player, animal etc.) is in the way
+                            return;
+                        }
+                    }
+                }
+
                 terrain.SetBlock(blockPos, 1);
             }
         }
