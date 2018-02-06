@@ -28,14 +28,13 @@ public class Stone : Block
 }
 public class Grass : Block
 {
-    public override string[] TexturePaths { get { return new[] { "res://Images/stone.png", "res://Images/brown_rock_side.png" }; } }
+    public override string[] TexturePaths { get { return new[] { "res://Images/brown_rock_top.png", "res://Images/brown_rock_side.png" }; } }
 
     public override int GetTextureIndex(BlockFace face)
     {
         switch(face)
         {
             case BlockFace.Top:
-            case BlockFace.Bottom:
                 return 0;
             default:
                 return 1;
