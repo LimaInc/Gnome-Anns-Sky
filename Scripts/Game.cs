@@ -22,30 +22,55 @@ public class Game : Node
         { 0, null } //Air block (probably should be something more sensible than null)
     };
 
+    //UVs for all blocks
+    private static Dictionary<byte, Rect2[]> blockUVs = new Dictionary<byte, Rect2[]>();
+
+    public static Rect2 GetBlockUV(byte block, BlockFace face)
+    {
+        Rect2[] uvs = blockUVs[block];
+
+        Rect2 uv = uvs[blocks[block].GetTextureIndex(face)];
+
+        return uv;
+    }
+
     //Generates texture atlas from all registered blocked
     private void GenerateTextureMap()
     {
-        List<Block> texturedBlocks = blocks.Values.Where(b => b != null).ToList();
-        Texture[] textures = new Texture[texturedBlocks.Count];
+        List<byte> texturedBlocks = blocks.Keys.Where(b => b != 0).ToList();
+        List<Texture> textures = new List<Texture>();
         for(int i = 0; i < texturedBlocks.Count; i++)
         {
-            Texture t = GD.Load(texturedBlocks[i].TexturePath) as Texture;
-            if(t == null)
+            string[] blockTexturePaths = blocks[texturedBlocks[i]].TexturePaths;
+            Texture[] blockTextures = new Texture[blockTexturePaths.Length];
+
+            for(int j = 0; j < blockTexturePaths.Length; j++)
             {
-                GD.Printerr("Block texture could not be loaded");
-            }
-            else
-            {
-                textures[i] = t;
+                blockTextures[j] = GD.Load(blockTexturePaths[j]) as Texture;
+                if(blockTextures[j] == null)
+                {
+                    GD.Printerr("Block texture could not be loaded");
+                }
+                else
+                {
+                    textures.Add(blockTextures[j]);
+                }
             }
         }
 
         Rect2[] uvs;
         TextureAtlas = TextureManager.PackTextures(textures.ToArray(), out uvs);
 
+        int index = 0;
+
         for(int i = 0; i < texturedBlocks.Count; i++)
         {
-            texturedBlocks[i].UVs = uvs[i];
+            Rect2[] uvsArr = new Rect2[blocks[texturedBlocks[i]].TexturePaths.Length];
+            for(int j = 0; j < uvsArr.Length; j++)
+            {
+                uvsArr[j] = uvs[index++];
+            }
+            blockUVs[texturedBlocks[i]] = uvsArr;
         }
     }
 
