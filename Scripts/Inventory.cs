@@ -57,10 +57,10 @@ public class Inventory
                     if (stacks[i] == null)
                     {
                         stacks[i] = new ItemStack(item, 1);
-                        goto endOfLoop; //I'm so sorry for using a goto...
+                        break;
                     }
                 }
-                endOfLoop : {}
+                // endOfLoop : {}
             }
             return;
         } else
