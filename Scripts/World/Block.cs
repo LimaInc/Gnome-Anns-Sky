@@ -28,7 +28,7 @@ public class Stone : Block
 }
 public class Grass : Block
 {
-    public override string[] TexturePaths { get { return new[] { "res://Images/stone.png", "res://Images/grass.png" }; } }
+    public override string[] TexturePaths { get { return new[] { "res://Images/stone.png", "res://Images/brown_rock_side.png" }; } }
 
     public override int GetTextureIndex(BlockFace face)
     {
