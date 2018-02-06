@@ -52,11 +52,11 @@
     <Compile Include="Scripts\ItemStorage.cs" />
     <Compile Include="Scripts\Item.cs" />
     <Compile Include="Scripts\ItemStack.cs" />
-    <Compile Include="Scripts\GUIBox.cs" />
-    <Compile Include="Scripts\GUIObject.cs" />
-    <Compile Include="Scripts\InventoryGUI.cs" />
+    <Compile Include="Scripts\GUI\GUIBox.cs" />
+    <Compile Include="Scripts\GUI\GUIObject.cs" />
+    <Compile Include="Scripts\GUI\InventoryGUI.cs" />
     <Compile Include="Scripts\Inventory.cs" />
-    <Compile Include="Scripts\GUIInventorySlot.cs" />
+    <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
     <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\Chunk.cs" />
