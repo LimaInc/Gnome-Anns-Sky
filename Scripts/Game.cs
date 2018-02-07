@@ -9,7 +9,7 @@ public class Game : Node
     {
         //Register blocks
         Game.RegisterBlock(new Stone());
-        Game.RegisterBlock(new Grass());
+        Game.RegisterBlock(new RedRock());
 
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();

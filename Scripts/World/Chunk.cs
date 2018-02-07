@@ -15,115 +15,6 @@ public class Chunk : Spatial
     private Terrain terrain;
     private IntVector2 chunkCoords;
 
-    private void AddPosXFace(Vector3 origin, byte blockType)
-    {
-        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Left);
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, -0.5f));
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
-    }
-    private void AddNegXFace(Vector3 origin, byte blockType)
-    {
-        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Right);
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, +0.5f));
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
-    }
-    private void AddPosYFace(Vector3 origin, byte blockType)
-    {
-        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Top);
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, +0.5f));
-    }
-    private void AddNegYFace(Vector3 origin, byte blockType)
-    {
-        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Bottom);
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, +0.5f));
-    }
-    private void AddPosZFace(Vector3 origin, byte blockType)
-    {
-        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Front);
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, +0.5f));
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, +0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, +0.5f));
-    }
-    private void AddNegZFace(Vector3 origin, byte blockType)
-    {
-        Rect2 uvs = Game.GetBlockUV(blockType, BlockFace.Back);
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(uvs.Size.x, 0));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, -0.5f));
-
-        surfaceTool.AddUv(uvs.Position);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, -0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.End);
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(+0.5f, +0.5f, -0.5f));
-        surfaceTool.AddUv(uvs.Position + new Vector2(0, uvs.Size.y));
-        surfaceTool.AddVertex(origin + BLOCK_SIZE * new Vector3(-0.5f, +0.5f, -0.5f));
-    }
-
     public byte GetBlockInChunk(IntVector3 position)
     {
         return GetBlockInChunk(position.x, position.y, position.z);
@@ -172,28 +63,28 @@ public class Chunk : Spatial
                     if(blockType == 0)
                         continue;
 
-                    Vector3 blockPos = new Vector3(x, y, z);
+                    Block block = Game.GetBlock(blockType);
 
-                    Vector3 worldBlockPos = blockPos + new Vector3(chunkCoords.x * CHUNK_SIZE.x, 0, chunkCoords.y * CHUNK_SIZE.z);
+                    IntVector3 localIndex = new IntVector3(x, y, z);
 
-                    int sx = (int) worldBlockPos.x;
-                    int sy = (int) worldBlockPos.y;
-                    int sz = (int) worldBlockPos.z;
+                    //Index in world space
+                    IntVector3 index = localIndex + new IntVector3(chunkCoords.x * CHUNK_SIZE.x, 0, chunkCoords.y * CHUNK_SIZE.z);
 
-                    Vector3 graphicalBlockPos = blockPos * BLOCK_SIZE;
+                    //Position in chunk
+                    Vector3 localBlockPosition = localIndex * BLOCK_SIZE;
                     
-                    if(terrain.GetBlock(sx+1,sy,sz) == 0)
-                        AddPosXFace(graphicalBlockPos, blockType);
-                    if(terrain.GetBlock(sx-1,sy,sz) == 0)
-                        AddNegXFace(graphicalBlockPos, blockType);
-                    if(terrain.GetBlock(sx,sy+1,sz) == 0)
-                        AddPosYFace(graphicalBlockPos, blockType);
-                    if(terrain.GetBlock(sx,sy-1,sz) == 0 && y != 0)
-                        AddNegYFace(graphicalBlockPos, blockType);
-                    if(terrain.GetBlock(sx,sy,sz+1) == 0)
-                        AddPosZFace(graphicalBlockPos, blockType);
-                    if(terrain.GetBlock(sx,sy,sz-1) == 0)
-                        AddNegZFace(graphicalBlockPos, blockType);
+                    if(terrain.GetBlock(index.x + 1, index.y, index.z) == 0)
+                        block.AddPosXFace(ref surfaceTool, localBlockPosition, blockType);
+                    if(terrain.GetBlock(index.x - 1, index.y, index.z) == 0)
+                        block.AddNegXFace(ref surfaceTool, localBlockPosition, blockType);
+                    if(terrain.GetBlock(index.x, index.y + 1, index.z) == 0)
+                        block.AddPosYFace(ref surfaceTool, localBlockPosition, blockType);
+                    if(terrain.GetBlock(index.x, index.y - 1, index.z) == 0 && y != 0) //Don't draw bottom face
+                        block.AddNegYFace(ref surfaceTool, localBlockPosition, blockType);
+                    if(terrain.GetBlock(index.x, index.y, index.z + 1) == 0)
+                        block.AddPosZFace(ref surfaceTool, localBlockPosition, blockType);
+                    if(terrain.GetBlock(index.x, index.y, index.z - 1) == 0)
+                        block.AddNegZFace(ref surfaceTool, localBlockPosition, blockType);
                 }
             }
         }
