@@ -68,7 +68,7 @@ public class Terrain : Spatial
 
     public override void _Ready()
     {
-        player = GetNode("/root/Node/Player") as Player;
+        player = GetNode("/root/Game/Player") as Player;
     }
 
     Player player;
