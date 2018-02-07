@@ -33,11 +33,10 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
         return vec;
     }
 
-    public static IntVector3 operator *(IntVector3 left, IntVector2 right)
+    public static IntVector2 operator *(IntVector2 left, IntVector2 right)
     {
         left.x *= right.x;
         left.y *= right.y;
-        left.z *= 0;
         return left;
     }
 
