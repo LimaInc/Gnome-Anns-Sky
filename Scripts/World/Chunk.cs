@@ -7,7 +7,6 @@ public class Chunk : Spatial
     public static float BLOCK_SIZE = 0.5f;
 
     private byte[,,] blocks;
-    private SurfaceTool surfaceTool = new SurfaceTool();
     private MeshInstance meshInstance;
     private StaticBody body;
     private CollisionShape collider;
@@ -50,6 +49,8 @@ public class Chunk : Spatial
         material.SetSpecularMode(SpatialMaterial.SpecularMode.Disabled);
         material.SetMetallic(0);
         material.SetRoughness(1);
+
+        SurfaceTool surfaceTool = new SurfaceTool();
 
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);        
 
@@ -102,15 +103,14 @@ public class Chunk : Spatial
         meshInstance.SetMesh(mesh);
     }
 
-    //Just generate terrain data
-    public void SoftLoad()
+    public Chunk(Terrain terrain, IntVector2 coords, byte[,,] blocks)
     {
-        blocks = terrain.WorldGenerator.GetChunk(chunkCoords.x, chunkCoords.y, CHUNK_SIZE.x, CHUNK_SIZE.y, CHUNK_SIZE.z);
-    }
+        this.terrain = terrain;
+        this.Translate(new IntVector3((int) (coords.x * CHUNK_SIZE.x * BLOCK_SIZE), 0, (int) (coords.y * CHUNK_SIZE.z * BLOCK_SIZE)));
+        this.blocks = blocks;
 
-    //Generate graphical data aswell
-    public void HardLoad()
-    {
+        this.chunkCoords = coords;
+
         meshInstance = new MeshInstance();
         this.AddChild(meshInstance);
 
@@ -118,15 +118,5 @@ public class Chunk : Spatial
         this.AddChild(body);
         collider = new CollisionShape();
         body.AddChild(collider);
-        
-        UpdateMesh();
-    }
-
-    public Chunk(Terrain terrain, IntVector2 coords)
-    {
-        this.terrain = terrain;
-        this.Translate(new IntVector3((int) (coords.x * CHUNK_SIZE.x * BLOCK_SIZE), 0, (int) (coords.y * CHUNK_SIZE.z * BLOCK_SIZE)));
-
-        this.chunkCoords = coords;
     }
 }

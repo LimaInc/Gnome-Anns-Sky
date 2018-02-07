@@ -5,40 +5,29 @@ using System.Linq;
 
 public class Terrain : Spatial
 {
-    Dictionary<IntVector2, Chunk> hardLoadedChunks = new Dictionary<IntVector2, Chunk>(); //Maybe we should just store an array of chunks?
-    Dictionary<IntVector2, Chunk> softLoadedChunks = new Dictionary<IntVector2, Chunk>(); //Maybe we should just store an array of chunks?
+    private Dictionary<IntVector2, Chunk> loadedChunks = new Dictionary<IntVector2, Chunk>();
 
-    public readonly WorldGenerator WorldGenerator = new WorldGenerator();
+    private WorldGenerator worldGenerator = new WorldGenerator();
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
-    private Chunk CreateChunkAndHardLoad(IntVector2 chunkIndex)
+    private Chunk CreateChunk(IntVector2 chunkIndex)
     {
-        if (!softLoadedChunks.ContainsKey(chunkIndex))
-        {
-            Chunk chunk = new Chunk(this, chunkIndex);
-            chunk.SoftLoad();
-            chunk.HardLoad();
-            this.AddChild(chunk);
-            softLoadedChunks[chunkIndex] = chunk;
-            hardLoadedChunks.Add(chunkIndex, chunk);
-            return chunk;
-        } else 
-        {
-            Chunk c = softLoadedChunks[chunkIndex];
-            c.HardLoad();
-            this.AddChild(c);
-            hardLoadedChunks.Add(chunkIndex, c);
-            return c;
-        }
+        if(loadedChunks.ContainsKey(chunkIndex))
+            return loadedChunks[chunkIndex];
+        
+        byte[,,] blocks = worldGenerator.GetChunk(chunkIndex.x, chunkIndex.y, Chunk.CHUNK_SIZE.x, Chunk.CHUNK_SIZE.y, Chunk.CHUNK_SIZE.z);
+        Chunk chunk = new Chunk(this, chunkIndex, blocks);
+        this.AddChild(chunk);
+
+        return chunk;
     }
 
     private void RemoveChunk(IntVector2 chunkIndex)
     {
-        Chunk chunk = hardLoadedChunks[chunkIndex];
+        Chunk chunk = loadedChunks[chunkIndex];
         chunk.Visible = false;
         chunk.QueueFree();
-        softLoadedChunks.Remove(chunkIndex);
-        hardLoadedChunks.Remove(chunkIndex);
+        loadedChunks.Remove(chunkIndex);
     }
 
     public byte GetBlock(IntVector3 v)
@@ -55,20 +44,10 @@ public class Terrain : Spatial
         IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.CHUNK_SIZE);
 
         Chunk chunk;
-        if(softLoadedChunks.TryGetValue(chunkIndex, out chunk))
-        {
-
+        if(loadedChunks.TryGetValue(chunkIndex, out chunk))
             return chunk.GetBlockInChunk(positionInChunk);
-        }
-        else //Chunk isn't loaded, so return 0?
-        {
-            Chunk c = new Chunk(this, chunkIndex);
-            c.SoftLoad();
-
-            softLoadedChunks.Add(chunkIndex, c);
-
-            return c.GetBlockInChunk(positionInChunk);
-        }
+        else //Should only happen when outside chunks are checking for adjacent blocks
+            return 1; //Just return 1 so they don't generate that face
     }
 
     public override void _Ready()
@@ -101,7 +80,7 @@ public class Terrain : Spatial
         IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.CHUNK_SIZE.x),
                                                (int)Mathf.Floor((float)pos.z / Chunk.CHUNK_SIZE.z));
 
-        Chunk chunk = hardLoadedChunks[chunkIndex];
+        Chunk chunk = loadedChunks[chunkIndex];
 
         IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.CHUNK_SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.CHUNK_SIZE.z);
 
@@ -113,16 +92,16 @@ public class Terrain : Spatial
         IntVector2 below = chunkIndex + new IntVector2(0,-1);
 
         if (positionInChunk.x == Chunk.CHUNK_SIZE.x - 1)
-            hardLoadedChunks[right].UpdateMesh();
+            loadedChunks[right].UpdateMesh();
 
         if (positionInChunk.x == 0)
-            hardLoadedChunks[left].UpdateMesh();
+            loadedChunks[left].UpdateMesh();
 
         if (positionInChunk.z == Chunk.CHUNK_SIZE.z - 1)
-            hardLoadedChunks[above].UpdateMesh();
+            loadedChunks[above].UpdateMesh();
 
         if (positionInChunk.z == 0)
-            hardLoadedChunks[below].UpdateMesh();
+            loadedChunks[below].UpdateMesh();
 
         chunk.UpdateMesh();
     }
@@ -134,6 +113,7 @@ public class Terrain : Spatial
         IntVector2 playerChunk = new IntVector2((int) (playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int) (playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
 
         List<IntVector2> chunksLoadedThisUpdate = new List<IntVector2>();
+        List<IntVector2> newChunks = new List<IntVector2>();
 
         for (int x = playerChunk.x - chunkLoadRadius.x; x <= playerChunk.x + chunkLoadRadius.x; x++)
         {
@@ -141,11 +121,16 @@ public class Terrain : Spatial
             {
                 IntVector2 thisChunkIndex = new IntVector2(x,z);
                 chunksLoadedThisUpdate.Add(thisChunkIndex);
-                if(!hardLoadedChunks.ContainsKey(thisChunkIndex))
-                    hardLoadedChunks[thisChunkIndex] = CreateChunkAndHardLoad(thisChunkIndex);
+                if(!loadedChunks.ContainsKey(thisChunkIndex))
+                {
+                    loadedChunks[thisChunkIndex] = CreateChunk(thisChunkIndex);
+                    newChunks.Add(thisChunkIndex);
+                }
             }
         }
 
-        hardLoadedChunks.Keys.Except(chunksLoadedThisUpdate).ToList().ForEach(x => RemoveChunk(x));
+        newChunks.ToList().ForEach(x => loadedChunks[x].UpdateMesh());
+
+        loadedChunks.Keys.Except(chunksLoadedThisUpdate).ToList().ForEach(x => RemoveChunk(x));
     }
 }
