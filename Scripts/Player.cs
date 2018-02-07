@@ -36,6 +36,7 @@ public class Player : KinematicBody
 
         collisionShape = new CollisionShape();
 
+        //OLD BoxShape collision 
         // BoxShape b = new BoxShape();
         // b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         // collisionShape.SetShape(b);
@@ -171,6 +172,5 @@ public class Player : KinematicBody
         // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
 
         onFloor = this.IsOnFloor();
-        GD.Print(onFloor);
     }
 }
