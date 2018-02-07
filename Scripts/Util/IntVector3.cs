@@ -59,6 +59,11 @@ public struct IntVector3 : IEquatable<IntVector3> //Used for chunk/block positio
         return new Vector3(vec.x, vec.y, vec.z);
     }
 
+    public static explicit operator IntVector3(Vector3 vec)
+    {
+        return new IntVector3((int)vec.x, (int)vec.y, (int)vec.z);
+    }
+
     public static bool operator ==(IntVector3 left, IntVector3 right)
     {
         return left.Equals(right);
