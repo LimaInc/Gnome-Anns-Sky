@@ -61,6 +61,10 @@
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Blocks\Block.cs" />
+    <Compile Include="Scripts\Blocks\BlockFace.cs" />
+    <Compile Include="Scripts\Blocks\CubeBlock.cs" />
+    <Compile Include="Scripts\Blocks\RedRock.cs" />
+    <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
     <Compile Include="Scripts\Interaction.cs" />
