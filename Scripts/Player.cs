@@ -4,7 +4,7 @@ using System;
 public class Player : KinematicBody
 {
     private float moveSpeed = 30.0f;
-    private float jumpPower = 550.0f;
+    private float jumpPower = 12.0f;
     private float camRotateSpeed = 0.01f;
 
     private float xz_inertia = 0.85f;
@@ -34,10 +34,18 @@ public class Player : KinematicBody
         Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
 
-        BoxShape b = new BoxShape();
-        b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         collisionShape = new CollisionShape();
-        collisionShape.SetShape(b);
+
+        //OLD BoxShape collision 
+        // BoxShape b = new BoxShape();
+        // b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
+        // collisionShape.SetShape(b);
+
+        CapsuleShape c = new CapsuleShape();
+        c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
+        c.SetHeight( Chunk.BLOCK_SIZE - 0.05f);
+        collisionShape.SetShape(c);
+        collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
 
         this.AddChild(collisionShape);
         this.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
@@ -93,6 +101,8 @@ public class Player : KinematicBody
         }
     }
 
+    private bool onFloor;
+
     public override void _Process(float delta)
     {
         if (Input.IsActionJustPressed("inventory"))
@@ -114,9 +124,9 @@ public class Player : KinematicBody
 
         if (!inventoryOpen)
         {
-            if (Input.IsActionJustPressed("jump") && velocity.y == 0)
+            if (Input.IsActionJustPressed("jump") && onFloor)
             {
-                velocity += new Vector3(0.0f, jumpPower * delta, 0.0f);
+                velocity += new Vector3(0.0f, jumpPower, 0.0f);
             }
         }
 
@@ -157,8 +167,10 @@ public class Player : KinematicBody
 
         velocity = new Vector3(velocity.x * xz_inertia, velocity.y * y_intertia, velocity.z * xz_inertia);
 
-        velocity = this.MoveAndSlide(velocity);
+        velocity = this.MoveAndSlide(velocity, new Vector3(0.0f, 1.0f, 0.0f));
 
         // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
+
+        onFloor = this.IsOnFloor();
     }
 }
