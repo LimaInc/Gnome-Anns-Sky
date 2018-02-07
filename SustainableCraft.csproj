@@ -60,7 +60,7 @@
     <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
-    <Compile Include="Scripts\World\Block.cs" />
+    <Compile Include="Scripts\Blocks\Block.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
     <Compile Include="Scripts\Interaction.cs" />
