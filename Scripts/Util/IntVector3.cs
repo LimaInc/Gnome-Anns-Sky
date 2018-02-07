@@ -46,12 +46,13 @@ public struct IntVector3 : IEquatable<IntVector3> //Used for chunk/block positio
         return left;
     }
 
-    public static IntVector3 operator *(IntVector3 left, float right)
+    public static Vector3 operator *(IntVector3 left, float right)
     {
-        left.x = (int) (left.x * right);
-        left.y = (int) (left.y * right);
-        left.y = (int) (left.y * right);
-        return left;
+        Vector3 vec;
+        vec.x = left.x * right;
+        vec.y = left.y * right;
+        vec.z = left.z * right;
+        return vec;
     }
 
     public static implicit operator Vector3(IntVector3 vec)
