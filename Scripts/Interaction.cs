@@ -14,13 +14,13 @@ public class Interaction : Camera
 
     public override void _Ready()
     {
-        player = GetNode("/root/Node/Player") as Player;
+        player = GetNode("/root/Game/Player") as Player;
 
         // Called every time the node is added to the scene.
         // Initialization here
         spaceState = GetWorld().DirectSpaceState;
 
-        terrain = GetNode("/root/Node/Terrain") as Terrain;
+        terrain = GetNode("/root/Game/Terrain") as Terrain;
 
     }
 
