@@ -22,6 +22,7 @@ public class Player : KinematicBody
     private bool inventoryOpen = false;
 
     private InventoryGUI inventoryGUI;
+    private PlayerGUI playerGUI;
 
     private Inventory consumableInventory;
     private Inventory fossilInventory;
@@ -57,6 +58,9 @@ public class Player : KinematicBody
         consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);
         blockInventory = new Inventory(this, Item.Type.BLOCK);
+
+        playerGUI = new PlayerGUI(this);
+        this.AddChild(playerGUI);
 
         blockInventory.AddItem(ItemStorage.block, 20);
         fossilInventory.AddItem(ItemStorage.fossil, 10);
@@ -109,15 +113,17 @@ public class Player : KinematicBody
         {
             if (!inventoryOpen)
             {
-                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this.GetViewport().Size);
+                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this);
                 inventoryOpen = true;
                 this.AddChild(inventoryGUI);
+                this.RemoveChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Visible);
             } else 
             {
                 inventoryOpen = false;
                 inventoryGUI.HandleClose();
                 this.RemoveChild(inventoryGUI);
+                this.AddChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Captured);
             }
         }

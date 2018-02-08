@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-public class InventoryGUI : Node
+public class InventoryGUI : GUI
 {
     private static IntVector2 SLOT_COUNT = new IntVector2(4,10);
 
@@ -14,8 +14,6 @@ public class InventoryGUI : Node
     private Inventory consumableInventory;
     private Inventory fossilInventory;
     private Inventory blockInventory;
-
-    private Vector2 viewportSize;
 
     //This follows the mouse to allow the player to move items around
     private GUIInventorySlot floatingSlot;
@@ -30,22 +28,40 @@ public class InventoryGUI : Node
 
     private GUIBox box;
 
-    public InventoryGUI(Inventory cinv, Inventory finv, Inventory binv, Vector2 vSize)
+    public InventoryGUI(Inventory cinv, Inventory finv, Inventory binv, Node vSource) : base(vSource)
     {
         this.consumableInventory = cinv;
         this.fossilInventory = finv;
         this.blockInventory = binv;
 
-        this.viewportSize = vSize;
+        floatingSlot = new GUIInventorySlot();
+        this.AddChild(floatingSlot);
+    }
 
-        box = new GUIBox(new Rect2(viewportSize / 2,BOX_SIZE));
+    public override void HandleResize()
+    {
+        this.RemoveChild(box);
+        this.RemoveChild(consLabel);
+        this.RemoveChild(fossLabel);
+        this.RemoveChild(blocLabel);
+
+        foreach (GUIInventorySlot g in consSlots)
+            this.RemoveChild(g);
+
+        foreach (GUIInventorySlot g in fossSlots)
+            this.RemoveChild(g);
+
+        foreach (GUIInventorySlot g in blocSlots)
+            this.RemoveChild(g);
+
+        box = new GUIBox(new Rect2(this.GetViewportDimensions() / 2,BOX_SIZE));
         this.AddChild(box);
 
         Vector2 sectionSize = new Vector2(SLOT_COUNT.x, SLOT_COUNT.y) * (SLOT_SPACING + GUIInventorySlot.SIZE);
         Vector2 sideSpace = SLOT_OFFSET * 2.0f;
         float sectionSpacing = (BOX_SIZE.x - 3 * sectionSize.x) / 2.0f - SLOT_OFFSET.x;
 
-        Vector2 totOff = SLOT_OFFSET + viewportSize / 2 - BOX_SIZE / 2.0f;
+        Vector2 totOff = SLOT_OFFSET + this.GetViewportDimensions() / 2 - BOX_SIZE / 2.0f;
 
         for (int x = 0; x < SLOT_COUNT.x; x++)
         {
@@ -87,10 +103,6 @@ public class InventoryGUI : Node
         blocLabel.SetText("Blocks");
         blocLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 2 - new Vector2(0.0f, 16.0f));
         this.AddChild(blocLabel);
-
-        // floatingSlot = new GUIInventorySlot(this, Item.Type.CONSUMABLE, 0, new Vector2());
-        floatingSlot = new GUIInventorySlot();
-        this.AddChild(floatingSlot);
     }
 
     public void HandleClose()
