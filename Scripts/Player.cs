@@ -47,15 +47,15 @@ public class Player : KinematicBody
         collisionShape = new CollisionShape();
 
         //OLD BoxShape collision 
-        // BoxShape b = new BoxShape();
-        // b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
-        // collisionShape.SetShape(b);
+        BoxShape b = new BoxShape();
+        b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
+        collisionShape.SetShape(b);
 
-        CapsuleShape c = new CapsuleShape();
-        c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
-        c.SetHeight( Chunk.BLOCK_SIZE - 0.05f);
-        collisionShape.SetShape(c);
-        collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
+        // CapsuleShape c = new CapsuleShape();
+        // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
+        // c.SetHeight( Chunk.BLOCK_SIZE - 0.05f);
+        // collisionShape.SetShape(c);
+        // collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
 
         this.AddChild(collisionShape);
         this.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
