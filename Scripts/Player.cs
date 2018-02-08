@@ -30,6 +30,15 @@ public class Player : KinematicBody
 
     public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
 
+    public static int MAX_AIR = 100;
+    private int currentAir = MAX_AIR;
+
+    public static int MAX_THIRST = 100;
+    private int currentThirst = MAX_THIRST;
+
+    public static int MAX_HUNGER = 100;
+    private int currentHunger = MAX_HUNGER;
+
     public override void _Ready()
     {
         Input.SetCustomMouseCursor(CURSOR);
@@ -178,5 +187,20 @@ public class Player : KinematicBody
         // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
 
         onFloor = this.IsOnFloor();
+    }
+
+    public int GetCurrentAir()
+    {
+        return currentAir;
+    }
+
+    public int GetCurrentThirst()
+    {
+        return currentThirst;
+    }
+
+    public int GetCurrentHunger()
+    {
+        return currentHunger;
     }
 }

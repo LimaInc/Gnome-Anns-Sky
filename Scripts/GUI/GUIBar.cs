@@ -13,12 +13,12 @@ public class GUIBar : GUIObject
     private float perc;
     private float height;
 
-    public GUIBar(Vector2 pos, float height) : base(new Rect2(pos, new Vector2(WIDTH,height)), TEX, new Vector2(WIDTH / 16.0f, height / 16.0f))
+    private Color color;
+
+    public GUIBar(Vector2 pos, float height, Color c) : base(new Rect2(pos, new Vector2(WIDTH,height)), TEX, new Vector2(WIDTH / 16.0f, height / 16.0f))
     {   
         this.height = height;
-
-        //Test, delete
-        this.perc = 1.0f;
+        this.color = c;
 
         this.sprite.SetRegion(true);
         this.sprite.SetRegionRect(new Rect2(0, 16, 16, 16));
@@ -38,14 +38,17 @@ public class GUIBar : GUIObject
         this.AddChild(bottom);
 
         cRect = new ColorRect();
-        //Color rect positions are set from top left
-        cRect.SetPosition(pos - new Vector2(WIDTH / 2.0f, height / 2.0f) + new Vector2(8.0f, 8.0f - 32.0f));
+        cRect.Color = c;
+        //Color rect positions are set from top left, so the position setting is a bit messy
+        cRect.SetPosition(pos - new Vector2(WIDTH / 2.0f, height / 2.0f) + new Vector2(8.0f, 8.0f - 32.0f + (height + 48.0f)) - new Vector2(0,perc * (height + 48.0f)));
         cRect.SetSize(new Vector2(WIDTH - 16.0f, perc * (height + 48.0f)));
         this.AddChild(cRect);
     }
 
-    public void setPercentage(float f)
+    public void SetPercentage(float f)
     {
         this.perc = f;
+        cRect.SetPosition(rect.Position - new Vector2(WIDTH / 2.0f, height / 2.0f) + new Vector2(8.0f, 8.0f - 32.0f + (height + 48.0f)) - new Vector2(0,perc * (height + 48.0f)));
+        cRect.SetSize(new Vector2(WIDTH - 16.0f, perc * (height + 48.0f)));
     }
 }
