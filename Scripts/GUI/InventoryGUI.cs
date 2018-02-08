@@ -38,21 +38,26 @@ public class InventoryGUI : GUI
         this.AddChild(floatingSlot);
     }
 
+    private bool first = true;
+
     public override void HandleResize()
     {
-        this.RemoveChild(box);
-        this.RemoveChild(consLabel);
-        this.RemoveChild(fossLabel);
-        this.RemoveChild(blocLabel);
+        if (!first)
+        {
+            this.RemoveChild(box);
+            this.RemoveChild(consLabel);
+            this.RemoveChild(fossLabel);
+            this.RemoveChild(blocLabel);
 
-        foreach (GUIInventorySlot g in consSlots)
-            this.RemoveChild(g);
+            foreach (GUIInventorySlot g in consSlots)
+                this.RemoveChild(g);
 
-        foreach (GUIInventorySlot g in fossSlots)
-            this.RemoveChild(g);
+            foreach (GUIInventorySlot g in fossSlots)
+                this.RemoveChild(g);
 
-        foreach (GUIInventorySlot g in blocSlots)
-            this.RemoveChild(g);
+            foreach (GUIInventorySlot g in blocSlots)
+                this.RemoveChild(g);
+        }
 
         box = new GUIBox(new Rect2(this.GetViewportDimensions() / 2,BOX_SIZE));
         this.AddChild(box);
@@ -103,6 +108,8 @@ public class InventoryGUI : GUI
         blocLabel.SetText("Blocks");
         blocLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 2 - new Vector2(0.0f, 16.0f));
         this.AddChild(blocLabel);
+
+        first = false;
     }
 
     public void HandleClose()

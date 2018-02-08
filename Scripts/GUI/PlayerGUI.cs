@@ -26,14 +26,19 @@ public class PlayerGUI : GUI
         this.player = p;
     }
 
+    bool first = true;
+
     public override void HandleResize()
     {
-        this.RemoveChild(this.atmos0);
-        this.RemoveChild(this.atmos1);
-        this.RemoveChild(this.atmos2);
-        this.RemoveChild(this.air);
-        this.RemoveChild(this.thirst);
-        this.RemoveChild(this.hunger);
+        if (!first)
+        {
+            this.RemoveChild(this.atmos0);
+            this.RemoveChild(this.atmos1);
+            this.RemoveChild(this.atmos2);
+            this.RemoveChild(this.air);
+            this.RemoveChild(this.thirst);
+            this.RemoveChild(this.hunger);
+        }
 
         float barHeight = 200.0f;
 
@@ -66,6 +71,8 @@ public class PlayerGUI : GUI
         this.AddChild(this.atmos0);
         this.AddChild(this.atmos1);
         this.AddChild(this.atmos2);
+
+        first = false;
     }
 
     public override void _Process(float delta)
