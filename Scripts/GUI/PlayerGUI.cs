@@ -13,10 +13,6 @@ public class PlayerGUI : GUI
     private GUIBar thirst;
     private GUIBar hunger;
 
-    private ColorRect airPercRect;
-    private ColorRect thirstPercRect;
-    private ColorRect hungerPercRect;
-
     public PlayerGUI(Player p) : base(p)
     {
         this.player = p;
