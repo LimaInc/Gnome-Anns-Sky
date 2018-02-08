@@ -39,15 +39,13 @@ public class GUIBar : GUIObject
 
         cRect = new ColorRect();
         cRect.Color = c;
-        //Color rect positions are set from top left, so the position setting is a bit messy
-        cRect.SetPosition(pos - new Vector2(WIDTH / 2.0f, height / 2.0f) + new Vector2(8.0f, 8.0f - 32.0f + (height + 48.0f)) - new Vector2(0,perc * (height + 48.0f)));
-        cRect.SetSize(new Vector2(WIDTH - 16.0f, perc * (height + 48.0f)));
         this.AddChild(cRect);
     }
 
     public void SetPercentage(float f)
     {
         this.perc = f;
+        //Color rect positions are set from top left, so the position setting is a bit messy
         cRect.SetPosition(rect.Position - new Vector2(WIDTH / 2.0f, height / 2.0f) + new Vector2(8.0f, 8.0f - 32.0f + (height + 48.0f)) - new Vector2(0,perc * (height + 48.0f)));
         cRect.SetSize(new Vector2(WIDTH - 16.0f, perc * (height + 48.0f)));
     }
