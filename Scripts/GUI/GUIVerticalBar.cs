@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class GUIBar : GUIObject
+public class GUIVerticalBar : GUIObject
 {
     public static Texture TEX = ResourceLoader.Load("res://Images/bar.png") as Texture;
     public static float WIDTH = 64.0f;
@@ -15,7 +15,7 @@ public class GUIBar : GUIObject
 
     private Color color;
 
-    public GUIBar(Vector2 pos, float height, Color c) : base(new Rect2(pos, new Vector2(WIDTH,height)), TEX, new Vector2(WIDTH / 16.0f, height / 16.0f))
+    public GUIVerticalBar(Vector2 pos, float height, Color c) : base(new Rect2(pos, new Vector2(WIDTH,height)), TEX, new Vector2(WIDTH / 16.0f, height / 16.0f))
     {   
         this.height = height;
         this.color = c;
