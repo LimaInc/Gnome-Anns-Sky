@@ -39,7 +39,7 @@ public class GUIInventorySlot : GUIObject
         this.rect.Position = pos;
         this.sprite.SetPosition(pos);
 
-        if (this.stack != null)
+        if (this.curItemChild != null)
         {
             this.curItemChild.SetPosition(pos);
 

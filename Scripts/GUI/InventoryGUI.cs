@@ -33,9 +33,6 @@ public class InventoryGUI : GUI
         this.consumableInventory = cinv;
         this.fossilInventory = finv;
         this.blockInventory = binv;
-
-        floatingSlot = new GUIInventorySlot();
-        this.AddChild(floatingSlot);
     }
 
     private bool first = true;
@@ -57,6 +54,8 @@ public class InventoryGUI : GUI
 
             foreach (GUIInventorySlot g in blocSlots)
                 this.RemoveChild(g);
+
+            this.RemoveChild(floatingSlot);
         }
 
         box = new GUIBox(new Rect2(this.GetViewportDimensions() / 2,BOX_SIZE));
@@ -108,6 +107,9 @@ public class InventoryGUI : GUI
         blocLabel.SetText("Blocks");
         blocLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 2 - new Vector2(0.0f, 16.0f));
         this.AddChild(blocLabel);
+
+        floatingSlot = new GUIInventorySlot();
+        this.AddChild(floatingSlot);
 
         first = false;
     }
