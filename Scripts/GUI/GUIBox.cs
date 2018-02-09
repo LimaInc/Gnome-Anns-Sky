@@ -5,15 +5,15 @@ public class GUIBox : GUIObject
 {
     public static Texture GUI_SHEET = ResourceLoader.Load("res://Images/guiSheet.png") as Texture;
 
-    public Sprite topLeft = new Sprite();
-    public Sprite topRight = new Sprite();
-    public Sprite bottomLeft = new Sprite();
-    public Sprite bottomRight = new Sprite();
+    private Sprite topLeft = new Sprite();
+    private Sprite topRight = new Sprite();
+    private Sprite bottomLeft = new Sprite();
+    private Sprite bottomRight = new Sprite();
     
-    public Sprite top = new Sprite();
-    public Sprite left = new Sprite();
-    public Sprite right = new Sprite();
-    public Sprite bottom = new Sprite();
+    private Sprite top = new Sprite();
+    private Sprite left = new Sprite();
+    private Sprite right = new Sprite();
+    private Sprite bottom = new Sprite();
 
     public GUIBox(Rect2 r) : base(r, GUI_SHEET, r.Size / 16.0f)
     {

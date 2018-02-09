@@ -52,6 +52,10 @@
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
+    <Compile Include="Scripts\GUI\PlayerGUI.cs" />
+    <Compile Include="Scripts\GUI\GUI.cs" />
+    <Compile Include="Scripts\GUI\GUIHorizontalBar.cs" />
+    <Compile Include="Scripts\GUI\GUIVerticalBar.cs" />
     <Compile Include="Scripts\GUI\GUIBox.cs" />
     <Compile Include="Scripts\GUI\GUIObject.cs" />
     <Compile Include="Scripts\GUI\InventoryGUI.cs" />

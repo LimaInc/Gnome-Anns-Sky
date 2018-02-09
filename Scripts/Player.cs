@@ -22,12 +22,23 @@ public class Player : KinematicBody
     private bool inventoryOpen = false;
 
     private InventoryGUI inventoryGUI;
+    private PlayerGUI playerGUI;
 
     private Inventory consumableInventory;
     private Inventory fossilInventory;
     private Inventory blockInventory;
 
     public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
+
+    //Original implementation was written in integers, hence why the max constants exist
+    public static float MAX_AIR = 1.0f;
+    public float CurrentAir { get; set; } = MAX_AIR;
+
+    public static float MAX_THIRST = 1.0f;
+    public float CurrentThirst { get; set; } = MAX_THIRST;
+
+    public static float MAX_HUNGER = 1.0f;
+    public float CurrentHunger { get; set; } = MAX_HUNGER;
 
     public override void _Ready()
     {
@@ -37,15 +48,15 @@ public class Player : KinematicBody
         collisionShape = new CollisionShape();
 
         //OLD BoxShape collision 
-        // BoxShape b = new BoxShape();
-        // b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
-        // collisionShape.SetShape(b);
+        BoxShape b = new BoxShape();
+        b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
+        collisionShape.SetShape(b);
 
-        CapsuleShape c = new CapsuleShape();
-        c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
-        c.SetHeight( Chunk.BLOCK_SIZE - 0.05f);
-        collisionShape.SetShape(c);
-        collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
+        // CapsuleShape c = new CapsuleShape();
+        // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
+        // c.SetHeight( Chunk.BLOCK_SIZE - 0.05f);
+        // collisionShape.SetShape(c);
+        // collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
 
         this.AddChild(collisionShape);
         this.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
@@ -57,6 +68,9 @@ public class Player : KinematicBody
         consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);
         blockInventory = new Inventory(this, Item.Type.BLOCK);
+
+        playerGUI = new PlayerGUI(this);
+        this.AddChild(playerGUI);
 
         blockInventory.AddItem(ItemStorage.block, 20);
         fossilInventory.AddItem(ItemStorage.fossil, 10);
@@ -103,21 +117,38 @@ public class Player : KinematicBody
 
     private bool onFloor;
 
+    //These numbers control how the player's needs change as they move around the world
+    private static float DEGRED_BALANCE_AIR = 1.0f;
+    private static float DEGRED_BALANCE_THIRST = 1.4f;
+    private static float DEGRED_BALANCE_HUNGER = 1.8f;
+
+    private static float BASIC_DEGRED = 0.001f;
+    private static float MOVE_DEGRED = 0.005f;
+    //single frame
+    private static float JUMP_DEGRED = 0.05f;
+
     public override void _Process(float delta)
     {
+        //Basic degredation
+        CurrentAir -= BASIC_DEGRED * delta * DEGRED_BALANCE_AIR;
+        CurrentThirst -= BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST;
+        CurrentHunger -= BASIC_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+
         if (Input.IsActionJustPressed("inventory"))
         {
             if (!inventoryOpen)
             {
-                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this.GetViewport().Size);
+                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this);
                 inventoryOpen = true;
                 this.AddChild(inventoryGUI);
+                this.RemoveChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Visible);
             } else 
             {
                 inventoryOpen = false;
                 inventoryGUI.HandleClose();
                 this.RemoveChild(inventoryGUI);
+                this.AddChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Captured);
             }
         }
@@ -126,6 +157,10 @@ public class Player : KinematicBody
         {
             if (Input.IsActionJustPressed("jump") && onFloor)
             {
+                CurrentAir -= JUMP_DEGRED * delta * DEGRED_BALANCE_AIR;
+                CurrentThirst -= JUMP_DEGRED * delta * DEGRED_BALANCE_THIRST;
+                CurrentHunger -= JUMP_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+
                 velocity += new Vector3(0.0f, jumpPower, 0.0f);
             }
         }
@@ -156,9 +191,20 @@ public class Player : KinematicBody
             {
                 movDir += new Vector3(cos,0.0f,-sin);
             }
+
+            if (!movDir.Equals(new Vector3()))
+            {
+                CurrentAir -= MOVE_DEGRED * delta * DEGRED_BALANCE_AIR;
+                CurrentThirst -= MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST;
+                CurrentHunger -= MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+            }
+
             movDir = movDir.Normalized();
             if(Input.IsActionPressed("sprint"))
             {
+                CurrentAir -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_AIR;
+                CurrentThirst -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_THIRST;
+                CurrentHunger -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_HUNGER;
                 movDir *= 3f;
             }
 
