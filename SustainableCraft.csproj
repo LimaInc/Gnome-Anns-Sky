@@ -65,10 +65,14 @@
     <Compile Include="Scripts\Blocks\RedRock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\GUI\PlayerGUI.cs" />
+    <Compile Include="Scripts\GUI\GUI.cs" />
     <Compile Include="Scripts\GUI\GUIBox.cs" />
     <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
     <Compile Include="Scripts\GUI\GUIObject.cs" />
     <Compile Include="Scripts\GUI\InventoryGUI.cs" />
+    <Compile Include="Scripts\GUI\GUIHorizontalBar.cs" />
+    <Compile Include="Scripts\GUI\GUIVerticalBar.cs" />
     <Compile Include="Scripts\Interaction.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
