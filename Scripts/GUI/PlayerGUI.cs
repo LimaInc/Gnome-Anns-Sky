@@ -79,9 +79,9 @@ public class PlayerGUI : GUI
     {
         base._Process(delta);
 
-        this.air.SetPercentage((float) this.player.GetCurrentAir() / Player.MAX_AIR);
-        this.thirst.SetPercentage((float) this.player.GetCurrentThirst() / Player.MAX_THIRST);
-        this.hunger.SetPercentage((float) this.player.GetCurrentHunger() / Player.MAX_HUNGER);
+        this.air.SetPercentage((float) this.player.CurrentAir / Player.MAX_AIR);
+        this.thirst.SetPercentage((float) this.player.CurrentThirst / Player.MAX_THIRST);
+        this.hunger.SetPercentage((float) this.player.CurrentHunger / Player.MAX_HUNGER);
 
         this.atmos0.SetPercentage(0.7f);
         this.atmos1.SetPercentage(0.2f);

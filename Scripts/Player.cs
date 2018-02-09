@@ -32,13 +32,13 @@ public class Player : KinematicBody
 
     //Original implementation was written in integers, hence why the max constants exist
     public static float MAX_AIR = 1.0f;
-    private float currentAir = MAX_AIR;
+    public float CurrentAir { get; set; } = MAX_AIR;
 
     public static float MAX_THIRST = 1.0f;
-    private float currentThirst = MAX_THIRST;
+    public float CurrentThirst { get; set; } = MAX_THIRST;
 
     public static float MAX_HUNGER = 1.0f;
-    private float currentHunger = MAX_HUNGER;
+    public float CurrentHunger { get; set; } = MAX_HUNGER;
 
     public override void _Ready()
     {
@@ -130,9 +130,9 @@ public class Player : KinematicBody
     public override void _Process(float delta)
     {
         //Basic degredation
-        currentAir -= BASIC_DEGRED * delta * DEGRED_BALANCE_AIR;
-        currentThirst -= BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST;
-        currentHunger -= BASIC_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+        CurrentAir -= BASIC_DEGRED * delta * DEGRED_BALANCE_AIR;
+        CurrentThirst -= BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST;
+        CurrentHunger -= BASIC_DEGRED * delta * DEGRED_BALANCE_HUNGER;
 
         if (Input.IsActionJustPressed("inventory"))
         {
@@ -157,9 +157,9 @@ public class Player : KinematicBody
         {
             if (Input.IsActionJustPressed("jump") && onFloor)
             {
-                currentAir -= JUMP_DEGRED * delta * DEGRED_BALANCE_AIR;
-                currentThirst -= JUMP_DEGRED * delta * DEGRED_BALANCE_THIRST;
-                currentHunger -= JUMP_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+                CurrentAir -= JUMP_DEGRED * delta * DEGRED_BALANCE_AIR;
+                CurrentThirst -= JUMP_DEGRED * delta * DEGRED_BALANCE_THIRST;
+                CurrentHunger -= JUMP_DEGRED * delta * DEGRED_BALANCE_HUNGER;
 
                 velocity += new Vector3(0.0f, jumpPower, 0.0f);
             }
@@ -194,17 +194,17 @@ public class Player : KinematicBody
 
             if (!movDir.Equals(new Vector3()))
             {
-                currentAir -= MOVE_DEGRED * delta * DEGRED_BALANCE_AIR;
-                currentThirst -= MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST;
-                currentHunger -= MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+                CurrentAir -= MOVE_DEGRED * delta * DEGRED_BALANCE_AIR;
+                CurrentThirst -= MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST;
+                CurrentHunger -= MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER;
             }
 
             movDir = movDir.Normalized();
             if(Input.IsActionPressed("sprint"))
             {
-                currentAir -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_AIR;
-                currentThirst -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_THIRST;
-                currentHunger -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_HUNGER;
+                CurrentAir -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_AIR;
+                CurrentThirst -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_THIRST;
+                CurrentHunger -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_HUNGER;
                 movDir *= 3f;
             }
 
@@ -218,20 +218,5 @@ public class Player : KinematicBody
         // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
 
         onFloor = this.IsOnFloor();
-    }
-
-    public float GetCurrentAir()
-    {
-        return currentAir;
-    }
-
-    public float GetCurrentThirst()
-    {
-        return currentThirst;
-    }
-
-    public float GetCurrentHunger()
-    {
-        return currentHunger;
     }
 }
