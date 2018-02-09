@@ -5,17 +5,12 @@ using static Atmosphere;
 
 public class SimpleGraphicsAtmosphereComponent : IAtmosphericComponent
 {
-    private static IDictionary<Gas, Tuple<Color,Color>> colorTable;
-
-    static SimpleGraphicsAtmosphereComponent()
-    {
-        colorTable = new Dictionary<Gas, Tuple<Color, Color>> {
+    private static readonly IDictionary<Gas, Tuple<Color,Color>> colorTable = new Dictionary<Gas, Tuple<Color, Color>> {
             [Gas.OXYGEN] = new Tuple<Color, Color>(Colors.MAGENTA, Colors.GRAY),
             [Gas.NITROGEN] = new Tuple<Color, Color>(Colors.CYAN, Colors.GRAY),
             [Gas.CARBON_DIOXIDE] = new Tuple<Color, Color>(Colors.YELLOW, Colors.GRAY),
             [Gas.VACUUM] = new Tuple<Color, Color>(Colors.BLACK, Colors.DARK_GRAY)
-        };
-    }
+    };
 
     public void Update(float delta, ExoWorld w, Atmosphere atm)
     {

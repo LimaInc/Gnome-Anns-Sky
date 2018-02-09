@@ -55,6 +55,7 @@
     <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
     <Compile Include="Scripts\Atmosphere\SimpleGraphicsAtmosphereComponent.cs" />
     <Compile Include="Scripts\Atmosphere\StaticAtmosphereComponent.cs" />
+    <Compile Include="Scripts\Bacteria\AsymptoticallyGrowingBacteria.cs" />
     <Compile Include="Scripts\Bacteria\Bacteria.cs" />
     <Compile Include="Scripts\Bacteria\BacterialState.cs" />
     <Compile Include="Scripts\Bacteria\IBacterialStateComponent.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Scripts\Util\Colors.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
-    <Compile Include="Scripts\Util\IntVector4.cs" />
     <Compile Include="Scripts\Util\Noise.cs" />
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
     <Compile Include="Scripts\Util\TextureManager.cs" />
