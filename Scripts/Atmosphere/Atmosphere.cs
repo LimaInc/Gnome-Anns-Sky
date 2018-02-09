@@ -5,12 +5,6 @@ using System.Linq;
 
 public class Atmosphere : Node
 {
-    public enum Gas
-    {
-        OXYGEN, NITROGEN, CARBON_DIOXIDE,
-        VACUUM
-    }
-
     private static readonly IDictionary<Gas, float> gasGoals = new Dictionary<Gas, float>
     {
         [Gas.OXYGEN] = 2,

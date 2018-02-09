@@ -4,11 +4,6 @@ using System.Linq;
 
 public class BacterialState
 {
-    public enum BacteriumType
-    {
-        OXYGEN, NITROGEN, CARBON_DIOXIDE
-    }
-
     private static readonly IDictionary<BacteriumType, Tuple<float,float>> bacteriaInitis = new Dictionary<BacteriumType, Tuple<float, float>>
     {
         [BacteriumType.OXYGEN] = Tuple.Create(2f,0.003f),
