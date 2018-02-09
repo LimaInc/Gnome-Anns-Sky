@@ -28,6 +28,8 @@ public class InventoryGUI : GUI
 
     private GUIBox box;
 
+    private Label hoverLabel;
+
     public InventoryGUI(Inventory cinv, Inventory finv, Inventory binv, Node vSource) : base(vSource)
     {
         this.consumableInventory = cinv;
@@ -112,6 +114,25 @@ public class InventoryGUI : GUI
         this.AddChild(floatingSlot);
 
         first = false;
+    }
+
+    public void HandleHover(ItemStack ist)
+    {
+        if (ist == null || hoverLabel != null)
+            return;
+
+        this.hoverLabel = new Label();
+        this.hoverLabel.SetText(ist.GetItem().GetName());
+        this.AddChild(this.hoverLabel);
+    }
+
+    public void HandleHoverOff()
+    {
+        if (this.hoverLabel == null)
+            return;
+
+        this.RemoveChild(this.hoverLabel);
+        this.hoverLabel = null;
     }
 
     public void HandleClose()
@@ -237,6 +258,9 @@ public class InventoryGUI : GUI
             InputEventMouseMotion iemm = (InputEventMouseMotion) e;
 
             floatingSlot.SetPosition(iemm.GetPosition());
+
+            if (this.hoverLabel != null)
+                this.hoverLabel.SetPosition(iemm.GetPosition() + new Vector2(10.0f, 10.0f));
         }
     }
 }

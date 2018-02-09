@@ -6,6 +6,8 @@ public class GUIObject : Node
     protected Rect2 rect;
     protected Sprite sprite;
 
+    private bool hovered;
+
     public GUIObject(Rect2 r, Texture t)
     {
         this.rect = r;
@@ -30,6 +32,10 @@ public class GUIObject : Node
 
     public virtual void onClick() { }
 
+    public virtual void onHover() { }
+
+    public virtual void onHoverOff() { }
+
     public override void _Input(InputEvent e)
     {
         if (e is InputEventMouseButton)
@@ -39,6 +45,24 @@ public class GUIObject : Node
             if (iemb.ButtonIndex == 1 && iemb.Pressed && rect.HasPoint(pos))
             {
                 onClick();
+            }
+        }
+
+        if (e is InputEventMouseMotion)
+        {
+            InputEventMouseMotion iemm = (InputEventMouseMotion) e;
+            Vector2 pos = iemm.GetPosition();
+            if (rect.HasPoint(pos))
+            {
+                hovered = true;
+                onHover();
+            } else
+            {
+                if (hovered)
+                {
+                    hovered = false;
+                    onHoverOff();
+                }
             }
         }
     }

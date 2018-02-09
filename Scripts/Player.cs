@@ -118,6 +118,7 @@ public class Player : KinematicBody
     private bool onFloor;
 
     //These numbers control how the player's needs change as they move around the world
+    
     private static float DEGRED_BALANCE_AIR = 1.0f;
     private static float DEGRED_BALANCE_THIRST = 1.4f;
     private static float DEGRED_BALANCE_HUNGER = 1.8f;
