@@ -1,7 +1,5 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class BacterialState
 {
@@ -15,7 +13,6 @@ public class BacterialState
 
     public BacterialState(IBacterialStateComponent dynamics)
     {
-        GD.Print("BacterialState(dynamics)");
         bacteriaTypes = new Dictionary<BacteriumType, Bacteria>();
         foreach(BacteriumType bt in Enum.GetValues(typeof(BacteriumType)))
         {
@@ -31,7 +28,6 @@ public class BacterialState
 
     public void Update(float delta, ExoWorld world)
     {
-        GD.Print("BacterialState.Update(delta, world)");
         dynamics.Update(delta, world, this);
     }
 }

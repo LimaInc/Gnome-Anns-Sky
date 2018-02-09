@@ -17,7 +17,6 @@ public class ExoWorld : Node
 
     public ExoWorld()
     {
-        GD.Print("ExoWorld()");
         this.Atmosphere = new Atmosphere(new StaticAtmosphereComponent(), new SimpleGraphicsAtmosphereComponent());
         this.Bacteria = new BacterialState(new StaticBacterialStateComponent());
     }

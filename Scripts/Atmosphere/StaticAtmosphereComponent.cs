@@ -1,5 +1,3 @@
-using Godot;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Atmosphere;
@@ -7,20 +5,17 @@ using static BacterialState;
 
 public class StaticAtmosphereComponent : IAtmosphericComponent
 {
-    private static Dictionary<BacteriumType, Gas> productionTable;
-
-    public StaticAtmosphereComponent()
+    private static readonly Dictionary<BacteriumType, Gas> productionTable = new Dictionary<BacteriumType, Gas>
     {
-        productionTable = new Dictionary<BacteriumType, Gas>();
-        productionTable[BacteriumType.OXYGEN] = Gas.OXYGEN;
-        productionTable[BacteriumType.NITROGEN] = Gas.NITROGEN;
-        productionTable[BacteriumType.CARBON_DIOXIDE] = Gas.CARBON_DIOXIDE;
-    }
+        [BacteriumType.OXYGEN] = Gas.OXYGEN,
+        [BacteriumType.NITROGEN] = Gas.NITROGEN,
+        [BacteriumType.CARBON_DIOXIDE] = Gas.CARBON_DIOXIDE
+    };
 
     public void Update(float delta, ExoWorld w, Atmosphere atm)
     {
-        double totalGasAmt = 0;
-        IDictionary<Gas,double> gasAmts = new Dictionary<Gas,double>();
+        float totalGasAmt = 0;
+        IDictionary<Gas,float> gasAmts = new Dictionary<Gas,float>();
         productionTable.Values.ToList().ForEach(gas => { gasAmts[gas] = 0; });
         BacterialState bacteriaState = w.Bacteria;
         foreach(KeyValuePair<BacteriumType, Gas> entry in productionTable)

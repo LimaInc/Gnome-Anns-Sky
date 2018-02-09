@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using static Atmosphere;
 
 public class SimpleGraphicsAtmosphereComponent : IAtmosphericComponent
@@ -35,7 +34,6 @@ public class SimpleGraphicsAtmosphereComponent : IAtmosphericComponent
         Color groundColor = colors.Item2;
         Color skyHorizonColor = skyColor.LinearInterpolate(groundColor, 0.33f);
         Color groundHorizonColor = skyColor.LinearInterpolate(groundColor, 0.67f);
-        GD.Print("skyColor: " + skyColor + ", skyHorizon: " + skyHorizonColor + ", groundHorizon: " + groundHorizonColor + ", groundColor: " + groundColor);
 
         Godot.Environment env = w.WorldEnv.GetEnvironment();
         env.SetBackground(Godot.Environment.BGMode.Sky);
@@ -44,6 +42,5 @@ public class SimpleGraphicsAtmosphereComponent : IAtmosphericComponent
         sky.SetSkyHorizonColor(skyHorizonColor);
         sky.SetGroundHorizonColor(groundHorizonColor);
         sky.SetGroundBottomColor(groundColor);
-        // w.WorldEnv.SetEnvironment(env);
     }
 }

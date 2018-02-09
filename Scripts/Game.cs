@@ -21,7 +21,6 @@ public class Game : Node
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
 
-        GD.Print("Game() : line 24");
         World = new ExoWorld();
         AddChild(World);
     }
