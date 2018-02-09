@@ -5,6 +5,13 @@ using System.Linq;
 
 public class Game : Node
 {
+    public const string GAME_PATH = "/root/Game";
+    public const string WORLD_ENVIRO_PATH = GAME_PATH + "/WorldEnvironment";
+    public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
+    public const string PLAYER_PATH = GAME_PATH + "/Player";
+
+    public ExoWorld World {get; private set;}
+
     public Game()
     {
         //Register blocks
@@ -13,6 +20,10 @@ public class Game : Node
 
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
+
+        GD.Print("Game() : line 24");
+        World = new ExoWorld();
+        AddChild(World);
     }
 
     public static Texture TextureAtlas { get; private set; }
