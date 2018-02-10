@@ -73,10 +73,13 @@ public class Player : KinematicBody
         this.AddChild(playerGUI);
 
         blockInventory.AddItem(ItemStorage.block, 20);
-        fossilInventory.AddItem(ItemStorage.fossil, 10);
+        fossilInventory.AddItem(ItemStorage.oxygenBacteriaVial, 10);
+        fossilInventory.AddItem(ItemStorage.nitrogenBacteriaVial, 10);
+        fossilInventory.AddItem(ItemStorage.carbonDioxideBacteriaVial, 10);
         consumableInventory.AddItem(ItemStorage.chocoloate, 10);
         blockInventory.AddItem(ItemStorage.block, 15);
         blockInventory.AddItem(ItemStorage.block, 34);
+        blockInventory.AddItem(ItemStorage.oxygenBacteriaFossil, 34);
     }
 
     public CollisionShape GetCollisionShape()
