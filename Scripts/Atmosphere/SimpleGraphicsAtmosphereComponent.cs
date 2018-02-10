@@ -27,15 +27,17 @@ public class SimpleGraphicsAtmosphereComponent : IAtmosphericComponent
         Tuple<Color,Color> colors = colorTable[gas];
         Color skyColor = colors.Item1;
         Color groundColor = colors.Item2;
-        Color skyHorizonColor = skyColor.LinearInterpolate(groundColor, 0.33f);
-        Color groundHorizonColor = skyColor.LinearInterpolate(groundColor, 0.67f);
+        Color skyHorizonColor = skyColor.LinearInterpolate(groundColor, 0.5f);
+        Color groundHorizonColor = skyColor.LinearInterpolate(groundColor, 0.5f);
 
         Godot.Environment env = w.WorldEnv.GetEnvironment();
         env.SetBackground(Godot.Environment.BGMode.Sky);
         ProceduralSky sky = env.GetSky() as ProceduralSky;
         sky.SetSkyTopColor(skyColor);
+        sky.SetSkyCurve(0.3f);
         sky.SetSkyHorizonColor(skyHorizonColor);
         sky.SetGroundHorizonColor(groundHorizonColor);
+        sky.SetGroundCurve(0.3f);
         sky.SetGroundBottomColor(groundColor);
     }
 }
