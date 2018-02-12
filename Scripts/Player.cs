@@ -117,6 +117,55 @@ public class Player : KinematicBody
 
             myCam.SetRotation(targetRotation);
         }
+
+        if (e is InputEventMouseButton)
+        {
+            InputEventMouseButton iemb = (InputEventMouseButton) e;
+
+            if (iemb.ButtonIndex == 2 && iemb.Pressed)
+            {
+                this.HandleUseItem();
+            }
+        }
+    }
+
+    public void ReplenishHunger(float v)
+    {
+        this.CurrentHunger += v;
+
+        if (this.CurrentHunger > MAX_HUNGER)
+            this.CurrentHunger = MAX_HUNGER;
+    }
+
+    public void ReplenishAir(float v)
+    {
+        this.CurrentAir += v;
+
+        if (this.CurrentAir > MAX_AIR)
+            this.CurrentAir = MAX_AIR;
+    }
+
+    public void ReplenishThirst(float v)
+    {
+        this.CurrentThirst += v;
+
+        if (this.CurrentThirst > MAX_THIRST)
+            this.CurrentThirst = MAX_THIRST;
+    }
+
+    public void HandleUseItem()
+    {
+        if (this.ItemInHand.GetItem() is ItemFood)
+        {
+            ItemFood f = (ItemFood) this.ItemInHand.GetItem();
+
+            ReplenishHunger(f.ReplenishValue);
+
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
+        }
     }
 
     private bool onFloor;

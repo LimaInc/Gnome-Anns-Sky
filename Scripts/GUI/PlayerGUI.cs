@@ -107,12 +107,6 @@ public class PlayerGUI : GUI
 
         inHandLabel = new Label();
 
-        GD.Print(player.ItemInHand);
-        if (player.ItemInHand != null)
-        {
-            inHandLabel.SetText("Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    Quantity : " + player.ItemInHand.GetCount());
-        }
-
         inHandLabel.SetPosition(new Vector2(this.GetViewportDimensions().x / 2.0f - 80.0f, this.GetViewportDimensions().y - 15.0f));
 
         this.AddChild(inHandLabel);
@@ -131,5 +125,13 @@ public class PlayerGUI : GUI
         this.atmos0.SetPercentage(0.7f);
         this.atmos1.SetPercentage(0.2f);
         this.atmos2.SetPercentage(0.5f);
+
+        if (player.ItemInHand != null)
+        {
+            inHandLabel.SetText("Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    Quantity : " + player.ItemInHand.GetCount());
+        } else 
+        {
+            inHandLabel.SetText("");
+        }
     }
 }
