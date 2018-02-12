@@ -28,6 +28,8 @@ public class Player : KinematicBody
     private Inventory fossilInventory;
     private Inventory blockInventory;
 
+    public ItemStack ItemInHand { get; set; }
+
     public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
 
     //Original implementation was written in integers, hence why the max constants exist
@@ -139,7 +141,7 @@ public class Player : KinematicBody
         {
             if (!inventoryOpen)
             {
-                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this);
+                inventoryGUI = new InventoryGUI(this, consumableInventory, fossilInventory, blockInventory, this);
                 inventoryOpen = true;
                 this.AddChild(inventoryGUI);
                 this.RemoveChild(playerGUI);
