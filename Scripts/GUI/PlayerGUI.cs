@@ -24,6 +24,8 @@ public class PlayerGUI : GUI
     private Sprite thirstIcon;
     private Sprite hungerIcon;
 
+    private Label inHandLabel;
+
     private GUIHorizontalBar atmos0;
     private GUIHorizontalBar atmos1;
     private GUIHorizontalBar atmos2;
@@ -42,9 +44,16 @@ public class PlayerGUI : GUI
             this.RemoveChild(this.atmos0);
             this.RemoveChild(this.atmos1);
             this.RemoveChild(this.atmos2);
+
             this.RemoveChild(this.air);
             this.RemoveChild(this.thirst);
             this.RemoveChild(this.hunger);
+
+            this.RemoveChild(this.airIcon);
+            this.RemoveChild(this.hungerIcon);
+            this.RemoveChild(this.thirstIcon);
+
+            this.RemoveChild(this.inHandLabel);
         }
 
         float barHeight = 200.0f;
@@ -95,6 +104,18 @@ public class PlayerGUI : GUI
         this.AddChild(this.atmos0);
         this.AddChild(this.atmos1);
         this.AddChild(this.atmos2);
+
+        inHandLabel = new Label();
+
+        GD.Print(player.ItemInHand);
+        if (player.ItemInHand != null)
+        {
+            inHandLabel.SetText("Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    Quantity : " + player.ItemInHand.GetCount());
+        }
+
+        inHandLabel.SetPosition(new Vector2(this.GetViewportDimensions().x / 2.0f - 80.0f, this.GetViewportDimensions().y - 15.0f));
+
+        this.AddChild(inHandLabel);
 
         first = false;
     }

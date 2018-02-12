@@ -67,12 +67,12 @@ public class Player : KinematicBody
 
         myCam.SetTranslation(camOffset);
 
+        playerGUI = new PlayerGUI(this);
+        this.AddChild(playerGUI);
+
         consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);
         blockInventory = new Inventory(this, Item.Type.BLOCK);
-
-        playerGUI = new PlayerGUI(this);
-        this.AddChild(playerGUI);
 
         blockInventory.AddItem(ItemStorage.block, 20);
         fossilInventory.AddItem(ItemStorage.fossil, 10);
@@ -150,10 +150,11 @@ public class Player : KinematicBody
                 Input.SetMouseMode(Input.MouseMode.Visible);
             } else 
             {
+                playerGUI = new PlayerGUI(this);
+                this.AddChild(playerGUI);
                 inventoryOpen = false;
                 inventoryGUI.HandleClose();
                 this.RemoveChild(inventoryGUI);
-                this.AddChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Captured);
             }
         }
