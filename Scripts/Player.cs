@@ -79,6 +79,8 @@ public class Player : KinematicBody
         consumableInventory.AddItem(ItemStorage.chocoloate, 10);
         blockInventory.AddItem(ItemStorage.block, 15);
         blockInventory.AddItem(ItemStorage.block, 34);
+
+        consumableInventory.AddItem(ItemStorage.cake, 3);
     }
 
     public CollisionShape GetCollisionShape()
