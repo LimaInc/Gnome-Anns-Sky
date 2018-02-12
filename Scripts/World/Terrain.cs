@@ -76,6 +76,10 @@ public class Terrain : Spatial
         {
             loadedChunks[chunksToUpdate.Dequeue()].UpdateMesh();
         }
+        else if(chunksToRemove.Count > 0)
+        {
+            RemoveChunk(chunksToRemove.Dequeue());
+        }
     }
 
     public void SetBlock(IntVector3 pos, byte block)
@@ -111,6 +115,7 @@ public class Terrain : Spatial
     }
 
     Queue<IntVector2> chunksToUpdate = new Queue<IntVector2>();
+    Queue<IntVector2> chunksToRemove = new Queue<IntVector2>();
 
     //Generated from https://stackoverflow.com/a/9591896
     IntVector2[][] chunkLoadIndices = new IntVector2[][]
@@ -238,6 +243,6 @@ public class Terrain : Spatial
 
         //newChunks.ToList().ForEach(x => loadedChunks[x].UpdateMesh());
 
-        loadedChunks.Keys.Except(chunksLoadedThisUpdate).ToList().ForEach(x => RemoveChunk(x));
+        chunksToRemove = new Queue<IntVector2>(loadedChunks.Keys.Except(chunksLoadedThisUpdate));
     }
 }
