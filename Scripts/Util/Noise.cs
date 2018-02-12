@@ -48,7 +48,8 @@ public class Noise
         float yy = (float) random.NextDouble() * 2 - 1;
         Vector2 v = new Vector2(xx, yy);
         v = v.Normalized();
-        randGrads.Add(z, v);
+        //randGrads.Add(z, v);
+        randGrads[z] = v;
         return v;
     }
 
