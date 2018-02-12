@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/cake.png-22efe0b83005258652789e24c1a96f65.stex"
+path="res://.import/waterDrop.png-515700f6baf5d57957efb8bb04f14d40.stex"
 
 [deps]
 
-source_file="res://Images/cake.png"
-source_md5="6b9a7523d22231407f13c45c18b7f574"
+source_file="res://Images/waterDrop.png"
+source_md5="902e43da65b05ff315354a681d82b64b"
 
-dest_files=[ "res://.import/cake.png-22efe0b83005258652789e24c1a96f65.stex" ]
-dest_md5="25e210f60afb89886b4aac21371b02a5"
+dest_files=[ "res://.import/waterDrop.png-515700f6baf5d57957efb8bb04f14d40.stex" ]
+dest_md5="114af83f266699facb599159a54234ff"
 
 [params]
 

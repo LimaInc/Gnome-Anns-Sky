@@ -3,6 +3,9 @@ using Godot;
 
 public class PlayerGUI : GUI
 {
+    private static Texture WATER_DROP_TEX = ResourceLoader.Load("res://Images/waterDrop.png") as Texture;
+    private static Texture AIR_ICON_TEX = ResourceLoader.Load("res://Images/airIcon.png") as Texture;
+
     private static Color AIR_COLOR = new Color(0.0f, 1.0f, 1.0f);
     private static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
     private static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
@@ -16,6 +19,10 @@ public class PlayerGUI : GUI
     private GUIVerticalBar air;
     private GUIVerticalBar thirst;
     private GUIVerticalBar hunger;
+
+    private Sprite airIcon;
+    private Sprite thirstIcon;
+    private Sprite hungerIcon;
 
     private GUIHorizontalBar atmos0;
     private GUIHorizontalBar atmos1;
@@ -56,6 +63,23 @@ public class PlayerGUI : GUI
         this.AddChild(this.air);
         this.AddChild(this.thirst);
         this.AddChild(this.hunger);
+
+        hungerIcon = ItemStorage.cake.GenerateGUISprite();
+        hungerIcon.SetPosition(hungerPos - new Vector2(0.0f, 150.0f));
+        hungerIcon.SetScale(new Vector2(2.0f, 2.0f));
+        this.AddChild(hungerIcon);
+
+        thirstIcon = new Sprite();
+        thirstIcon.SetTexture(WATER_DROP_TEX);
+        thirstIcon.SetPosition(thirstPos - new Vector2(0.0f, 150.0f));
+        thirstIcon.SetScale(new Vector2(2.0f, 2.0f));
+        this.AddChild(thirstIcon);
+
+        airIcon = new Sprite();
+        airIcon.SetTexture(AIR_ICON_TEX);
+        airIcon.SetPosition(airPos - new Vector2(0.0f, 150.0f));
+        airIcon.SetScale(new Vector2(2.0f, 2.0f));
+        this.AddChild(airIcon);
 
         Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 - (barHeight - 5.0f) * 1.5f,50.0f);
 
