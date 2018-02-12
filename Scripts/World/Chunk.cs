@@ -40,18 +40,39 @@ public class Chunk : Spatial
             blocks[x,y,z] = block;
     }
 
+    public override void _Process(float delta)
+    {
+        if(generationFinished)
+        {
+            generationFinished = false;
+
+            ArrayMesh mesh = new ArrayMesh();
+
+            mesh = surfaceTool.Commit();
+
+            collider.Shape = mesh.CreateTrimeshShape();
+
+            meshInstance.SetMesh(mesh);
+        }
+    }
+
+    bool generationFinished = false;
+    SurfaceTool surfaceTool = new SurfaceTool();
+    SpatialMaterial material = new SpatialMaterial();
+
     public void UpdateMesh()
     {
-        ArrayMesh mesh = new ArrayMesh();
-        SpatialMaterial material = new SpatialMaterial();
-        material.AlbedoTexture = Game.TextureAtlas;
-        material.SetDiffuseMode(SpatialMaterial.DiffuseMode.Lambert);
-        material.SetSpecularMode(SpatialMaterial.SpecularMode.Disabled);
-        material.SetMetallic(0);
-        material.SetRoughness(1);
+        System.Threading.Thread thread = new System.Threading.Thread(() => 
+        {
+            GenerateSurface();
+            generationFinished = true;
+        });
+        thread.Priority = System.Threading.ThreadPriority.Lowest;
+        thread.Start();
+    }
 
-        SurfaceTool surfaceTool = new SurfaceTool();
-
+    private void GenerateSurface()
+    {        
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);        
 
         for(int x = 0; x < CHUNK_SIZE.x; x++)
@@ -95,12 +116,6 @@ public class Chunk : Spatial
         surfaceTool.SetMaterial(material);
 
         surfaceTool.Index();
-
-        mesh = surfaceTool.Commit();
-
-        collider.Shape = mesh.CreateTrimeshShape();
-
-        meshInstance.SetMesh(mesh);
     }
 
     public Chunk(Terrain terrain, IntVector2 coords, byte[,,] blocks)
@@ -118,5 +133,12 @@ public class Chunk : Spatial
         this.AddChild(body);
         collider = new CollisionShape();
         body.AddChild(collider);
+
+        material.AlbedoTexture = Game.TextureAtlas;
+        material.SetDiffuseMode(SpatialMaterial.DiffuseMode.Lambert);
+        material.SetSpecularMode(SpatialMaterial.SpecularMode.Disabled);
+        material.SetMetallic(0);
+        material.SetRoughness(1);
+
     }
 }
