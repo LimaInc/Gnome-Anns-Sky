@@ -8,5 +8,7 @@ public class ItemBlock : Item
     public ItemBlock(byte id, String name, Texture tex, byte b) : base(id, name, tex, Item.Type.BLOCK) 
     {
         this.Block = b;
+
+        ItemStorage.RegisterBlockItem(b, this);
     }
 }
