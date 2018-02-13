@@ -79,7 +79,7 @@ public class PlayerGUI : GUI
 
         crosshair = new Sprite();
         crosshair.SetTexture(CROSSHAIR_TEX);
-        crosshair.SetPosition(this.GetViewportDimensions() / 2.0f - CROSSHAIR_TEX.GetSize());
+        crosshair.SetPosition(this.GetViewportDimensions() / 2.0f);
         this.AddChild(crosshair);
 
         first = false;
