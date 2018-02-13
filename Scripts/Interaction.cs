@@ -23,7 +23,7 @@ public class Interaction : Camera
     }
 
     float rayLength = 5;
-    public void PlaceBlock(byte b)
+    public bool PlaceBlock(byte b)
     {
         Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
 
@@ -62,13 +62,15 @@ public class Interaction : Camera
                     if (info["collider"] is KinematicBody)
                     {
                         //A moving body (player, animal etc.) is in the way
-                        return;
+                        return false;
                     }
                 }
             }
 
             terrain.SetBlock(blockPos, b);
+            return true;
         }
+        return false;
     }
 
     public byte RemoveBlock()

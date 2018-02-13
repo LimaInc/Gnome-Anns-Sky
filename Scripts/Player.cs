@@ -193,12 +193,13 @@ public class Player : KinematicBody
         {
             ItemBlock b = (ItemBlock) i;
 
-            this.interaction.PlaceBlock(b.Block);
-
-            if (this.ItemInHand.GetCount() == 1)
-                this.ItemInHand = null;
-            else
-                this.ItemInHand.SubtractCount(1);
+            if (this.interaction.PlaceBlock(b.Block))
+            {
+                if (this.ItemInHand.GetCount() == 1)
+                    this.ItemInHand = null;
+                else
+                    this.ItemInHand.SubtractCount(1);
+            }
         } else if (i is ItemFood)
         {
             ItemFood f = (ItemFood) i;
