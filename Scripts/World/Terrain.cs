@@ -5,7 +5,6 @@ using System.Linq;
 
 public class Terrain : Spatial
 {
-    //private Dictionary<IntVector2, Chunk> loadedChunks = new Dictionary<IntVector2, Chunk>();
     //Stores the loaded chunks, indexed by their position. Also stores a bool indicating whether chunk model is currently loaded.
     private Dictionary<IntVector2, Tuple<Chunk, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool>>();
 
@@ -163,8 +162,6 @@ public class Terrain : Spatial
                 IntVector2 thisChunkIndex = playerChunk + v;
                 chunksLoadedThisUpdate.Add(thisChunkIndex);
                 CreateChunk(thisChunkIndex, true);
-                //loadedChunks[thisChunkIndex] = new Tuple<Chunk, bool>(CreateChunk(thisChunkIndex), true);
-                //chunksToUpdate.Enqueue(thisChunkIndex);
             }
         }
 
@@ -176,11 +173,8 @@ public class Terrain : Spatial
                 IntVector2 thisChunkIndex = playerChunk + v;
                 chunksLoadedThisUpdate.Add(thisChunkIndex);
                 CreateChunk(thisChunkIndex, false);
-                //loadedChunks[thisChunkIndex] = new Tuple<Chunk, bool>(CreateChunk(thisChunkIndex), false);
             }
         }
-
-        //newChunks.ToList().ForEach(x => loadedChunks[x].UpdateMesh());
 
         chunksToRemove = new Queue<IntVector2>(loadedChunks.Keys.Except(chunksLoadedThisUpdate));
     }
