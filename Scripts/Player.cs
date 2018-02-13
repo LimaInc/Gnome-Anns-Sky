@@ -14,7 +14,7 @@ public class Player : KinematicBody
 
     private Vector3 camOffset = new Vector3(0.0f, 0.4f, 0.0f);
 
-    private float gravity = 40.0f;
+    private static float gravity = 40.0f;
 
     private CollisionShape collisionShape;
     private Camera myCam;
@@ -42,6 +42,8 @@ public class Player : KinematicBody
     public static float MAX_HUNGER = 1.0f;
     public float CurrentHunger { get; set; } = MAX_HUNGER;
 
+    private Interaction interaction;
+
     public override void _Ready()
     {
         Input.SetCustomMouseCursor(CURSOR);
@@ -53,6 +55,8 @@ public class Player : KinematicBody
         BoxShape b = new BoxShape();
         b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         collisionShape.SetShape(b);
+
+        interaction = GetNode("/root/Game/Player/Camera") as Interaction;
 
         // CapsuleShape c = new CapsuleShape();
         // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
@@ -74,11 +78,11 @@ public class Player : KinematicBody
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);
         blockInventory = new Inventory(this, Item.Type.BLOCK);
 
-        blockInventory.AddItem(ItemStorage.block, 20);
+        blockInventory.AddItem(ItemStorage.redRock, 20);
         fossilInventory.AddItem(ItemStorage.fossil, 10);
         consumableInventory.AddItem(ItemStorage.chocoloate, 10);
-        blockInventory.AddItem(ItemStorage.block, 15);
-        blockInventory.AddItem(ItemStorage.block, 34);
+        blockInventory.AddItem(ItemStorage.redRock, 15);
+        blockInventory.AddItem(ItemStorage.redRock, 34);
 
         consumableInventory.AddItem(ItemStorage.cake, 3);
     }
@@ -122,9 +126,16 @@ public class Player : KinematicBody
         {
             InputEventMouseButton iemb = (InputEventMouseButton) e;
 
-            if (iemb.ButtonIndex == 2 && iemb.Pressed)
+            if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
             {
                 this.HandleUseItem();
+            }
+
+            if (iemb.ButtonIndex == 1 && iemb.Pressed && !inventoryOpen)
+            {
+                byte b = interaction.RemoveBlock();
+                Item i = ItemStorage.GetItemFromBlock(b);
+                this.blockInventory.AddItem(i, 1);
             }
         }
     }
@@ -155,9 +166,24 @@ public class Player : KinematicBody
 
     public void HandleUseItem()
     {
-        if (this.ItemInHand.GetItem() is ItemFood)
+        if (this.ItemInHand == null)
+            return;
+
+        Item i = this.ItemInHand.GetItem();
+
+        if (i is ItemBlock)
         {
-            ItemFood f = (ItemFood) this.ItemInHand.GetItem();
+            ItemBlock b = (ItemBlock) i;
+
+            this.interaction.PlaceBlock(b.Block);
+
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
+        } else if (i is ItemFood)
+        {
+            ItemFood f = (ItemFood) i;
 
             ReplenishHunger(f.ReplenishValue);
 
