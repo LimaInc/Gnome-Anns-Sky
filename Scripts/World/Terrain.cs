@@ -41,6 +41,11 @@ public class Terrain : Spatial
         hardLoadedChunks.Remove(chunkIndex);
     }
 
+    public byte GetBlock(IntVector3 v)
+    {
+        return GetBlock(v.x, v.y, v.z);
+    }
+
     public byte GetBlock(int x, int y, int z)
     {
         //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(

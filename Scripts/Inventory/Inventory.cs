@@ -69,6 +69,8 @@ public class Inventory
             {
                 for (int i = 0; i < SLOT_COUNT; i++)
                 {
+                    if (stacks[i] == null) continue;
+
                     if (stacks[i].GetItem().GetID() == item.GetID())
                     {
                         stacks[i].AddToQuantity(cnt);

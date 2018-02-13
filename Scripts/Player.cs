@@ -14,7 +14,7 @@ public class Player : KinematicBody
 
     private Vector3 camOffset = new Vector3(0.0f, 0.4f, 0.0f);
 
-    private float gravity = 40.0f;
+    private static float gravity = 40.0f;
 
     private CollisionShape collisionShape;
     private Camera myCam;
@@ -28,6 +28,8 @@ public class Player : KinematicBody
     private Inventory fossilInventory;
     private Inventory blockInventory;
 
+    public ItemStack ItemInHand { get; set; }
+
     public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
 
     //Original implementation was written in integers, hence why the max constants exist
@@ -40,6 +42,8 @@ public class Player : KinematicBody
     public static float MAX_HUNGER = 1.0f;
     public float CurrentHunger { get; set; } = MAX_HUNGER;
 
+    private Interaction interaction;
+
     public override void _Ready()
     {
         Input.SetCustomMouseCursor(CURSOR);
@@ -51,6 +55,8 @@ public class Player : KinematicBody
         BoxShape b = new BoxShape();
         b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         collisionShape.SetShape(b);
+
+        interaction = GetNode("/root/Game/Player/Camera") as Interaction;
 
         // CapsuleShape c = new CapsuleShape();
         // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
@@ -65,18 +71,20 @@ public class Player : KinematicBody
 
         myCam.SetTranslation(camOffset);
 
+        playerGUI = new PlayerGUI(this);
+        this.AddChild(playerGUI);
+
         consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);
         blockInventory = new Inventory(this, Item.Type.BLOCK);
 
-        playerGUI = new PlayerGUI(this);
-        this.AddChild(playerGUI);
-
-        blockInventory.AddItem(ItemStorage.block, 20);
+        blockInventory.AddItem(ItemStorage.redRock, 20);
         fossilInventory.AddItem(ItemStorage.fossil, 10);
         consumableInventory.AddItem(ItemStorage.chocoloate, 10);
-        blockInventory.AddItem(ItemStorage.block, 15);
-        blockInventory.AddItem(ItemStorage.block, 34);
+        blockInventory.AddItem(ItemStorage.redRock, 15);
+        blockInventory.AddItem(ItemStorage.redRock, 34);
+
+        consumableInventory.AddItem(ItemStorage.cake, 3);
     }
 
     public CollisionShape GetCollisionShape()
@@ -113,11 +121,102 @@ public class Player : KinematicBody
 
             myCam.SetRotation(targetRotation);
         }
+
+        if (e is InputEventMouseButton)
+        {
+            InputEventMouseButton iemb = (InputEventMouseButton) e;
+
+            if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
+            {
+                this.HandleUseItem();
+            }
+
+            if (iemb.ButtonIndex == 1 && iemb.Pressed && !inventoryOpen)
+            {
+                byte b = interaction.RemoveBlock();
+                Item ib = ItemStorage.GetItemFromBlock(b);
+
+                bool addedToHand = false;
+
+                if (this.ItemInHand != null)
+                {
+                    Item i = this.ItemInHand.GetItem();
+                    if (i is ItemBlock)
+                    {
+                        ItemBlock curBlock = (ItemBlock) i;
+
+                        if (curBlock.Block == b)
+                        {
+                            this.ItemInHand.AddToQuantity(1);
+                            addedToHand = true;
+                        }
+                    }
+                } 
+                if (!addedToHand)
+                    this.blockInventory.AddItem(ib, 1);
+            }
+        }
+    }
+
+    public void ReplenishHunger(float v)
+    {
+        this.CurrentHunger += v;
+
+        if (this.CurrentHunger > MAX_HUNGER)
+            this.CurrentHunger = MAX_HUNGER;
+    }
+
+    public void ReplenishAir(float v)
+    {
+        this.CurrentAir += v;
+
+        if (this.CurrentAir > MAX_AIR)
+            this.CurrentAir = MAX_AIR;
+    }
+
+    public void ReplenishThirst(float v)
+    {
+        this.CurrentThirst += v;
+
+        if (this.CurrentThirst > MAX_THIRST)
+            this.CurrentThirst = MAX_THIRST;
+    }
+
+    public void HandleUseItem()
+    {
+        if (this.ItemInHand == null)
+            return;
+
+        Item i = this.ItemInHand.GetItem();
+
+        if (i is ItemBlock)
+        {
+            ItemBlock b = (ItemBlock) i;
+
+            if (this.interaction.PlaceBlock(b.Block))
+            {
+                if (this.ItemInHand.GetCount() == 1)
+                    this.ItemInHand = null;
+                else
+                    this.ItemInHand.SubtractCount(1);
+            }
+        } else if (i is ItemFood)
+        {
+            ItemFood f = (ItemFood) i;
+
+            ReplenishHunger(f.ReplenishValue);
+
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
+        }
     }
 
     private bool onFloor;
 
     //These numbers control how the player's needs change as they move around the world
+    
     private static float DEGRED_BALANCE_AIR = 1.0f;
     private static float DEGRED_BALANCE_THIRST = 1.4f;
     private static float DEGRED_BALANCE_HUNGER = 1.8f;
@@ -138,17 +237,18 @@ public class Player : KinematicBody
         {
             if (!inventoryOpen)
             {
-                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this);
+                inventoryGUI = new InventoryGUI(this, consumableInventory, fossilInventory, blockInventory, this);
                 inventoryOpen = true;
                 this.AddChild(inventoryGUI);
                 this.RemoveChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Visible);
             } else 
             {
+                playerGUI = new PlayerGUI(this);
+                this.AddChild(playerGUI);
                 inventoryOpen = false;
                 inventoryGUI.HandleClose();
                 this.RemoveChild(inventoryGUI);
-                this.AddChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Captured);
             }
         }
