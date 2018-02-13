@@ -5,6 +5,7 @@ public class PlayerGUI : GUI
 {
     private static Texture WATER_DROP_TEX = ResourceLoader.Load("res://Images/waterDrop.png") as Texture;
     private static Texture AIR_ICON_TEX = ResourceLoader.Load("res://Images/airIcon.png") as Texture;
+    public static Texture CROSSHAIR_TEX = ResourceLoader.Load("res://Images/crosshairWhite.png") as Texture;
 
     private static Color AIR_COLOR = new Color(0.0f, 1.0f, 1.0f);
     private static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
@@ -29,6 +30,8 @@ public class PlayerGUI : GUI
     private GUIHorizontalBar atmos0;
     private GUIHorizontalBar atmos1;
     private GUIHorizontalBar atmos2;
+
+    private Sprite crosshair;
 
     public PlayerGUI(Player p) : base(p)
     {
@@ -110,6 +113,10 @@ public class PlayerGUI : GUI
         inHandLabel.SetPosition(new Vector2(this.GetViewportDimensions().x / 2.0f - 80.0f, this.GetViewportDimensions().y - 15.0f));
 
         this.AddChild(inHandLabel);
+        crosshair = new Sprite();
+        crosshair.SetTexture(CROSSHAIR_TEX);
+        crosshair.SetPosition(this.GetViewportDimensions() / 2.0f);
+        this.AddChild(crosshair);
 
         first = false;
     }
