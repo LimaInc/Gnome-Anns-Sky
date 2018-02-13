@@ -3,6 +3,9 @@ using Godot;
 
 public class PlayerGUI : GUI
 {
+
+    public static Texture CROSSHAIR_TEX = ResourceLoader.Load("res://Images/crosshairWhite.png") as Texture;
+
     private static Color AIR_COLOR = new Color(0.0f, 1.0f, 1.0f);
     private static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
     private static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
@@ -20,6 +23,8 @@ public class PlayerGUI : GUI
     private GUIHorizontalBar atmos0;
     private GUIHorizontalBar atmos1;
     private GUIHorizontalBar atmos2;
+
+    private Sprite crosshair;
 
     public PlayerGUI(Player p) : base(p)
     {
@@ -71,6 +76,11 @@ public class PlayerGUI : GUI
         this.AddChild(this.atmos0);
         this.AddChild(this.atmos1);
         this.AddChild(this.atmos2);
+
+        crosshair = new Sprite();
+        crosshair.SetTexture(CROSSHAIR_TEX);
+        crosshair.SetPosition(this.GetViewportDimensions() / 2.0f);
+        this.AddChild(crosshair);
 
         first = false;
     }
