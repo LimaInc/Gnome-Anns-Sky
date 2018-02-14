@@ -85,7 +85,7 @@ public class Player : KinematicBody
 
         blockInventory.AddItem(ItemStorage.redRock, 20);
         fossilInventory.AddItem(ItemStorage.fossil, 10);
-        consumableInventory.AddItem(ItemStorage.chocoloate, 10);
+        consumableInventory.AddItem(ItemStorage.chocolate, 10);
         blockInventory.AddItem(ItemStorage.redRock, 15);
         blockInventory.AddItem(ItemStorage.redRock, 34);
 
