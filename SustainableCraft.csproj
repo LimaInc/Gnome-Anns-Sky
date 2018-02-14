@@ -61,6 +61,7 @@
     <Compile Include="Scripts\GUI\GUIBox.cs" />
     <Compile Include="Scripts\GUI\GUIObject.cs" />
     <Compile Include="Scripts\GUI\InventoryGUI.cs" />
+    <Compile Include="Scripts\GUI\DeadGUI.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
     <Compile Include="Scripts\Game.cs" />
