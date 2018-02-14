@@ -41,11 +41,12 @@ public class PhysicsComponent : BaseComponent
 
     public override void _Ready()
     {
+        GD.Print("Physics component readying... ");
         parent = (KinematicBody)GetParent(); //downcast!
 
         //set up the signals we want to broadcast
         parent.AddUserSignal("terrainInterference");
-        parent.AddUserSignal("collided");
+        parent.AddUserSignal("collided"); 
     }
 
     public override void _Process(float delta)
@@ -64,9 +65,9 @@ public class PhysicsComponent : BaseComponent
             velocity.y = -terminal;
         }
 
-        //GD.Print("Attempted velocity: ", velocity.x, " ", velocity.y, " ", velocity.z);
+     //   GD.Print("Attempted velocity: ", velocity.x, " ", velocity.y, " ", velocity.z);
         Vector3 newVelocity = parent.MoveAndSlide(velocity, new Vector3(0.0f, 1.0f, 0.0f));
-        //GD.Print("New velocity: ", newVelocity.x, " ", newVelocity.y, " ", newVelocity.z);
+     //   GD.Print("New velocity: ", newVelocity.x, " ", newVelocity.y, " ", newVelocity.z);
 
         float xDif = Math.Abs(velocity.x - newVelocity.x);
         float zDif = Math.Abs(velocity.z - newVelocity.z);
