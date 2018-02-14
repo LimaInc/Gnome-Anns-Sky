@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Scripts/PhysicsComponent.cs" type="Script" id=1]
+[ext_resource path="res://Scripts/AnimalBehaviourComponent.cs" type="Script" id=2]
+[ext_resource path="res://models/pig.dae" type="PackedScene" id=3]
+
+[sub_resource type="BoxShape" id=3]
+
+extents = Vector3( 0.282437, 0.685297, 0.627552 )
+
+[node name="AnimalBase" type="Spatial"]
+
+[node name="KinematicBody" type="KinematicBody" parent="." index="0"]
+
+input_ray_pickable = true
+input_capture_on_drag = false
+collision_layer = 1
+collision_mask = 1
+axis_lock_linear_x = false
+axis_lock_linear_y = false
+axis_lock_linear_z = false
+axis_lock_angular_x = false
+axis_lock_angular_y = false
+axis_lock_angular_z = false
+collision/safe_margin = 0.001
+
+[node name="CollisionShape" type="CollisionShape" parent="KinematicBody" index="0"]
+
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00916052, 0, 0.000581741 )
+shape = SubResource( 3 )
+disabled = false
+
+[node name="PhysicsComponent" type="Node" parent="KinematicBody" index="1"]
+
+script = ExtResource( 1 )
+
+[node name="AnimalBehaviourComponent" type="Node" parent="KinematicBody" index="2"]
+
+script = ExtResource( 2 )
+
+[node name="Model" parent="KinematicBody" index="3" instance=ExtResource( 3 )]
+
+

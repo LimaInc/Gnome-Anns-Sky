@@ -14,6 +14,7 @@ public class Interaction : Camera
     {
         player = GetNode(Game.PLAYER_PATH) as Player;
 
+
         // Called every time the node is added to the scene.
         // Initialization here
         spaceState = GetWorld().DirectSpaceState;
