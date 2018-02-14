@@ -21,6 +21,9 @@ public class ItemStorage
     private static Texture STONE_BLOCK_TEX = ResourceLoader.Load("res://Images/itemStone.png") as Texture;
     public static Item stone = new ItemBlock(5, "Stone", STONE_BLOCK_TEX, Game.GetBlockId<Stone>()).SetStackable(true);
 
+    private static Texture WATER_TEX = ResourceLoader.Load("res://Images/itemWater.png") as Texture;
+    public static Item water = new ItemDrink(6, "Water", WATER_TEX, 0.4f);
+
     public static void RegisterBlockItem(byte id, Item item)
     {
         blockItems[id] = item;

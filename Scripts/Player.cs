@@ -90,6 +90,8 @@ public class Player : KinematicBody
         blockInventory.AddItem(ItemStorage.redRock, 34);
 
         consumableInventory.AddItem(ItemStorage.cake, 3);
+
+        consumableInventory.AddItem(ItemStorage.water, 5);
     }
 
     public CollisionShape GetCollisionShape()
@@ -269,6 +271,16 @@ public class Player : KinematicBody
             ItemFood f = (ItemFood) i;
 
             ReplenishHunger(f.ReplenishValue);
+
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
+        } else if (i is ItemDrink)
+        {
+            ItemDrink d = (ItemDrink) i;
+
+            ReplenishThirst(d.ReplenishValue);
 
             if (this.ItemInHand.GetCount() == 1)
                 this.ItemInHand = null;

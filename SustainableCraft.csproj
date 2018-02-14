@@ -53,6 +53,7 @@
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\ItemFood.cs" />
     <Compile Include="Scripts\Inventory\ItemBlock.cs" />
+    <Compile Include="Scripts\Inventory\ItemDrink.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
     <Compile Include="Scripts\GUI\PlayerGUI.cs" />
     <Compile Include="Scripts\GUI\GUI.cs" />
