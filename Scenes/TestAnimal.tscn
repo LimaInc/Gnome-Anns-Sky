@@ -7,7 +7,7 @@
 
 extents = Vector3( 0.658638, 0.603055, 0.463831 )
 
-[node name="Spatial" type="Spatial" index="0"]
+[node name="Spatial" type="Spatial"]
 
 [node name="Pig" type="KinematicBody" parent="." index="0"]
 

@@ -3,6 +3,29 @@ using System;
 
 public class AnimalBehaviourComponent : BaseComponent
 {
+    public enum Sex
+    {
+        Male = 0,
+        Female = 1,
+    }
+
+    public enum Diet
+    {
+        Herbivore = 0,
+        Carnivore = 1,
+        Omnivore = 2
+    }
+
+    //exports: stats that are generated from spawner
+    [Export]
+    private int sex; //from Sex enum
+
+    [Export]
+    private int diet;
+
+    [Export]
+    private int foodChainLevel; //0 is "eaten by everything", no max
+
     private KinematicBody parent;
 
     float jumpMagnitude = 5.0f;
@@ -31,6 +54,10 @@ public class AnimalBehaviourComponent : BaseComponent
         parent.AddUserSignal("jump");
         parent.AddUserSignal("setDirection");
         parent.AddUserSignal("setSpeed");
+
+        parent.AddToGroup("animals");
+
+        GD.Print("Animal sex: ", ((Sex)sex).ToString());
     }
 
     public override void _Process(float delta)

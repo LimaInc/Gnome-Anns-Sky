@@ -5,7 +5,7 @@
 [ext_resource path="res://Scripts/Player.cs" type="Script" id=3]
 [ext_resource path="res://default_env.tres" type="Environment" id=4]
 [ext_resource path="res://Scripts/Interaction.cs" type="Script" id=5]
-[ext_resource path="res://Scenes/TestAnimal.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scenes/AnimalSpawner.tscn" type="PackedScene" id=6]
 
 [node name="Game" type="Node"]
 
@@ -78,8 +78,6 @@ far = 100.0
 script = ExtResource( 5 )
 _sections_unfolded = [ "Transform" ]
 
-[node name="Spatial" parent="." index="3" instance=ExtResource( 6 )]
-
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45.7135, 0 )
+[node name="AnimalSpawner" parent="." index="3" instance=ExtResource( 6 )]
 
 

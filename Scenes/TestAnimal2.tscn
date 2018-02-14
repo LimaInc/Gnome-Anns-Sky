@@ -4,7 +4,7 @@
 [ext_resource path="res://Scripts/AnimalBehaviourComponent.cs" type="Script" id=2]
 [ext_resource path="res://models/pig.dae" type="PackedScene" id=3]
 
-[sub_resource type="BoxShape" id=3]
+[sub_resource type="BoxShape" id=1]
 
 extents = Vector3( 0.282437, 0.685297, 0.627552 )
 
@@ -27,7 +27,7 @@ collision/safe_margin = 0.001
 [node name="CollisionShape" type="CollisionShape" parent="KinematicBody" index="0"]
 
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00916052, 0, 0.000581741 )
-shape = SubResource( 3 )
+shape = SubResource( 1 )
 disabled = false
 
 [node name="PhysicsComponent" type="Node" parent="KinematicBody" index="1"]
