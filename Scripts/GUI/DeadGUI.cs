@@ -3,6 +3,8 @@ using Godot;
 
 public class DeadGUI : GUI
 {
+    private Color bgCol = new Color(0.8f, 0.0f, 0.0f, 0.5f);
+
     private float textScale = 0.8f;
     private Sprite youAreDead;
 
@@ -12,6 +14,11 @@ public class DeadGUI : GUI
 
     public override void HandleResize()
     {
+        ColorRect cr = new ColorRect();
+        cr.Color = bgCol;
+        cr.SetSize(this.GetViewportDimensions());
+        this.AddChild(cr);
+
         youAreDead = new Sprite();
         youAreDead.SetPosition(this.GetViewportDimensions() / 2.0f);
         youAreDead.SetTexture(DEAD_TEX);
@@ -22,6 +29,8 @@ public class DeadGUI : GUI
     float time = 0.0f;
     public override void _Process(float delta)
     {
+        base._Process(delta);
+
         time += delta;
         textScale = 0.8f + (float) Math.Sin(time * 2.0f) * 0.2f;
         youAreDead.SetScale(new Vector2(textScale, textScale));
