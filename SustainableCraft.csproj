@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,9 +8,10 @@
     <OutputPath>.mono/temp/bin/$(Configuration)</OutputPath>
     <RootNamespace>SustainableCraft</RootNamespace>
     <AssemblyName>SustainableCraft</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>.mono/temp/obj</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)/$(Configuration)</IntermediateOutputPath>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,6 +50,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Scripts\AnimalBehaviourComponent.cs" />
+    <Compile Include="Scripts\AnimalSpawner.cs" />
+    <Compile Include="Scripts\BaseComponent.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
@@ -62,6 +66,8 @@
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
     <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\PhysicsComponent.cs" />
+    <Compile Include="Scripts\Pig.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Blocks\Block.cs" />
