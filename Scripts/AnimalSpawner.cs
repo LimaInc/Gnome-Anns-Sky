@@ -39,6 +39,10 @@ public class AnimalSpawner : Node
 
         SpawnAnimal(0,new Vector3(0.0f,50.0f,4.0f));
         SpawnAnimal(1,new Vector3(0.0f, 50.0f, 20.0f));
+        SpawnAnimal(0, new Vector3(10.0f, 50.0f, 4.0f));
+        SpawnAnimal(1, new Vector3(20.0f, 50.0f, 20.0f));
+        SpawnAnimal(0, new Vector3(10.0f, 50.0f, 20.0f));
+        SpawnAnimal(1, new Vector3(30.0f, 50.0f, -10.0f));
     }
 
     public void SpawnAnimal(int pn,Vector3 position)

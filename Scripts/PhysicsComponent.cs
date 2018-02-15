@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class PhysicsComponent : BaseComponent
 {
-    private float gravity = 20.0f;
-    private float terminal = 200.0f;
+    private const float gravity = 20.0f;
+    private const float terminal = 200.0f;
 
     private KinematicBody parent;
     private Vector3 velocity;
@@ -13,7 +13,7 @@ public class PhysicsComponent : BaseComponent
     private float speed = 0.0f;
     private Vector2 direction;
 
-    private float terrainInterferenceEpsilon = 0.5f;
+    private const float terrainInterferenceEpsilon = 0.5f;
 
     private bool tojump = false;
     private float jumpMagnitude;

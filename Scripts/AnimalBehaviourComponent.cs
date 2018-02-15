@@ -28,25 +28,31 @@ public class AnimalBehaviourComponent : BaseComponent
     private int sex; //from Sex enum
 
     [Export]
-    private int diet;
+    private int diet; //from Diet enum
 
     [Export]
     private int foodChainLevel; //0 is "eaten by everything", no max
 
     private KinematicBody parent;
 
-    float jumpMagnitude = 5.0f;
+    private float jumpMagnitude = 5.0f;
 
-    float directionThreshold = 2.0f;
-    float timer = 0.0f;
+    private const float directionThreshold = 2.0f;
+    private float timer = 0.0f;
 
-    int frameCount = 0;
+    private int frameCount = 0;
 
-    List<PhysicsBody> foodInRange;
+    private List<PhysicsBody> foodInRange;
 
-    BehaviourState state = BehaviourState.Idle;
+    private BehaviourState state = BehaviourState.Idle;
 
-    PhysicsBody target;
+    private PhysicsBody target;
+
+    [Export]
+    float satiated = 100.0f; //100 is max, 0 is starved to death
+
+    const float timeToDeath = 50.0f;
+
 
     private void SetRandomDirection()
     {
@@ -130,6 +136,37 @@ public class AnimalBehaviourComponent : BaseComponent
         }
     }
 
+    protected void Collided(KinematicCollision collision)
+    {
+        if(state == BehaviourState.Hunting && target != null && collision.Collider.Equals(target))
+        {
+            eat(collision.Collider);            
+        }
+    }
+
+    protected void eat(Godot.Object nom)
+    {
+        GD.Print("Nom!");
+        satiated = Math.Max(100.0f, satiated + 20.0f);
+        if(nom is Node)
+        {
+            ((Node)nom).QueueFree();          
+        }
+        state = BehaviourState.Idle;
+    }
+
+    protected void hungry(float delta)
+    {
+        satiated -= delta * (100.0f/timeToDeath);
+
+        if(satiated <= 0.0f)
+        {
+            // :(
+            GD.Print("Starved to death!");
+            parent.QueueFree();
+        }
+    }
+
     public override void _Process(float delta)
     {
         if(frameCount == 1)
@@ -145,9 +182,14 @@ public class AnimalBehaviourComponent : BaseComponent
             frameCount++;
         }
 
+
         SetupConnection("terrainInterference", parent, nameof(OnTerrainInterference));
         SetupConnection("objectInRange", parent, nameof(ObjectInRange));
         SetupConnection("objectOutOfRange", parent, nameof(ObjectOutOfRange));
+        SetupConnection("collided", parent, nameof(Collided));
+
+        //cleanse dead objects
+        foodInRange.RemoveAll(p => p == null);
 
         if (state == BehaviourState.Idle)
         {
@@ -168,43 +210,40 @@ public class AnimalBehaviourComponent : BaseComponent
         {
             foreach (PhysicsBody b in foodInRange)
             {
-                GD.Print("IDLE: Food in range, can I see it?");
-                GD.Print("IDLE: Target position: ", b.GetTranslation(), "My position: ", parent.GetTranslation());
-                //Identify whether we can see the target by raycasting
+                if (b == null) continue;
+                // Identify whether we can see the target by raycasting
                 PhysicsDirectSpaceState spaceState = b.GetWorld().GetDirectSpaceState();
                 var result = spaceState.IntersectRay(parent.GetTranslation(), b.GetTranslation(), new[] { parent, b });
 
                 if(result.Count == 0)
                 {
-                    GD.Print("Yes!");
                     target = b;
                     state = BehaviourState.Hunting;
-                }
-                else
-                {
-                    GD.Print("Nope. Ray hit: ",((Node)result["collider"]).GetName());
                 }
             }
         }
         else if (state == BehaviourState.Hunting)
         {
-            // Check for line of sight and whether object is still in range.
-            PhysicsDirectSpaceState spaceState = target.GetWorld().GetDirectSpaceState();
-            var result = spaceState.IntersectRay(target.GetTranslation(), parent.GetTranslation(), new[] { parent, target });
-
-            if (result.Count != 0 || target.ToGlobal(target.GetTranslation()).DistanceSquaredTo(parent.ToGlobal(parent.GetTranslation())) > 60 * 60)
+            if(target == null)
             {
-                GD.Print("Hunting, but I can't see him any more :(");
                 state = BehaviourState.Idle;
             }
             else
             {
-                GD.Print("Hunting. Target: ", target.GetName(), "Me: ", parent.GetParent().GetName());
-                GD.Print("Hunting. Target position: ", target.GetTranslation(), "My position: ",parent.GetTranslation());
-                Vector3 direction = target.GetTranslation() - parent.GetTranslation();
-                GD.Print("So the direction: ", new Vector2(direction.x, direction.z));
-                parent.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
-            }
+                // Check for line of sight and whether object is still in range.
+                PhysicsDirectSpaceState spaceState = target.GetWorld().GetDirectSpaceState();
+                var result = spaceState.IntersectRay(target.GetTranslation(), parent.GetTranslation(), new[] { parent, target });
+
+                if (result.Count != 0 || target.GetTranslation().DistanceSquaredTo(parent.GetTranslation()) > 60 * 60)
+                {
+                    state = BehaviourState.Idle;
+                }
+                else
+                {
+                    Vector3 direction = target.GetTranslation() - parent.GetTranslation();
+                    parent.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
+                }
+            }        
         }
     }
 }
