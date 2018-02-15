@@ -26,7 +26,9 @@ public class Atmosphere : Node
         this.graphics = graphics;
     }
 
-    public Double GetGasAmt(Gas gas) => gases[gas];
+    public float GetGasAmt(Gas gas) => gases[gas];
+
+    public float GetPressure() => gases.Values.Sum();
 
     public IList<Gas> GetGases() => gases.Keys.ToList();
 

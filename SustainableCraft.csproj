@@ -54,7 +54,8 @@
     <Compile Include="Scripts\Atmosphere\Atmosphere.cs" />
     <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
     <Compile Include="Scripts\Atmosphere\Gas.cs" />
-    <Compile Include="Scripts\Atmosphere\SimpleGraphicsAtmosphereComponent.cs" />
+    <Compile Include="Scripts\Atmosphere\SimpleGraphicsAtmosphereComponent - Copy.cs" />
+    <Compile Include="Scripts\Atmosphere\ColorMixingAtmosphereComponent.cs" />
     <Compile Include="Scripts\Atmosphere\StaticAtmosphereComponent.cs" />
     <Compile Include="Scripts\Bacteria\AsymptoticallyGrowingBacteria.cs" />
     <Compile Include="Scripts\Bacteria\Bacteria.cs" />
