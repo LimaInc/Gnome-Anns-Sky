@@ -2,6 +2,10 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
+//TODO: REFACTOR OF THIS CLASS
+// Got a bit large and messy. Need to separate this out before doing more work.
+// Particularly the breeding behaviour which is probably a little buggy due to the messy logic here.
+
 public class AnimalBehaviourComponent : BaseComponent
 {
     public enum Sex
