@@ -72,6 +72,7 @@
     <Compile Include="Scripts\Blocks\BlockFace.cs" />
     <Compile Include="Scripts\Blocks\CubeBlock.cs" />
     <Compile Include="Scripts\Blocks\RedRock.cs" />
+    <Compile Include="Scripts\Blocks\HabitationBlock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />

@@ -301,7 +301,8 @@ public class Player : KinematicBody
     private static float MOVE_DEGRED = 0.005f;
     //single frame
     private static float JUMP_DEGRED = 0.05f;
-
+    
+    private static float BASE_AIR_REGEN = 0.005f;
     private static float SPRINT_DEGRED_MULT = 4.0f;
 
     private void ProcessAlive(float delta)
@@ -309,6 +310,13 @@ public class Player : KinematicBody
         if (Input.IsActionJustPressed("debug_kill"))
         {
             this.Kill();
+        }
+        
+        Vector3 position = this.GetTranslation();
+
+        if (position.x * position.x + position.z * position.z < WorldGenerator.BASE_RADIUS_SQRD)
+        {
+            this.ReplenishAir(BASE_AIR_REGEN);
         }
 
         //Basic degredation
