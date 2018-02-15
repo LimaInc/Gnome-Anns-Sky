@@ -10,7 +10,7 @@ extents = Vector3( 0.567733, 0.620378, 0.568888 )
 
 extents = Vector3( 60, 60, 60 )
 
-[node name="MaleAnimal0" type="KinematicBody"]
+[node name="MaleAnimal0" type="KinematicBody" index="0"]
 
 input_ray_pickable = true
 input_capture_on_drag = false

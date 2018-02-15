@@ -191,6 +191,15 @@ public class AnimalBehaviourComponent : BaseComponent
             if(breedingCollisionTimer >= breedingCollisionsThreshold)
             {
                 GD.Print("Breed! If female.");
+                if(sex == (int)Sex.Female)
+                {
+                    Node spawnNode = GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner");
+                    Random r = new Random();
+                    int nextSex = r.Next(0, 1);
+
+                    spawnNode.Call("SpawnAnimal",presetName,(AnimalBehaviourComponent.Sex)nextSex, parent.GetTranslation() + new Vector3(0.0f,20.0f,0.0f));
+                }
+
                 breedingTargetName = "";
                 state = BehaviourState.Idle;
             }
@@ -243,7 +252,7 @@ public class AnimalBehaviourComponent : BaseComponent
         breedingTimer = 0;
 
         Random r = new Random();
-        int n = 0;// r.Next(0, 100);
+        int n = r.Next(0, 100);
         if((sex == (int)Sex.Female)){
             n = 100;
         }
@@ -277,7 +286,7 @@ public class AnimalBehaviourComponent : BaseComponent
         GD.Print(parent.GetName(), ": Breeding request received!");
         if (satiated < satiatedBreedThreshold) return;
         Random r = new Random();
-        int n = 100;// r.Next(0, 100);
+        int n = r.Next(0, 100);
         if(n < breedability)
         {
             GD.Print(parent.GetName(),": Breeding request approved!");
