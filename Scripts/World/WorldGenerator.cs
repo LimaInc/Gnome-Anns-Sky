@@ -7,11 +7,14 @@ public class WorldGenerator
 
     private byte stoneId = Game.GetBlockId<Stone>();
     private byte grassId = Game.GetBlockId<RedRock>();
+    private byte habId = Game.GetBlockId<HabitationBlock>();
 
     private static float SIGMOID_PARAM_A = -40.0f;
     private static float SIGMOID_PARAM_B = 4.9f;
 
     private static float STARTING_HEIGHT = 55.0f;
+
+    private static float BASE_RADIUS = 8.0f;
 
     public byte[,,] GetChunk(int x, int z, int sX, int sY, int sZ)
     {
@@ -21,8 +24,11 @@ public class WorldGenerator
         {
             for(int k = 0; k < sZ; k++)
             {
-                float xs = (x * sX + i) / 256.0f;
-                float zs = (z * sZ + k) / 256.0f;
+                int wx = x * sX + i;
+                int wz = z * sZ + k;
+
+                float xs = wx / 256.0f;
+                float zs = wz / 256.0f;
                 float height = noise.sample(xs, zs) * 128.0f + 50.0f;
 
                 float centreDist = (float) Math.Sqrt(xs * xs + zs * zs);
@@ -33,12 +39,20 @@ public class WorldGenerator
 
                 for(int j = 0; j < sY; j++)
                 {
+                    float startAdjustedY = j - STARTING_HEIGHT;
+                    if (Math.Abs(wx) < BASE_RADIUS || Math.Abs(startAdjustedY) < BASE_RADIUS || Math.Abs(wz) < BASE_RADIUS)
+                    {
+                        float blockSphereDist = (float) Math.Sqrt(wx * wx + startAdjustedY * startAdjustedY + wz * wz);
+                        if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f)
+                        {
+                            chunk[i,j,k] = habId;
+                        }
+                    }
+
                     if(j < weighted)
                         chunk[i,j,k] = stoneId;
                     else if(j < weighted + 3) //3 layers of rock on top of stone
                         chunk[i,j,k] = grassId;
-                    else
-                        chunk[i,j,k] = 0;
                 }
             }
         }
