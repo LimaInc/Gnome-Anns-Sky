@@ -34,11 +34,11 @@ public class ItemStorage
 
     private static Texture BACTERIA_FOSSIL_TEX = ResourceLoader.Load("res://Images/itemBacteriaFossil.png") as Texture;
     public static Item oxygenBacteriaFossil = 
-        new Item((byte)ItemID.OXYGEN_BACTERIA_FOSSIL, "OxygenBacteriaFossil", BACTERIA_FOSSIL_TEX, Item.Type.BLOCK).SetStackable(true);
+        new ItemBlock((byte)ItemID.OXYGEN_BACTERIA_FOSSIL, "OxygenBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<OxygenBacteriaFossilBlock>()).SetStackable(true);
     public static Item nitrogenBacteriaFossil = 
-        new Item((byte)ItemID.NITROGEN_BACTERIA_FOSSIL, "NitrogenBacteriaFossil", BACTERIA_FOSSIL_TEX, Item.Type.BLOCK).SetStackable(true);
+        new ItemBlock((byte)ItemID.NITROGEN_BACTERIA_FOSSIL, "NitrogenBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<NitrogenBacteriaFossilBlock>()).SetStackable(true);
     public static Item carbonDioxideBacteriaFossil = 
-        new Item((byte)ItemID.CARBON_DIOXIDE_BACTERIA_FOSSIL, "CarbonDioxideBacteriaFossil", BACTERIA_FOSSIL_TEX, Item.Type.BLOCK).SetStackable(true);
+        new ItemBlock((byte)ItemID.CARBON_DIOXIDE_BACTERIA_FOSSIL, "CarbonDioxideBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>()).SetStackable(true);
 
     private static Texture OXYGEN_BACTERIA_VIAL_TEX = ResourceLoader.Load("res://Images/itemOxygenBacteriaVial.png") as Texture;
     public static Item oxygenBacteriaVial = 
