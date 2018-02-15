@@ -39,20 +39,28 @@ public class WorldGenerator
 
                 for(int j = 0; j < sY; j++)
                 {
+                    if(j < weighted)
+                        chunk[i,j,k] = stoneId;
+                    else if(j < weighted + 3) //3 layers of grass on top of stone
+                        chunk[i,j,k] = grassId;
+
                     float startAdjustedY = j - STARTING_HEIGHT;
                     if (Math.Abs(wx) < BASE_RADIUS || Math.Abs(startAdjustedY) < BASE_RADIUS || Math.Abs(wz) < BASE_RADIUS)
                     {
                         float blockSphereDist = (float) Math.Sqrt(wx * wx + startAdjustedY * startAdjustedY + wz * wz);
                         if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f)
                         {
-                            chunk[i,j,k] = habId;
+                            if (chunk[i,j,k] == 0)
+                                chunk[i,j,k] = habId;
+                        }
+                        if (Math.Sqrt(wx * wx + wz * wz) < BASE_RADIUS)
+                        {
+                            if (Math.Abs(j - (weighted + 2)) < 0.5f)
+                            {
+                                chunk[i,j,k] = habId;
+                            }
                         }
                     }
-
-                    if(j < weighted)
-                        chunk[i,j,k] = stoneId;
-                    else if(j < weighted + 3) //3 layers of rock on top of stone
-                        chunk[i,j,k] = grassId;
                 }
             }
         }
