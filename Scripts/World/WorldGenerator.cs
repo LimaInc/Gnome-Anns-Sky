@@ -14,8 +14,8 @@ public class WorldGenerator
 
     private static float STARTING_HEIGHT = 55.0f;
 
-    private static float BASE_RADIUS = 8.0f;
-    private static float BASE_RADIUS_SQRD = BASE_RADIUS * BASE_RADIUS;
+    public static float BASE_RADIUS = 8.0f;
+    public static float BASE_RADIUS_SQRD = BASE_RADIUS * BASE_RADIUS;
 
     public byte[,,] GetChunk(int x, int z, int sX, int sY, int sZ)
     {

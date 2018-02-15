@@ -226,8 +226,17 @@ public class Player : KinematicBody
     //single frame
     private static float JUMP_DEGRED = 0.05f;
 
+    private static float BASE_AIR_REGEN = 0.005f;
+
     public override void _Process(float delta)
     {
+        Vector3 position = this.GetTranslation();
+
+        if (position.x * position.x + position.z * position.z < WorldGenerator.BASE_RADIUS_SQRD)
+        {
+            this.ReplenishAir(BASE_AIR_REGEN);
+        }
+
         //Basic degredation
         CurrentAir -= BASIC_DEGRED * delta * DEGRED_BALANCE_AIR;
         CurrentThirst -= BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST;
