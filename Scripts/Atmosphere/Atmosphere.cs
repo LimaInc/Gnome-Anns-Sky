@@ -7,9 +7,9 @@ public class Atmosphere : Node
 {
     private static readonly IDictionary<Gas, float> gasGoals = new Dictionary<Gas, float>
     {
-        [Gas.OXYGEN] = 2,
-        [Gas.NITROGEN] = 5,
-        [Gas.CARBON_DIOXIDE] = 1
+        [Gas.OXYGEN] = 4*0.2f,
+        [Gas.NITROGEN] = 4 * 0.7f,
+        [Gas.CARBON_DIOXIDE] = 4 * 0.1f
     };
     private IDictionary<Gas,float> gases;
     private IAtmosphericComponent dynamics;

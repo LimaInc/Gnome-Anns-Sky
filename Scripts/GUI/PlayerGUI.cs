@@ -7,13 +7,13 @@ public class PlayerGUI : GUI
     
     public static Texture CROSSHAIR_TEX = ResourceLoader.Load("res://Images/crosshairWhite.png") as Texture;
 
-    private static Color AIR_COLOR = new Color(0.0f, 1.0f, 1.0f);
-    private static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
-    private static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
+    private readonly static Color AIR_COLOR = new Color(0.0f, 1.0f, 1.0f);
+    private readonly static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
+    private readonly static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
 
-    private static Color ATMOS0_COLOR = new Color(1.0f, 0.0f, 0.0f);
-    private static Color ATMOS1_COLOR = new Color(0.0f, 1.0f, 0.0f);
-    private static Color ATMOS2_COLOR = new Color(0.0f, 0.0f, 1.0f);
+    private readonly static Color OXYGEN_COLOR = Colors.MAGENTA;
+    private readonly static Color NITROGEN_COLOR = Colors.CYAN;
+    private readonly static Color CARBON_DIOXIDE_COLOR = Colors.YELLOW;
 
     private Player player;
 
@@ -27,15 +27,22 @@ public class PlayerGUI : GUI
 
     private Label inHandLabel;
 
-    private GUIHorizontalBar atmos0;
-    private GUIHorizontalBar atmos1;
-    private GUIHorizontalBar atmos2;
+    private GUIHorizontalBar atmosOxygen;
+    private GUIHorizontalBar atmosNitrogen;
+    private GUIHorizontalBar atmosCarbonDioxide;
 
     private Sprite crosshair;
+
+    private Atmosphere atm;
 
     public PlayerGUI(Player p) : base(p)
     {
         this.player = p;
+    }
+
+    public override void _Ready()
+    {
+        this.atm = (GetNode(Game.GAME_PATH) as Game).World.Atmosphere;
     }
 
     bool first = true;
@@ -44,9 +51,9 @@ public class PlayerGUI : GUI
     {
         if (!first)
         {
-            this.RemoveChild(this.atmos0);
-            this.RemoveChild(this.atmos1);
-            this.RemoveChild(this.atmos2);
+            this.RemoveChild(this.atmosOxygen);
+            this.RemoveChild(this.atmosNitrogen);
+            this.RemoveChild(this.atmosCarbonDioxide);
 
             this.RemoveChild(this.air);
             this.RemoveChild(this.thirst);
@@ -95,17 +102,17 @@ public class PlayerGUI : GUI
         Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 - (barHeight - 5.0f) * 1.5f,50.0f);
 
         Vector2 atmos0Pos = baseAtmosOffset;
-        this.atmos0 = new GUIHorizontalBar(atmos0Pos, barHeight, ATMOS0_COLOR);
+        this.atmosOxygen = new GUIHorizontalBar(atmos0Pos, barHeight, OXYGEN_COLOR);
 
         Vector2 atmos1Pos = atmos0Pos + new Vector2(barHeight + 80.0f, 0.0f);
-        this.atmos1 = new GUIHorizontalBar(atmos1Pos, barHeight, ATMOS1_COLOR);
+        this.atmosNitrogen = new GUIHorizontalBar(atmos1Pos, barHeight, NITROGEN_COLOR);
 
         Vector2 atmos2Pos = atmos1Pos + new Vector2(barHeight + 80.0f, 0.0f);
-        this.atmos2 = new GUIHorizontalBar(atmos2Pos, barHeight, ATMOS2_COLOR);
+        this.atmosCarbonDioxide = new GUIHorizontalBar(atmos2Pos, barHeight, CARBON_DIOXIDE_COLOR);
 
-        this.AddChild(this.atmos0);
-        this.AddChild(this.atmos1);
-        this.AddChild(this.atmos2);
+        this.AddChild(this.atmosOxygen);
+        this.AddChild(this.atmosNitrogen);
+        this.AddChild(this.atmosCarbonDioxide);
 
         inHandLabel = new Label();
 
@@ -128,14 +135,24 @@ public class PlayerGUI : GUI
         this.thirst.SetPercentage((float) this.player.CurrentThirst / Player.MAX_THIRST);
         this.hunger.SetPercentage((float) this.player.CurrentHunger / Player.MAX_HUNGER);
 
-        this.atmos0.SetPercentage(0.7f);
-        this.atmos1.SetPercentage(0.2f);
-        this.atmos2.SetPercentage(0.5f);
+        if (this.atm != null)
+        {
+            this.atmosOxygen.SetPercentage(this.atm.GetGasProgress(Gas.OXYGEN));
+            this.atmosNitrogen.SetPercentage(this.atm.GetGasProgress(Gas.NITROGEN));
+            this.atmosCarbonDioxide.SetPercentage(this.atm.GetGasProgress(Gas.CARBON_DIOXIDE));
+        }
+        else
+        {
+            this.atmosOxygen.SetPercentage(0.0f);
+            this.atmosNitrogen.SetPercentage(0.0f);
+            this.atmosCarbonDioxide.SetPercentage(0.0f);
+        }
 
         if (player.ItemInHand != null)
         {
             inHandLabel.SetText("Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    Quantity : " + player.ItemInHand.GetCount());
-        } else 
+        }
+        else 
         {
             inHandLabel.SetText("");
         }

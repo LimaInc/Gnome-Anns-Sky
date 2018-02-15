@@ -6,8 +6,8 @@ public class BacterialState
 {
     private static readonly IDictionary<BacteriumType, Tuple<float,float>> bacteriaInitis = new Dictionary<BacteriumType, Tuple<float, float>>
     {
-        [BacteriumType.OXYGEN] = Tuple.Create(2f,0.003f),
-        [BacteriumType.NITROGEN] = Tuple.Create(8f, 0.0005f),
+        [BacteriumType.OXYGEN] = Tuple.Create(2f, 0.003f),
+        [BacteriumType.NITROGEN] = Tuple.Create(7f, 0.0005f),
         [BacteriumType.CARBON_DIOXIDE] = Tuple.Create(1f, 0.015f)
     };
 

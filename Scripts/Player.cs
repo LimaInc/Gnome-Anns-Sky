@@ -101,7 +101,7 @@ public class Player : KinematicBody
         return this.collisionShape;
     }
 
-    public bool isInventoryOpen()
+    public bool IsInventoryOpen()
     {
         return inventoryOpen;
     }
@@ -133,10 +133,8 @@ public class Player : KinematicBody
             myCam.SetRotation(targetRotation);
         }
 
-        if (e is InputEventMouseButton)
+        if (e is InputEventMouseButton iemb)
         {
-            InputEventMouseButton iemb = (InputEventMouseButton) e;
-
             if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
             {
                 this.HandleUseItem();
@@ -152,10 +150,8 @@ public class Player : KinematicBody
                 if (this.ItemInHand != null)
                 {
                     Item i = this.ItemInHand.GetItem();
-                    if (i is ItemBlock)
+                    if (i is ItemBlock curBlock)
                     {
-                        ItemBlock curBlock = (ItemBlock) i;
-
                         if (curBlock.Block == b)
                         {
                             this.ItemInHand.AddToQuantity(1);
@@ -245,7 +241,7 @@ public class Player : KinematicBody
         this.AddChild(dg);
     }
 
-    public bool isDead()
+    public bool IsDead()
     {
         return dead;
     }
@@ -257,10 +253,8 @@ public class Player : KinematicBody
 
         Item i = this.ItemInHand.GetItem();
 
-        if (i is ItemBlock)
+        if (i is ItemBlock b)
         {
-            ItemBlock b = (ItemBlock) i;
-
             if (this.interaction.PlaceBlock(b.Block))
             {
                 if (this.ItemInHand.GetCount() == 1)
@@ -268,20 +262,18 @@ public class Player : KinematicBody
                 else
                     this.ItemInHand.SubtractCount(1);
             }
-        } else if (i is ItemFood)
+        }
+        else if (i is ItemFood f)
         {
-            ItemFood f = (ItemFood) i;
-
             ReplenishHunger(f.ReplenishValue);
 
             if (this.ItemInHand.GetCount() == 1)
                 this.ItemInHand = null;
             else
                 this.ItemInHand.SubtractCount(1);
-        } else if (i is ItemDrink)
+        }
+        else if (i is ItemDrink d)
         {
-            ItemDrink d = (ItemDrink) i;
-
             ReplenishThirst(d.ReplenishValue);
 
             if (this.ItemInHand.GetCount() == 1)
