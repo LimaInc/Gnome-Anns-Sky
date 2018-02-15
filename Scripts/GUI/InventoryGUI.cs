@@ -188,8 +188,10 @@ public class InventoryGUI : GUI
                 return;
             }
 
+            handSlot.ClearItemStack();
             handSlot.AssignItemStack(floatingItemStack);
-                player.ItemInHand = floatingItemStack;
+            player.ItemInHand = floatingItemStack;
+            floatingSlot.ClearItemStack();
             floatingSlot.AssignItemStack(ist);
 
             return;
