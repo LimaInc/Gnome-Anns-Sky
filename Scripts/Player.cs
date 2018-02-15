@@ -3,6 +3,8 @@ using System;
 
 public class Player : KinematicBody
 {
+    private static bool DEBUG_DEATH_ENABLED = true;
+
     private float moveSpeed = 30.0f;
     private float jumpPower = 12.0f;
     private float camRotateSpeed = 0.01f;
@@ -13,8 +15,9 @@ public class Player : KinematicBody
     private Vector3 velocity = new Vector3();
 
     private Vector3 camOffset = new Vector3(0.0f, 0.4f, 0.0f);
+    private Vector3 deadCamOffset = new Vector3(0.0f, -0.4f, 0.0f);
 
-    private float gravity = 40.0f;
+    private static float gravity = 40.0f;
 
     private CollisionShape collisionShape;
     private Camera myCam;
@@ -28,6 +31,8 @@ public class Player : KinematicBody
     private Inventory fossilInventory;
     private Inventory blockInventory;
 
+    public ItemStack ItemInHand { get; set; }
+
     public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
 
     //Original implementation was written in integers, hence why the max constants exist
@@ -40,6 +45,10 @@ public class Player : KinematicBody
     public static float MAX_HUNGER = 1.0f;
     public float CurrentHunger { get; set; } = MAX_HUNGER;
 
+    private Interaction interaction;
+
+    private bool dead;
+
     public override void _Ready()
     {
         Input.SetCustomMouseCursor(CURSOR);
@@ -51,6 +60,8 @@ public class Player : KinematicBody
         BoxShape b = new BoxShape();
         b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         collisionShape.SetShape(b);
+
+        interaction = GetNode("/root/Game/Player/Camera") as Interaction;
 
         // CapsuleShape c = new CapsuleShape();
         // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
@@ -65,21 +76,24 @@ public class Player : KinematicBody
 
         myCam.SetTranslation(camOffset);
 
-        consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
-        fossilInventory = new Inventory(this, Item.Type.FOSSIL);
-        blockInventory = new Inventory(this, Item.Type.BLOCK);
-
         playerGUI = new PlayerGUI(this);
         this.AddChild(playerGUI);
 
-        blockInventory.AddItem(ItemStorage.block, 20);
-        fossilInventory.AddItem(ItemStorage.oxygenBacteriaVial, 10);
-        fossilInventory.AddItem(ItemStorage.nitrogenBacteriaVial, 10);
-        fossilInventory.AddItem(ItemStorage.carbonDioxideBacteriaVial, 10);
-        consumableInventory.AddItem(ItemStorage.chocoloate, 10);
-        blockInventory.AddItem(ItemStorage.block, 15);
-        blockInventory.AddItem(ItemStorage.block, 34);
-        blockInventory.AddItem(ItemStorage.oxygenBacteriaFossil, 34);
+        consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
+        fossilInventory = new Inventory(this, Item.Type.FOSSIL);
+        blockInventory = new Inventory(this, Item.Type.BLOCK);
+        blockInventory.AddItem(ItemStorage.redRock, 20);
+        blockInventory.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
+        consumableInventory.AddItem(ItemStorage.chocolate, 10);
+        blockInventory.AddItem(ItemStorage.redRock, 15);
+        blockInventory.AddItem(ItemStorage.redRock, 34);
+
+        consumableInventory.AddItem(ItemStorage.cake, 3);
+
+        consumableInventory.AddItem(ItemStorage.water, 5);
+        fossilInventory.AddItem(ItemStorage.oxygenBacteriaVial, 5);
+        fossilInventory.AddItem(ItemStorage.nitrogenBacteriaVial, 5);
+        fossilInventory.AddItem(ItemStorage.carbonDioxideBacteriaVial, 5);
     }
 
     public CollisionShape GetCollisionShape()
@@ -94,6 +108,8 @@ public class Player : KinematicBody
 
     public override void _Input(InputEvent e)
     {
+        if (dead) return;
+
         if (e is InputEventMouseMotion && !inventoryOpen)
         {
             Vector3 rot = this.GetRotation();
@@ -116,11 +132,169 @@ public class Player : KinematicBody
 
             myCam.SetRotation(targetRotation);
         }
+
+        if (e is InputEventMouseButton)
+        {
+            InputEventMouseButton iemb = (InputEventMouseButton) e;
+
+            if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
+            {
+                this.HandleUseItem();
+            }
+
+            if (iemb.ButtonIndex == 1 && iemb.Pressed && !inventoryOpen)
+            {
+                byte b = interaction.RemoveBlock();
+                Item ib = ItemStorage.GetItemFromBlock(b);
+
+                bool addedToHand = false;
+
+                if (this.ItemInHand != null)
+                {
+                    Item i = this.ItemInHand.GetItem();
+                    if (i is ItemBlock)
+                    {
+                        ItemBlock curBlock = (ItemBlock) i;
+
+                        if (curBlock.Block == b)
+                        {
+                            this.ItemInHand.AddToQuantity(1);
+                            addedToHand = true;
+                        }
+                    }
+                }
+                if (!addedToHand)
+                    this.blockInventory.AddItem(ib, 1);
+            }
+        }
+    }
+
+    public void ReplenishHunger(float v)
+    {
+        this.CurrentHunger += v;
+
+        if (this.CurrentHunger > MAX_HUNGER)
+            this.CurrentHunger = MAX_HUNGER;
+    }
+
+    public void ReplenishAir(float v)
+    {
+        this.CurrentAir += v;
+
+        if (this.CurrentAir > MAX_AIR)
+            this.CurrentAir = MAX_AIR;
+    }
+
+    public void ReplenishThirst(float v)
+    {
+        this.CurrentThirst += v;
+
+        if (this.CurrentThirst > MAX_THIRST)
+            this.CurrentThirst = MAX_THIRST;
+    }
+
+    public void DepleteHunger(float v)
+    {
+        this.CurrentHunger -= v;
+
+        if (this.CurrentHunger < 0)
+        {
+            this.CurrentHunger = 0;
+            this.Kill();
+        }
+    }
+
+    public void DepleteAir(float v)
+    {
+        this.CurrentAir -= v;
+
+        if (this.CurrentAir < 0)
+        {
+            this.CurrentAir = 0;
+            this.Kill();
+        }
+    }
+
+    public void DepleteThirst(float v)
+    {
+        this.CurrentThirst -= v;
+
+        if (this.CurrentThirst < 0)
+        {
+            this.CurrentThirst = 0;
+            this.Kill();
+        }
+    }
+
+    public void Kill()
+    {
+        if (!DEBUG_DEATH_ENABLED) 
+        {
+            GD.Print("Tried to kill player, but death is disabled");
+            return;
+        }
+
+        this.dead = true;
+
+        if (inventoryOpen)
+            this.RemoveChild(inventoryGUI);
+        else 
+            this.RemoveChild(playerGUI);
+
+        DeadGUI dg = new DeadGUI(this);
+        this.AddChild(dg);
+    }
+
+    public bool isDead()
+    {
+        return dead;
+    }
+
+    public void HandleUseItem()
+    {
+        if (this.ItemInHand == null)
+            return;
+
+        Item i = this.ItemInHand.GetItem();
+
+        if (i is ItemBlock)
+        {
+            ItemBlock b = (ItemBlock) i;
+
+            if (this.interaction.PlaceBlock(b.Block))
+            {
+                if (this.ItemInHand.GetCount() == 1)
+                    this.ItemInHand = null;
+                else
+                    this.ItemInHand.SubtractCount(1);
+            }
+        } else if (i is ItemFood)
+        {
+            ItemFood f = (ItemFood) i;
+
+            ReplenishHunger(f.ReplenishValue);
+
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
+        } else if (i is ItemDrink)
+        {
+            ItemDrink d = (ItemDrink) i;
+
+            ReplenishThirst(d.ReplenishValue);
+
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
+        }
     }
 
     private bool onFloor;
 
     //These numbers control how the player's needs change as they move around the world
+    
     private static float DEGRED_BALANCE_AIR = 1.0f;
     private static float DEGRED_BALANCE_THIRST = 1.4f;
     private static float DEGRED_BALANCE_HUNGER = 1.8f;
@@ -129,29 +303,45 @@ public class Player : KinematicBody
     private static float MOVE_DEGRED = 0.005f;
     //single frame
     private static float JUMP_DEGRED = 0.05f;
+    
+    private static float BASE_AIR_REGEN = 0.005f;
+    private static float SPRINT_DEGRED_MULT = 4.0f;
 
-    public override void _Process(float delta)
+    private void ProcessAlive(float delta)
     {
+        if (Input.IsActionJustPressed("debug_kill"))
+        {
+            this.Kill();
+        }
+        
+        Vector3 position = this.GetTranslation();
+
+        if (position.x * position.x + position.z * position.z < WorldGenerator.BASE_RADIUS_SQRD)
+        {
+            this.ReplenishAir(BASE_AIR_REGEN);
+        }
+
         //Basic degredation
-        CurrentAir -= BASIC_DEGRED * delta * DEGRED_BALANCE_AIR;
-        CurrentThirst -= BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST;
-        CurrentHunger -= BASIC_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+        this.DepleteAir(BASIC_DEGRED * delta * DEGRED_BALANCE_AIR);
+        this.DepleteThirst(BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST);
+        this.DepleteHunger(BASIC_DEGRED * delta * DEGRED_BALANCE_HUNGER);
 
         if (Input.IsActionJustPressed("inventory"))
         {
             if (!inventoryOpen)
             {
-                inventoryGUI = new InventoryGUI(consumableInventory, fossilInventory, blockInventory, this);
+                inventoryGUI = new InventoryGUI(this, consumableInventory, fossilInventory, blockInventory, this);
                 inventoryOpen = true;
                 this.AddChild(inventoryGUI);
                 this.RemoveChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Visible);
             } else 
             {
+                playerGUI = new PlayerGUI(this);
+                this.AddChild(playerGUI);
                 inventoryOpen = false;
                 inventoryGUI.HandleClose();
                 this.RemoveChild(inventoryGUI);
-                this.AddChild(playerGUI);
                 Input.SetMouseMode(Input.MouseMode.Captured);
             }
         }
@@ -160,9 +350,9 @@ public class Player : KinematicBody
         {
             if (Input.IsActionJustPressed("jump") && onFloor)
             {
-                CurrentAir -= JUMP_DEGRED * delta * DEGRED_BALANCE_AIR;
-                CurrentThirst -= JUMP_DEGRED * delta * DEGRED_BALANCE_THIRST;
-                CurrentHunger -= JUMP_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+                this.DepleteAir(JUMP_DEGRED * delta * DEGRED_BALANCE_AIR);
+                this.DepleteThirst(JUMP_DEGRED * delta * DEGRED_BALANCE_THIRST);
+                this.DepleteHunger(JUMP_DEGRED * delta * DEGRED_BALANCE_HUNGER);
 
                 velocity += new Vector3(0.0f, jumpPower, 0.0f);
             }
@@ -197,17 +387,17 @@ public class Player : KinematicBody
 
             if (!movDir.Equals(new Vector3()))
             {
-                CurrentAir -= MOVE_DEGRED * delta * DEGRED_BALANCE_AIR;
-                CurrentThirst -= MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST;
-                CurrentHunger -= MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+                this.DepleteAir(MOVE_DEGRED * delta * DEGRED_BALANCE_AIR);
+                this.DepleteThirst(MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST);
+                this.DepleteHunger(MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER);
             }
 
             movDir = movDir.Normalized();
             if(Input.IsActionPressed("sprint"))
             {
-                CurrentAir -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_AIR;
-                CurrentThirst -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_THIRST;
-                CurrentHunger -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_HUNGER;
+                this.DepleteAir(MOVE_DEGRED * delta * DEGRED_BALANCE_AIR * SPRINT_DEGRED_MULT);
+                this.DepleteThirst(MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST * SPRINT_DEGRED_MULT);
+                this.DepleteHunger(MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER * SPRINT_DEGRED_MULT);
                 movDir *= 3f;
             }
 
@@ -221,5 +411,21 @@ public class Player : KinematicBody
         // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
 
         onFloor = this.IsOnFloor();
+    }
+    
+    public void ProcessDead(float delta)
+    {
+
+    }
+
+    public override void _Process(float delta)
+    {
+        if (dead)
+        {
+            ProcessDead(delta);
+        } else
+        {
+            ProcessAlive(delta);
+        }
     }
 }

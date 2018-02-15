@@ -3,6 +3,10 @@ using Godot;
 
 public class PlayerGUI : GUI
 {
+    private static Texture AIR_ICON_TEX = ResourceLoader.Load("res://Images/airIcon.png") as Texture;
+    
+    public static Texture CROSSHAIR_TEX = ResourceLoader.Load("res://Images/crosshairWhite.png") as Texture;
+
     private static Color AIR_COLOR = new Color(0.0f, 1.0f, 1.0f);
     private static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
     private static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
@@ -17,9 +21,17 @@ public class PlayerGUI : GUI
     private GUIVerticalBar thirst;
     private GUIVerticalBar hunger;
 
+    private Sprite airIcon;
+    private Sprite thirstIcon;
+    private Sprite hungerIcon;
+
+    private Label inHandLabel;
+
     private GUIHorizontalBar atmos0;
     private GUIHorizontalBar atmos1;
     private GUIHorizontalBar atmos2;
+
+    private Sprite crosshair;
 
     public PlayerGUI(Player p) : base(p)
     {
@@ -35,9 +47,16 @@ public class PlayerGUI : GUI
             this.RemoveChild(this.atmos0);
             this.RemoveChild(this.atmos1);
             this.RemoveChild(this.atmos2);
+
             this.RemoveChild(this.air);
             this.RemoveChild(this.thirst);
             this.RemoveChild(this.hunger);
+
+            this.RemoveChild(this.airIcon);
+            this.RemoveChild(this.hungerIcon);
+            this.RemoveChild(this.thirstIcon);
+
+            this.RemoveChild(this.inHandLabel);
         }
 
         float barHeight = 200.0f;
@@ -57,6 +76,22 @@ public class PlayerGUI : GUI
         this.AddChild(this.thirst);
         this.AddChild(this.hunger);
 
+        hungerIcon = ItemStorage.cake.GenerateGUISprite();
+        hungerIcon.SetPosition(hungerPos - new Vector2(0.0f, 150.0f));
+        hungerIcon.SetScale(new Vector2(2.0f, 2.0f));
+        this.AddChild(hungerIcon);
+
+        thirstIcon = ItemStorage.water.GenerateGUISprite();
+        thirstIcon.SetPosition(thirstPos - new Vector2(0.0f, 150.0f));
+        thirstIcon.SetScale(new Vector2(2.0f, 2.0f));
+        this.AddChild(thirstIcon);
+
+        airIcon = new Sprite();
+        airIcon.SetTexture(AIR_ICON_TEX);
+        airIcon.SetPosition(airPos - new Vector2(0.0f, 150.0f));
+        airIcon.SetScale(new Vector2(2.0f, 2.0f));
+        this.AddChild(airIcon);
+
         Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 - (barHeight - 5.0f) * 1.5f,50.0f);
 
         Vector2 atmos0Pos = baseAtmosOffset;
@@ -72,6 +107,16 @@ public class PlayerGUI : GUI
         this.AddChild(this.atmos1);
         this.AddChild(this.atmos2);
 
+        inHandLabel = new Label();
+
+        inHandLabel.SetPosition(new Vector2(this.GetViewportDimensions().x / 2.0f - 80.0f, this.GetViewportDimensions().y - 15.0f));
+
+        this.AddChild(inHandLabel);
+        crosshair = new Sprite();
+        crosshair.SetTexture(CROSSHAIR_TEX);
+        crosshair.SetPosition(this.GetViewportDimensions() / 2.0f);
+        this.AddChild(crosshair);
+
         first = false;
     }
 
@@ -86,5 +131,13 @@ public class PlayerGUI : GUI
         this.atmos0.SetPercentage(0.7f);
         this.atmos1.SetPercentage(0.2f);
         this.atmos2.SetPercentage(0.5f);
+
+        if (player.ItemInHand != null)
+        {
+            inHandLabel.SetText("Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    Quantity : " + player.ItemInHand.GetCount());
+        } else 
+        {
+            inHandLabel.SetText("");
+        }
     }
 }

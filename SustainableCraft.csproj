@@ -71,6 +71,12 @@
     <Compile Include="Scripts\Blocks\RedRock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\Inventory\Item.cs" />
+    <Compile Include="Scripts\Inventory\ItemStorage.cs" />
+    <Compile Include="Scripts\Inventory\ItemFood.cs" />
+    <Compile Include="Scripts\Inventory\ItemBlock.cs" />
+    <Compile Include="Scripts\Inventory\ItemDrink.cs" />
+    <Compile Include="Scripts\Inventory\ItemStack.cs" />
     <Compile Include="Scripts\GUI\PlayerGUI.cs" />
     <Compile Include="Scripts\GUI\GUI.cs" />
     <Compile Include="Scripts\GUI\GUIBox.cs" />
@@ -80,6 +86,7 @@
     <Compile Include="Scripts\GUI\GUIHorizontalBar.cs" />
     <Compile Include="Scripts\GUI\GUIVerticalBar.cs" />
     <Compile Include="Scripts\Interaction.cs" />
+    <Compile Include="Scripts\GUI\DeadGUI.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
@@ -87,6 +94,13 @@
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\Util\CMYKColor.cs" />
     <Compile Include="Scripts\Util\Colors.cs" />
+    <Compile Include="Scripts\World\Chunk.cs" />
+    <Compile Include="Scripts\Blocks\Block.cs" />
+    <Compile Include="Scripts\Blocks\BlockFace.cs" />
+    <Compile Include="Scripts\Blocks\CubeBlock.cs" />
+    <Compile Include="Scripts\Blocks\RedRock.cs" />
+    <Compile Include="Scripts\Blocks\HabitationBlock.cs" />
+    <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
     <Compile Include="Scripts\Util\Noise.cs" />

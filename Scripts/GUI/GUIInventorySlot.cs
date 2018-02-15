@@ -34,6 +34,18 @@ public class GUIInventorySlot : GUIObject
             inventory.HandleSlotClick(index, type);
     }
 
+    public override void onHover()
+    {
+        if (this.index != -1)
+            inventory.HandleHover(stack);
+    }
+
+    public override void onHoverOff()
+    {
+        if (this.index != -1)
+            inventory.HandleHoverOff();
+    }
+
     public void SetPosition(Vector2 pos)
     {
         this.rect.Position = pos;
