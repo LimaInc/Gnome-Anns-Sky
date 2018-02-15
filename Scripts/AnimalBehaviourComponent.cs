@@ -21,6 +21,7 @@ public class AnimalBehaviourComponent : BaseComponent
     {
         Idle = 0,
         Hunting = 1,
+        Breeding = 2,
     }
 
     //exports: stats that are generated from spawner
@@ -38,21 +39,55 @@ public class AnimalBehaviourComponent : BaseComponent
     private float jumpMagnitude = 5.0f;
 
     private const float directionThreshold = 2.0f;
-    private float timer = 0.0f;
+    private float directionTimer = 0.0f;
+
+    private const float breedingThreshold = 5.0f;
+    private float breedingTimer = 0.0f;
+
+    private const float breedingSignalThreshold = 3.0f;
+    private float breedingSignalTimer = 0.0f;
+    private bool breedingSignalled = false;
+
+    private const float breedingCollisionsThreshold = 2.0f;
+    private float breedingCollisionTimer = 0.0f;
+    private bool breedingCollision = false;
+
+    private const float satiatedBreedThreshold = 50.0f;
 
     private int frameCount = 0;
 
     private List<PhysicsBody> foodInRange;
+    private List<PhysicsBody> breedableTargets;
 
     private BehaviourState state = BehaviourState.Idle;
 
     private PhysicsBody target;
+    private PhysicsBody breedingTarget;
+
+    [Export]
+    private string breedingTargetName = "";
 
     [Export]
     float satiated = 100.0f; //100 is max, 0 is starved to death
 
+    [Export]
+    int breedability;
+
+    [Export]
+    string presetName;
+
     const float timeToDeath = 50.0f;
 
+    // TODO NEXT: Breeding. Random chance animal (defined in preset) will feel like breeding with 5sec cooldown if satiated enough, if in sight of opposite sex.
+    // If test passes, heads towards target, and when within range, send request. Target can accept or deny request.
+    // If request accepted, continue to head towards each other, and when collided, wait 3 seconds, then if both still alive, produce baby.
+    // 50% chance for gender of baby, need to add preset names.
+    // Then make sure works on laptop. 
+
+    // Left to do: Add different models. Add different basic behaviours to models (eg movement). Improve AI a bit. This can be done tomorrow (got 11-16).
+    // No plants yet. That's fine, just give herbivores a long time-to-death for demo purposes.
+
+    // Also, add rotations.
 
     private void SetRandomDirection()
     {
@@ -70,6 +105,7 @@ public class AnimalBehaviourComponent : BaseComponent
     public override void _Ready()
     {
         foodInRange = new List<PhysicsBody>();
+        breedableTargets = new List<PhysicsBody>();
 
         parent = (KinematicBody)GetParent();
         parent.AddUserSignal("jump");
@@ -77,6 +113,7 @@ public class AnimalBehaviourComponent : BaseComponent
         parent.AddUserSignal("setSpeed");
         parent.AddUserSignal("watchFor");
         parent.AddUserSignal("setVisionRange");
+        parent.AddUserSignal("attemptBreeding");
 
         parent.AddToGroup("animals");
 
@@ -86,7 +123,6 @@ public class AnimalBehaviourComponent : BaseComponent
     protected void SetupInitialisationSignals()
     {
         parent.EmitSignal("setSpeed", 150.0f);
-
         parent.EmitSignal("watchFor", "plants");
         parent.EmitSignal("watchFor", "animals");
     }
@@ -120,19 +156,27 @@ public class AnimalBehaviourComponent : BaseComponent
 
     protected void ObjectInRange(PhysicsBody n)
     {
-        if (IsFood(n) && (int)n.GetNode("BehaviourComponent").Get("foodChainLevel") < foodChainLevel)
+        Node behaviourComponent = n.GetNode("BehaviourComponent");
+        if (IsFood(n) && (int)behaviourComponent.Get("foodChainLevel") < foodChainLevel)
         {
             foodInRange.Add(n);
+        }else if (behaviourComponent.Get("presetName").Equals(presetName) && (int)behaviourComponent.Get("sex") != sex)
+        {
+            breedableTargets.Add(n);
         }
     }
 
     protected void ObjectOutOfRange(PhysicsBody n)
     {
-        if (IsFood(n))
+        Node behaviourComponent = n.GetNode("BehaviourComponent");
+        if (IsFood(n) && (int)behaviourComponent.Get("foodChainLevel") < foodChainLevel)
         {
-            //List is implemented as an array, so this could get quite slow
-            //Could change to hash map if this is a bottleneck
+            //List is implemented as an array, so could get expensive. Could change to HashMap.
             foodInRange.Remove(n);
+        }
+        else if (behaviourComponent.Get("presetName").Equals(presetName) && (int)behaviourComponent.Get("sex") != sex)
+        {
+            breedableTargets.Remove(n);
         }
     }
 
@@ -141,6 +185,15 @@ public class AnimalBehaviourComponent : BaseComponent
         if(state == BehaviourState.Hunting && target != null && collision.Collider.Equals(target))
         {
             eat(collision.Collider);            
+        }else if(state == BehaviourState.Breeding && breedingTarget != null && collision.Collider.Equals(breedingTarget)) //is this right?
+        {
+            breedingCollision = true;
+            if(breedingCollisionTimer >= breedingCollisionsThreshold)
+            {
+                GD.Print("Breed! If female.");
+                breedingTargetName = "";
+                state = BehaviourState.Idle;
+            }
         }
     }
 
@@ -161,9 +214,82 @@ public class AnimalBehaviourComponent : BaseComponent
 
         if(satiated <= 0.0f)
         {
-            // :(
             GD.Print("Starved to death!");
             parent.QueueFree();
+        }
+    }
+
+    protected void AttemptBreedState()
+    {
+        //only attempt breed if there is a breedable target in sight
+        PhysicsBody found = null;
+
+        foreach(PhysicsBody body in breedableTargets)
+        {
+            if (body == null) continue;
+            // Identify whether we can see the target by raycasting
+            PhysicsDirectSpaceState spaceState = body.GetWorld().GetDirectSpaceState();
+            var result = spaceState.IntersectRay(parent.GetTranslation(), body.GetTranslation(), new[] { parent, body });
+
+            if (result.Count == 0)
+            {
+                found = body;
+                break;
+            }
+        }
+
+        if (found == null) return;
+
+        breedingTimer = 0;
+
+        Random r = new Random();
+        int n = 0;// r.Next(0, 100);
+        if((sex == (int)Sex.Female)){
+            n = 100;
+        }
+        if(n < breedability)
+        {
+            breedingTarget = found;
+            breedingTargetName = breedingTarget.GetName();
+
+            GD.Print("Found partner to attempt to breed with! Path: ", breedingTargetName);
+
+            SetupBreedingState();
+        }
+        else
+        {
+            GD.Print(parent.GetName(), ": Found partner, but decided not to pursue.");
+        }
+    }
+
+    protected void SetupBreedingState()
+    {
+        breedingSignalTimer = 0.0f;
+        breedingSignalled = false;
+        breedingCollisionTimer = 0.0f;
+        breedingCollision = false;
+
+        state = BehaviourState.Breeding;
+    }
+
+    protected void AttemptBreeding(KinematicBody body)
+    {
+        GD.Print(parent.GetName(), ": Breeding request received!");
+        if (satiated < satiatedBreedThreshold) return;
+        Random r = new Random();
+        int n = 100;// r.Next(0, 100);
+        if(n < breedability)
+        {
+            GD.Print(parent.GetName(),": Breeding request approved!");
+            breedingTarget = body;
+            breedingTargetName = body.GetName();
+
+            SetupBreedingState();
+            breedingSignalled = true;
+        }
+        else
+        {
+            GD.Print(parent.GetName(),": Breeding request rejected");
         }
     }
 
@@ -187,17 +313,24 @@ public class AnimalBehaviourComponent : BaseComponent
         SetupConnection("objectInRange", parent, nameof(ObjectInRange));
         SetupConnection("objectOutOfRange", parent, nameof(ObjectOutOfRange));
         SetupConnection("collided", parent, nameof(Collided));
+        SetupConnection("attemptBreeding", parent, nameof(AttemptBreeding));
 
         //cleanse dead objects
         foodInRange.RemoveAll(p => p == null);
+        breedableTargets.RemoveAll(p => p == null);
 
         if (state == BehaviourState.Idle)
         {
-            timer += delta;
-            if (timer > directionThreshold)
+            directionTimer += delta;
+            breedingTimer += delta;
+            if (directionTimer > directionThreshold)
             {
-                timer = 0;
+                directionTimer = 0;
                 SetRandomDirection();
+            }
+            if(breedingTimer > breedingThreshold && satiated > satiatedBreedThreshold)
+            {
+                AttemptBreedState();
             }
         }
     }
@@ -208,7 +341,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
         if(state == BehaviourState.Idle)
         {
-            foreach (PhysicsBody b in foodInRange)
+            foreach (PhysicsBody b in foodInRange) //Could randomise this?
             {
                 if (b == null) continue;
                 // Identify whether we can see the target by raycasting
@@ -219,6 +352,7 @@ public class AnimalBehaviourComponent : BaseComponent
                 {
                     target = b;
                     state = BehaviourState.Hunting;
+                    break;
                 }
             }
         }
@@ -244,6 +378,57 @@ public class AnimalBehaviourComponent : BaseComponent
                     parent.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
                 }
             }        
+        }else if(state == BehaviourState.Breeding)
+        {
+            if(breedingTarget == null)
+            {
+                state = BehaviourState.Idle;
+            }
+            else
+            {
+                float distanceSquared = breedingTarget.GetTranslation().DistanceSquaredTo(parent.GetTranslation());
+                if (distanceSquared <= 30 * 30)
+                {
+                    // Close enough: try match!
+                    if (!breedingSignalled)
+                    {
+                        GD.Print(parent.GetName(), ": Close enough to try match! Signalling...");
+                        breedingTarget.EmitSignal("attemptBreeding", parent);
+                        breedingSignalled = true;
+                    }
+
+                    if (breedingCollision)
+                    {
+                        breedingCollisionTimer += delta;
+                        if(breedingCollisionTimer >= breedingCollisionsThreshold + 1.0f)
+                        {
+                            //partner must have been eaten...
+                            GD.Print(parent.GetName(), ": Where did you go ? :(");
+                            state = BehaviourState.Idle;
+                        }
+                    }
+
+                    string targetString = (string)breedingTarget.GetNode("BehaviourComponent").Get("breedingTargetName");
+
+                    if (targetString.Equals(parent.GetName()))
+                    {
+                        Vector3 direction = breedingTarget.GetTranslation() - parent.GetTranslation();
+                        parent.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
+                    }
+                    else
+                    {
+                        parent.EmitSignal("setDirection", new Vector2(0, 0));
+                        breedingSignalTimer += delta;
+                        if (breedingSignalTimer > breedingSignalThreshold)
+                        {
+                            // Must have been rejected!
+                            state = BehaviourState.Idle;
+
+                            GD.Print(parent.GetName(), ": Detected rejection. Idling.");
+                        }
+                    }
+                }
+            }
         }
     }
 }
