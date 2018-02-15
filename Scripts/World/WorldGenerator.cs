@@ -46,7 +46,7 @@ public class WorldGenerator
                         chunk[i,j,k] = grassId;
 
                     float startAdjustedY = j - STARTING_HEIGHT;
-                    if (Math.Abs(wx) < BASE_RADIUS || Math.Abs(startAdjustedY) < BASE_RADIUS || Math.Abs(wz) < BASE_RADIUS)
+                    if ((Math.Abs(wx) < BASE_RADIUS || Math.Abs(startAdjustedY) < BASE_RADIUS || Math.Abs(wz) < BASE_RADIUS) && wx < BASE_RADIUS - 3)
                     {
                         float blockSphereDist = (float) Math.Sqrt(wx * wx + startAdjustedY * startAdjustedY + wz * wz);
                         if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f)
