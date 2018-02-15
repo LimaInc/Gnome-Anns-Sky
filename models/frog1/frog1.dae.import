@@ -2,15 +2,15 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/pig1.dae-0e3b3a2f0623a635d1f9c850de9e906f.scn"
+path="res://.import/frog1.dae-5ac7eb473e22db776e33ffaf08a0a1dc.scn"
 
 [deps]
 
-source_file="res://models/pig1/pig1.dae"
-source_md5="c089a96a0cacc9f64a85fac7042365a1"
+source_file="res://models/frog1/frog1.dae"
+source_md5="5064153aafa03015b5f01acf0d8b9088"
 
-dest_files=[ "res://.import/pig1.dae-0e3b3a2f0623a635d1f9c850de9e906f.scn" ]
-dest_md5="90f9c3121db26ba31de22295ec9ed209"
+dest_files=[ "res://.import/frog1.dae-5ac7eb473e22db776e33ffaf08a0a1dc.scn" ]
+dest_md5="53ac90ef4857cb8df5d21347f5460106"
 
 [params]
 

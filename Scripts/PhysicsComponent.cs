@@ -36,7 +36,9 @@ public class PhysicsComponent : BaseComponent
     private void SetDirection(Vector2 d)
     {
         //GD.Print("Direction set received: ", d.x, " ", d.y);
+        
         direction = d.Normalized();
+        parent.LookAt(parent.GetTranslation() + new Vector3(direction.x, 0, direction.y) * 100.0f, new Vector3(0,1,0));
         //GD.Print("Direction set: ", direction);
     }
 
