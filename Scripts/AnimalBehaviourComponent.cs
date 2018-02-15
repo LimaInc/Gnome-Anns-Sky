@@ -72,7 +72,7 @@ public class AnimalBehaviourComponent : BaseComponent
     private string breedingTargetName = "";
 
     [Export]
-    float satiated = 100.0f; //100 is max, 0 is starved to death
+    float satiated = 80.0f; //100 is max, 0 is starved to death
 
     [Export]
     int breedability;
@@ -82,16 +82,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
     const float timeToDeath = 50.0f;
 
-    // TODO NEXT: Breeding. Random chance animal (defined in preset) will feel like breeding with 5sec cooldown if satiated enough, if in sight of opposite sex.
-    // If test passes, heads towards target, and when within range, send request. Target can accept or deny request.
-    // If request accepted, continue to head towards each other, and when collided, wait 3 seconds, then if both still alive, produce baby.
-    // 50% chance for gender of baby, need to add preset names.
-    // Then make sure works on laptop. 
-
-    // Left to do: Add different models. Add different basic behaviours to models (eg movement). Improve AI a bit. This can be done tomorrow (got 11-16).
-    // No plants yet. That's fine, just give herbivores a long time-to-death for demo purposes.
-
-    // Also, add rotations.
+    // TODO add rotations.
 
     private void SetRandomDirection()
     {
@@ -199,9 +190,10 @@ public class AnimalBehaviourComponent : BaseComponent
                 {
                     Node spawnNode = GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner");
                     Random r = new Random();
-                    int nextSex = r.Next(0, 1);
+                    int nextSex = r.Next(0, 2);
 
                     spawnNode.Call("SpawnAnimal",presetName,(AnimalBehaviourComponent.Sex)nextSex, parent.GetTranslation() + new Vector3(0.0f,20.0f,0.0f));
+                    satiated -= 20.0f;
                 }
 
                 breedingTargetName = "";
@@ -332,6 +324,8 @@ public class AnimalBehaviourComponent : BaseComponent
         foodInRange.RemoveAll(p => p == null);
         breedableTargets.RemoveAll(p => p == null);
 
+        hungry(delta);
+
         if (state == BehaviourState.Idle)
         {
             directionTimer += delta;
@@ -354,18 +348,35 @@ public class AnimalBehaviourComponent : BaseComponent
 
         if(state == BehaviourState.Idle)
         {
-            foreach (PhysicsBody b in foodInRange) //Could randomise this?
+            if (satiated < 80.0f)
             {
-                if (b == null) continue;
-                // Identify whether we can see the target by raycasting
-                PhysicsDirectSpaceState spaceState = b.GetWorld().GetDirectSpaceState();
-                var result = spaceState.IntersectRay(parent.GetTranslation(), b.GetTranslation(), new[] { parent, b });
-
-                if(result.Count == 0)
+                float minDistanceSquared = 1000.0f * 1000.0f;
+                PhysicsBody minTarget = null;
+                bool found = false;
+                foreach (PhysicsBody b in foodInRange) //Could randomise this?
                 {
-                    target = b;
+                    if (b == null) continue;
+                    // Identify whether we can see the target by raycasting
+                    PhysicsDirectSpaceState spaceState = b.GetWorld().GetDirectSpaceState();
+                    var result = spaceState.IntersectRay(parent.GetTranslation(), b.GetTranslation(), new[] { parent, b });
+
+                    if (result.Count == 0)
+                    {
+                        found = true;
+                        float distanceSquared = parent.GetTranslation().DistanceSquaredTo(b.GetTranslation());
+                        if(distanceSquared < minDistanceSquared)
+                        {
+                            minDistanceSquared = distanceSquared;
+                            minTarget = b;
+                        }
+                    }
+                }
+
+                if (found)
+                {                 
+                    target = minTarget;
+                    GD.Print(parent.GetName(), " found target to eat: ", target.GetName());
                     state = BehaviourState.Hunting;
-                    break;
                 }
             }
         }
@@ -380,8 +391,8 @@ public class AnimalBehaviourComponent : BaseComponent
                 // Check for line of sight and whether object is still in range.
                 PhysicsDirectSpaceState spaceState = target.GetWorld().GetDirectSpaceState();
                 var result = spaceState.IntersectRay(target.GetTranslation(), parent.GetTranslation(), new[] { parent, target });
-
-                if (result.Count != 0 || target.GetTranslation().DistanceSquaredTo(parent.GetTranslation()) > 60 * 60)
+                float distanceSquared = target.GetTranslation().DistanceSquaredTo(parent.GetTranslation());
+                if (result.Count != 0 || distanceSquared > 60 * 60)
                 {
                     state = BehaviourState.Idle;
                 }
