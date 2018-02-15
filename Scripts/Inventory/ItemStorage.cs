@@ -13,13 +13,16 @@ public class ItemStorage
     public static Item fossil = new Item(2, "Fossil", FOSSIL_TEX, Item.Type.FOSSIL);
 
     private static Texture CHOCOLATE_TEX = ResourceLoader.Load("res://Images/itemChocolate.png") as Texture;
-    public static Item chocoloate = new ItemFood(3, "Chocolate", CHOCOLATE_TEX, 0.2f);
+    public static Item chocolate = new ItemFood(3, "Chocolate", CHOCOLATE_TEX, 0.2f);
 
     private static Texture CAKE_TEX = ResourceLoader.Load("res://Images/itemCake.png") as Texture;
     public static Item cake = new ItemFood(4, "Cake", CAKE_TEX, 0.5f);
 
     private static Texture STONE_BLOCK_TEX = ResourceLoader.Load("res://Images/itemStone.png") as Texture;
     public static Item stone = new ItemBlock(5, "Stone", STONE_BLOCK_TEX, Game.GetBlockId<Stone>()).SetStackable(true);
+
+    private static Texture WATER_TEX = ResourceLoader.Load("res://Images/itemWater.png") as Texture;
+    public static Item water = new ItemDrink(6, "Water", WATER_TEX, 0.4f);
 
     public static void RegisterBlockItem(byte id, Item item)
     {

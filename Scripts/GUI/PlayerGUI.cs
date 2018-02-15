@@ -3,8 +3,8 @@ using Godot;
 
 public class PlayerGUI : GUI
 {
-    private static Texture WATER_DROP_TEX = ResourceLoader.Load("res://Images/waterDrop.png") as Texture;
     private static Texture AIR_ICON_TEX = ResourceLoader.Load("res://Images/airIcon.png") as Texture;
+    
     public static Texture CROSSHAIR_TEX = ResourceLoader.Load("res://Images/crosshairWhite.png") as Texture;
 
     private static Color AIR_COLOR = new Color(0.0f, 1.0f, 1.0f);
@@ -81,8 +81,7 @@ public class PlayerGUI : GUI
         hungerIcon.SetScale(new Vector2(2.0f, 2.0f));
         this.AddChild(hungerIcon);
 
-        thirstIcon = new Sprite();
-        thirstIcon.SetTexture(WATER_DROP_TEX);
+        thirstIcon = ItemStorage.water.GenerateGUISprite();
         thirstIcon.SetPosition(thirstPos - new Vector2(0.0f, 150.0f));
         thirstIcon.SetScale(new Vector2(2.0f, 2.0f));
         this.AddChild(thirstIcon);

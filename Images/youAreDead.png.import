@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/waterDrop.png-515700f6baf5d57957efb8bb04f14d40.stex"
+path="res://.import/youAreDead.png-6e0eeedf5bc2b84aa89fc40a94857cfb.stex"
 
 [deps]
 
-source_file="res://Images/waterDrop.png"
-source_md5="902e43da65b05ff315354a681d82b64b"
+source_file="res://Images/youAreDead.png"
+source_md5="aa3016f8374fcc074482dad9755b70b3"
 
-dest_files=[ "res://.import/waterDrop.png-515700f6baf5d57957efb8bb04f14d40.stex" ]
-dest_md5="114af83f266699facb599159a54234ff"
+dest_files=[ "res://.import/youAreDead.png-6e0eeedf5bc2b84aa89fc40a94857cfb.stex" ]
+dest_md5="da6559823f1a4aa0a61b1648adff7df3"
 
 [params]
 

@@ -53,6 +53,7 @@
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\ItemFood.cs" />
     <Compile Include="Scripts\Inventory\ItemBlock.cs" />
+    <Compile Include="Scripts\Inventory\ItemDrink.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
     <Compile Include="Scripts\GUI\PlayerGUI.cs" />
     <Compile Include="Scripts\GUI\GUI.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Scripts\GUI\GUIBox.cs" />
     <Compile Include="Scripts\GUI\GUIObject.cs" />
     <Compile Include="Scripts\GUI\InventoryGUI.cs" />
+    <Compile Include="Scripts\GUI\DeadGUI.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
     <Compile Include="Scripts\Game.cs" />

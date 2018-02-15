@@ -3,6 +3,8 @@ using System;
 
 public class Player : KinematicBody
 {
+    private static bool DEBUG_DEATH_ENABLED = true;
+
     private float moveSpeed = 30.0f;
     private float jumpPower = 12.0f;
     private float camRotateSpeed = 0.01f;
@@ -13,6 +15,7 @@ public class Player : KinematicBody
     private Vector3 velocity = new Vector3();
 
     private Vector3 camOffset = new Vector3(0.0f, 0.4f, 0.0f);
+    private Vector3 deadCamOffset = new Vector3(0.0f, -0.4f, 0.0f);
 
     private static float gravity = 40.0f;
 
@@ -43,6 +46,8 @@ public class Player : KinematicBody
     public float CurrentHunger { get; set; } = MAX_HUNGER;
 
     private Interaction interaction;
+
+    private bool dead;
 
     public override void _Ready()
     {
@@ -80,11 +85,13 @@ public class Player : KinematicBody
 
         blockInventory.AddItem(ItemStorage.redRock, 20);
         fossilInventory.AddItem(ItemStorage.fossil, 10);
-        consumableInventory.AddItem(ItemStorage.chocoloate, 10);
+        consumableInventory.AddItem(ItemStorage.chocolate, 10);
         blockInventory.AddItem(ItemStorage.redRock, 15);
         blockInventory.AddItem(ItemStorage.redRock, 34);
 
         consumableInventory.AddItem(ItemStorage.cake, 3);
+
+        consumableInventory.AddItem(ItemStorage.water, 5);
     }
 
     public CollisionShape GetCollisionShape()
@@ -99,6 +106,8 @@ public class Player : KinematicBody
 
     public override void _Input(InputEvent e)
     {
+        if (dead) return;
+
         if (e is InputEventMouseMotion && !inventoryOpen)
         {
             Vector3 rot = this.GetRotation();
@@ -151,7 +160,7 @@ public class Player : KinematicBody
                             addedToHand = true;
                         }
                     }
-                } 
+                }
                 if (!addedToHand)
                     this.blockInventory.AddItem(ib, 1);
             }
@@ -182,6 +191,63 @@ public class Player : KinematicBody
             this.CurrentThirst = MAX_THIRST;
     }
 
+    public void DepleteHunger(float v)
+    {
+        this.CurrentHunger -= v;
+
+        if (this.CurrentHunger < 0)
+        {
+            this.CurrentHunger = 0;
+            this.Kill();
+        }
+    }
+
+    public void DepleteAir(float v)
+    {
+        this.CurrentAir -= v;
+
+        if (this.CurrentAir < 0)
+        {
+            this.CurrentAir = 0;
+            this.Kill();
+        }
+    }
+
+    public void DepleteThirst(float v)
+    {
+        this.CurrentThirst -= v;
+
+        if (this.CurrentThirst < 0)
+        {
+            this.CurrentThirst = 0;
+            this.Kill();
+        }
+    }
+
+    public void Kill()
+    {
+        if (!DEBUG_DEATH_ENABLED) 
+        {
+            GD.Print("Tried to kill player, but death is disabled");
+            return;
+        }
+
+        this.dead = true;
+
+        if (inventoryOpen)
+            this.RemoveChild(inventoryGUI);
+        else 
+            this.RemoveChild(playerGUI);
+
+        DeadGUI dg = new DeadGUI(this);
+        this.AddChild(dg);
+    }
+
+    public bool isDead()
+    {
+        return dead;
+    }
+
     public void HandleUseItem()
     {
         if (this.ItemInHand == null)
@@ -210,6 +276,16 @@ public class Player : KinematicBody
                 this.ItemInHand = null;
             else
                 this.ItemInHand.SubtractCount(1);
+        } else if (i is ItemDrink)
+        {
+            ItemDrink d = (ItemDrink) i;
+
+            ReplenishThirst(d.ReplenishValue);
+
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
         }
     }
 
@@ -225,11 +301,17 @@ public class Player : KinematicBody
     private static float MOVE_DEGRED = 0.005f;
     //single frame
     private static float JUMP_DEGRED = 0.05f;
-
+    
     private static float BASE_AIR_REGEN = 0.005f;
+    private static float SPRINT_DEGRED_MULT = 4.0f;
 
-    public override void _Process(float delta)
+    private void ProcessAlive(float delta)
     {
+        if (Input.IsActionJustPressed("debug_kill"))
+        {
+            this.Kill();
+        }
+        
         Vector3 position = this.GetTranslation();
 
         if (position.x * position.x + position.z * position.z < WorldGenerator.BASE_RADIUS_SQRD)
@@ -238,9 +320,9 @@ public class Player : KinematicBody
         }
 
         //Basic degredation
-        CurrentAir -= BASIC_DEGRED * delta * DEGRED_BALANCE_AIR;
-        CurrentThirst -= BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST;
-        CurrentHunger -= BASIC_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+        this.DepleteAir(BASIC_DEGRED * delta * DEGRED_BALANCE_AIR);
+        this.DepleteThirst(BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST);
+        this.DepleteHunger(BASIC_DEGRED * delta * DEGRED_BALANCE_HUNGER);
 
         if (Input.IsActionJustPressed("inventory"))
         {
@@ -266,9 +348,9 @@ public class Player : KinematicBody
         {
             if (Input.IsActionJustPressed("jump") && onFloor)
             {
-                CurrentAir -= JUMP_DEGRED * delta * DEGRED_BALANCE_AIR;
-                CurrentThirst -= JUMP_DEGRED * delta * DEGRED_BALANCE_THIRST;
-                CurrentHunger -= JUMP_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+                this.DepleteAir(JUMP_DEGRED * delta * DEGRED_BALANCE_AIR);
+                this.DepleteThirst(JUMP_DEGRED * delta * DEGRED_BALANCE_THIRST);
+                this.DepleteHunger(JUMP_DEGRED * delta * DEGRED_BALANCE_HUNGER);
 
                 velocity += new Vector3(0.0f, jumpPower, 0.0f);
             }
@@ -303,17 +385,17 @@ public class Player : KinematicBody
 
             if (!movDir.Equals(new Vector3()))
             {
-                CurrentAir -= MOVE_DEGRED * delta * DEGRED_BALANCE_AIR;
-                CurrentThirst -= MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST;
-                CurrentHunger -= MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER;
+                this.DepleteAir(MOVE_DEGRED * delta * DEGRED_BALANCE_AIR);
+                this.DepleteThirst(MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST);
+                this.DepleteHunger(MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER);
             }
 
             movDir = movDir.Normalized();
             if(Input.IsActionPressed("sprint"))
             {
-                CurrentAir -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_AIR;
-                CurrentThirst -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_THIRST;
-                CurrentHunger -= MOVE_DEGRED * delta * 4 * DEGRED_BALANCE_HUNGER;
+                this.DepleteAir(MOVE_DEGRED * delta * DEGRED_BALANCE_AIR * SPRINT_DEGRED_MULT);
+                this.DepleteThirst(MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST * SPRINT_DEGRED_MULT);
+                this.DepleteHunger(MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER * SPRINT_DEGRED_MULT);
                 movDir *= 3f;
             }
 
@@ -327,5 +409,21 @@ public class Player : KinematicBody
         // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
 
         onFloor = this.IsOnFloor();
+    }
+    
+    public void ProcessDead(float delta)
+    {
+
+    }
+
+    public override void _Process(float delta)
+    {
+        if (dead)
+        {
+            ProcessDead(delta);
+        } else
+        {
+            ProcessAlive(delta);
+        }
     }
 }
