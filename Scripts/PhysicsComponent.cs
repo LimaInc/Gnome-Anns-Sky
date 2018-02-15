@@ -38,7 +38,10 @@ public class PhysicsComponent : BaseComponent
         //GD.Print("Direction set received: ", d.x, " ", d.y);
         
         direction = d.Normalized();
-        parent.LookAt(parent.GetTranslation() + new Vector3(direction.x, 0, direction.y) * 100.0f, new Vector3(0,1,0));
+        if (d.x != 0.0f || d.y != 0.0f)
+        {
+            parent.LookAt(parent.GetTranslation() + new Vector3(direction.x, 0, direction.y) * 100.0f, new Vector3(0, 1, 0));
+        }
         //GD.Print("Direction set: ", direction);
     }
 
