@@ -15,6 +15,7 @@ public class WorldGenerator
     private static float STARTING_HEIGHT = 55.0f;
 
     private static float BASE_RADIUS = 8.0f;
+    private static float BASE_RADIUS_SQRD = BASE_RADIUS * BASE_RADIUS;
 
     public byte[,,] GetChunk(int x, int z, int sX, int sY, int sZ)
     {
@@ -53,7 +54,7 @@ public class WorldGenerator
                             if (chunk[i,j,k] == 0)
                                 chunk[i,j,k] = habId;
                         }
-                        if (Math.Sqrt(wx * wx + wz * wz) < BASE_RADIUS)
+                        if (wx * wx + wz * wz < BASE_RADIUS_SQRD)
                         {
                             if (Math.Abs(j - (weighted + 2)) < 0.5f)
                             {
