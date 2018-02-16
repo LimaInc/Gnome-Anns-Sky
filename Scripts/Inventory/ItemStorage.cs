@@ -34,6 +34,7 @@ public class ItemStorage
 
     private static Texture BACTERIA_FOSSIL_TEX = ResourceLoader.Load("res://Images/itemBacteriaFossil.png") as Texture;
     public static Item oxygenBacteriaFossil = 
+
         new ItemBlock((byte)ItemID.OXYGEN_BACTERIA_FOSSIL, "OxygenBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<OxygenBacteriaFossilBlock>()).SetStackable(true);
     public static Item nitrogenBacteriaFossil = 
         new ItemBlock((byte)ItemID.NITROGEN_BACTERIA_FOSSIL, "NitrogenBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<NitrogenBacteriaFossilBlock>()).SetStackable(true);
@@ -42,15 +43,15 @@ public class ItemStorage
 
     private static Texture OXYGEN_BACTERIA_VIAL_TEX = ResourceLoader.Load("res://Images/itemOxygenBacteriaVial.png") as Texture;
     public static Item oxygenBacteriaVial = 
-        new Item((byte)ItemID.OXYGEN_BACTERIA_VIAL, "OxygenBacteriaVial", OXYGEN_BACTERIA_VIAL_TEX, Item.Type.FOSSIL);
+        new ItemBacteriaVial((byte)ItemID.OXYGEN_BACTERIA_VIAL, "OxygenBacteriaVial", OXYGEN_BACTERIA_VIAL_TEX);
 
     private static Texture NITROGEN_BACTERIA_VIAL_TEX = ResourceLoader.Load("res://Images/itemNitrogenBacteriaVial.png") as Texture;
     public static Item nitrogenBacteriaVial = 
-        new Item((byte)ItemID.NITROGEN_BACTERIA_VIAL, "NitrogenBacteriaVial", NITROGEN_BACTERIA_VIAL_TEX, Item.Type.FOSSIL);
+        new ItemBacteriaVial((byte)ItemID.NITROGEN_BACTERIA_VIAL, "NitrogenBacteriaVial", NITROGEN_BACTERIA_VIAL_TEX);
     
     private static Texture CARBON_DIOXIDE_BACTERIA_VIAL_TEX = ResourceLoader.Load("res://Images/itemCarbonDioxideBacteriaVial.png") as Texture;
     public static Item carbonDioxideBacteriaVial = 
-        new Item((byte)ItemID.CARBON_DIOXIDE_BACTERIA_VIAL, "CarbonDioxideBacteriaVial", CARBON_DIOXIDE_BACTERIA_VIAL_TEX, Item.Type.FOSSIL);
+        new ItemBacteriaVial((byte)ItemID.CARBON_DIOXIDE_BACTERIA_VIAL, "CarbonDioxideBacteriaVial", CARBON_DIOXIDE_BACTERIA_VIAL_TEX);
 
     public static void RegisterBlockItem(byte id, Item item)
     {
