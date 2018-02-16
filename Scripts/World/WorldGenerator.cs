@@ -34,7 +34,7 @@ public class WorldGenerator
 
                 float centreDist = (float) Math.Sqrt(xs * xs + zs * zs);
 
-                float sigmoidSample = sigmoid(centreDist, SIGMOID_PARAM_A, SIGMOID_PARAM_B);
+                float sigmoidSample = Sigmoid(centreDist, SIGMOID_PARAM_A, SIGMOID_PARAM_B);
 
                 float weighted = sigmoidSample * STARTING_HEIGHT + (1 - sigmoidSample) * height;
 
@@ -48,18 +48,19 @@ public class WorldGenerator
                     float startAdjustedY = j - STARTING_HEIGHT;
                     if ((Math.Abs(wx) < BASE_RADIUS || Math.Abs(startAdjustedY) < BASE_RADIUS || Math.Abs(wz) < BASE_RADIUS) && wx < BASE_RADIUS - 3)
                     {
+                        int SOME_MAGIC_NUMBER = 2;
                         float blockSphereDist = (float) Math.Sqrt(wx * wx + startAdjustedY * startAdjustedY + wz * wz);
-                        if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f)
+                        if (blockSphereDist < BASE_RADIUS && startAdjustedY > SOME_MAGIC_NUMBER)
                         {
-                            if (chunk[i,j,k] == 0)
-                                chunk[i,j,k] = habId;
-                        } else if (blockSphereDist < BASE_RADIUS && j > STARTING_HEIGHT + 2)
+                            chunk[i, j, k] = 0;
+                        }
+                        if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f && startAdjustedY > SOME_MAGIC_NUMBER)
                         {
-                            chunk[i,j,k] = 0;
+                            chunk[i,j,k] = habId;
                         }
                         if (wx * wx + wz * wz < BASE_RADIUS_SQRD)
                         {
-                            if (Math.Abs(j - (weighted + 2)) < 0.5f)
+                            if (Math.Abs(j - (weighted + SOME_MAGIC_NUMBER)) < 0.5f)
                             {
                                 chunk[i,j,k] = habId;
                             }
@@ -72,7 +73,7 @@ public class WorldGenerator
         return chunk;
     }
 
-    public float sigmoid(float x, float a, float b)
+    public float Sigmoid(float x, float a, float b)
     {
         return (float) Math.Exp(a * x + b) / (1.0f + (float) Math.Exp(a * x + b));
     }

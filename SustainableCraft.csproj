@@ -49,6 +49,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Scripts\Blocks\HabitationBlock.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\ItemFood.cs" />
@@ -72,7 +73,6 @@
     <Compile Include="Scripts\Blocks\BlockFace.cs" />
     <Compile Include="Scripts\Blocks\CubeBlock.cs" />
     <Compile Include="Scripts\Blocks\RedRock.cs" />
-    <Compile Include="Scripts\Blocks\HabitationBlock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
@@ -83,6 +83,9 @@
     <Compile Include="Scripts\Util\Noise.cs" />
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\Fossils\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
