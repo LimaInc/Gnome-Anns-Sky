@@ -53,6 +53,9 @@ public class WorldGenerator
                         {
                             if (chunk[i,j,k] == 0)
                                 chunk[i,j,k] = habId;
+                        } else if (blockSphereDist < BASE_RADIUS && j > STARTING_HEIGHT + 2)
+                        {
+                            chunk[i,j,k] = 0;
                         }
                         if (wx * wx + wz * wz < BASE_RADIUS_SQRD)
                         {
