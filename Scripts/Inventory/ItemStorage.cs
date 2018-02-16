@@ -60,6 +60,9 @@ public class ItemStorage
 
     public static Item GetItemFromBlock(byte b)
     {
+        if (!blockItems.ContainsKey(b))
+            return null;
+
         return blockItems[b];
     }
 }

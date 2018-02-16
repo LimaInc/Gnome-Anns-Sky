@@ -30,7 +30,7 @@ public class WorldGenerator
 
                 float xs = wx / 256.0f;
                 float zs = wz / 256.0f;
-                float height = noise.sample(xs, zs) * 128.0f + 50.0f;
+                float height = noise.sample(xs, zs) * 128.0f + STARTING_HEIGHT;
 
                 float centreDist = (float) Math.Sqrt(xs * xs + zs * zs);
 

@@ -145,22 +145,25 @@ public class Player : KinematicBody
                 byte b = interaction.RemoveBlock();
                 Item ib = ItemStorage.GetItemFromBlock(b);
 
-                bool addedToHand = false;
-
-                if (this.ItemInHand != null)
+                if (ib != null)
                 {
-                    Item i = this.ItemInHand.GetItem();
-                    if (i is ItemBlock curBlock)
+                    bool addedToHand = false;
+
+                    if (this.ItemInHand != null)
                     {
-                        if (curBlock.Block == b)
+                        Item i = this.ItemInHand.GetItem();
+                        if (i is ItemBlock curBlock)
                         {
-                            this.ItemInHand.AddToQuantity(1);
-                            addedToHand = true;
+                            if (curBlock.Block == b)
+                            {
+                                this.ItemInHand.AddToQuantity(1);
+                                addedToHand = true;
+                            }
                         }
                     }
+                    if (!addedToHand)
+                        this.blockInventory.AddItem(ib, 1);
                 }
-                if (!addedToHand)
-                    this.blockInventory.AddItem(ib, 1);
             }
         }
     }
