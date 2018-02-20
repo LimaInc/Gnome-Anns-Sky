@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Godot;
 
 class DefossiliserBlock : CubeBlock
 {
+    public Defossiliser Machine { private set; get; }
+
     private static readonly string[] texturePaths = 
         new[] { "res://Images/defossiliser_front.png",
                 "res://Images/defossiliser_top.png",
@@ -24,5 +24,15 @@ class DefossiliserBlock : CubeBlock
             default:
                 return 2;
         }
+    }
+
+    public DefossiliserBlock()
+    {
+        Machine = new Defossiliser();
+    }
+
+    public void HandleInput(InputEvent e)
+    {
+
     }
 }

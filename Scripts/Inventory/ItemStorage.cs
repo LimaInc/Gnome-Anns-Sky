@@ -33,7 +33,6 @@ public class ItemStorage
 
     private static Texture BACTERIA_FOSSIL_TEX = ResourceLoader.Load("res://Images/itemBacteriaFossil.png") as Texture;
     public static Item oxygenBacteriaFossil = 
-
         new ItemBlock((byte)ItemID.OXYGEN_BACTERIA_FOSSIL, "OxygenBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<OxygenBacteriaFossilBlock>()).SetStackable(true);
 
     public static Item nitrogenBacteriaFossil = 

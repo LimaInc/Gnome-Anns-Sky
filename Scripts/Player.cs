@@ -138,6 +138,15 @@ public class Player : KinematicBody
         {
             if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
             {
+                if(this.ItemInHand == null)
+                {
+                    byte b = interaction.GetBlock();
+                    Block block = Game.GetBlock(b);
+                    if (block is DefossiliserBlock db)
+                    {
+                        db.HandleInput(e);
+                    }
+                }
                 this.HandleUseItem();
             }
 

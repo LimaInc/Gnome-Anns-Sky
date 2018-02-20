@@ -28,19 +28,19 @@ public class GUIInventorySlot : GUIObject
         this.index = -1;
     }
 
-    public override void onClick()
+    public override void OnClick()
     {
         if (this.index != -1) //If i am not the floating slot
             inventory.HandleSlotClick(index, type);
     }
 
-    public override void onHover()
+    public override void OnHover()
     {
         if (this.index != -1)
             inventory.HandleHover(stack);
     }
 
-    public override void onHoverOff()
+    public override void OnHoverOff()
     {
         if (this.index != -1)
             inventory.HandleHoverOff();

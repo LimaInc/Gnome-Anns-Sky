@@ -7,13 +7,14 @@ public class Atmosphere : Node
 {
     private static readonly IDictionary<Gas, float> gasGoals = new Dictionary<Gas, float>
     {
-        [Gas.OXYGEN] = 4*0.2f,
-        [Gas.NITROGEN] = 4 * 0.7f,
-        [Gas.CARBON_DIOXIDE] = 4 * 0.1f
+        [Gas.OXYGEN] = 0.2f,
+        [Gas.NITROGEN] = 0.7f,
+        [Gas.CARBON_DIOXIDE] = 0.1f
     };
     private IDictionary<Gas,float> gases;
     private IAtmosphericComponent dynamics;
     private IAtmosphericComponent graphics;
+    public float Pressure { get; private set; }
 
     public Atmosphere(IAtmosphericComponent dynamics, IAtmosphericComponent graphics)
     {
@@ -28,7 +29,7 @@ public class Atmosphere : Node
 
     public float GetGasAmt(Gas gas) => gases[gas];
 
-    public float GetPressure() => gases.Values.Sum();
+    public float UpdatePressure() => Pressure = gases.Values.Sum();
 
     public IList<Gas> GetGases() => gases.Keys.ToList();
 

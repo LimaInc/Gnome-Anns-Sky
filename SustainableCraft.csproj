@@ -71,7 +71,10 @@
     <Compile Include="Scripts\Blocks\RedRock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Blocks\HabitationBlock.cs" />
+    <Compile Include="Scripts\Fossils\Defossiliser.cs" />
+    <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\GUI\DefossiliserGUI.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemBacteriaVial.cs" />
@@ -103,11 +106,7 @@
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\World\WorldGenerator.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\Fossils\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\Fossils\" />
-  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
