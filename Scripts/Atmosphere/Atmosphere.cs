@@ -7,7 +7,7 @@ public class Atmosphere : Node
 {
     private static readonly IDictionary<Gas, float> gasGoals = new Dictionary<Gas, float>
     {
-        [Gas.OXYGEN] = 4*0.2f,
+        [Gas.OXYGEN] = 4 * 0.2f,
         [Gas.NITROGEN] = 4 * 0.7f,
         [Gas.CARBON_DIOXIDE] = 4 * 0.1f
     };

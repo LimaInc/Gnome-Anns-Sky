@@ -49,6 +49,8 @@ public class Player : KinematicBody
 
     private bool dead;
 
+    private Atmosphere atmosphere;
+
     public override void _Ready()
     {
         Input.SetCustomMouseCursor(CURSOR);
@@ -94,6 +96,8 @@ public class Player : KinematicBody
         fossilInventory.AddItem(ItemStorage.oxygenBacteriaVial, 5);
         fossilInventory.AddItem(ItemStorage.nitrogenBacteriaVial, 5);
         fossilInventory.AddItem(ItemStorage.carbonDioxideBacteriaVial, 5);
+
+        this.atmosphere = (GetNode(Game.GAME_PATH) as Game).World.Atmosphere;
     }
 
     public CollisionShape GetCollisionShape()
@@ -175,6 +179,9 @@ public class Player : KinematicBody
 
     public void ReplenishAir(float v)
     {
+        if (v != v) //isNaN
+            return;
+
         this.CurrentAir += v;
 
         if (this.CurrentAir > MAX_AIR)
@@ -304,6 +311,8 @@ public class Player : KinematicBody
     private static float BASE_AIR_REGEN = 0.005f;
     private static float SPRINT_DEGRED_MULT = 4.0f;
 
+    private static float ATMOSPHERE_AIR_REGEN = 0.004f;
+
     private void ProcessAlive(float delta)
     {
         if (Input.IsActionJustPressed("debug_kill"))
@@ -317,6 +326,9 @@ public class Player : KinematicBody
         {
             this.ReplenishAir(BASE_AIR_REGEN);
         }
+
+        GD.Print(this.CurrentAir);
+        this.ReplenishAir(ATMOSPHERE_AIR_REGEN * delta * (1 - atmosphere.GetGasProgress(Gas.OXYGEN)));
 
         //Basic degredation
         this.DepleteAir(BASIC_DEGRED * delta * DEGRED_BALANCE_AIR);
