@@ -327,7 +327,6 @@ public class Player : KinematicBody
             this.ReplenishAir(BASE_AIR_REGEN);
         }
 
-        GD.Print(this.CurrentAir);
         this.ReplenishAir(ATMOSPHERE_AIR_REGEN * delta * (1 - atmosphere.GetGasProgress(Gas.OXYGEN)));
 
         //Basic degredation
