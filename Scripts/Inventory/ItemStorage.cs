@@ -9,6 +9,7 @@ public class ItemStorage
         OXYGEN_BACTERIA_FOSSIL, NITROGEN_BACTERIA_FOSSIL, CARBON_DIOXIDE_BACTERIA_FOSSIL,
         OXYGEN_BACTERIA_VIAL, NITROGEN_BACTERIA_VIAL, CARBON_DIOXIDE_BACTERIA_VIAL,
         CHOCOLATE, CAKE, WATER,
+        GRASS, TREE,
     }
   
     private static Dictionary<byte, Item> blockItems = new Dictionary<byte, Item>();
@@ -53,6 +54,12 @@ public class ItemStorage
     public static Item carbonDioxideBacteriaVial = 
         new ItemBacteriaVial((byte)ItemID.CARBON_DIOXIDE_BACTERIA_VIAL, "CarbonDioxideBacteriaVial", CARBON_DIOXIDE_BACTERIA_VIAL_TEX);
 
+    private static Texture GRASS_TEX = ResourceLoader.Load("res://Images/itemGrass.png") as Texture;
+    public static Item grass = new ItemPlant((byte) ItemID.GRASS, "Grass", GRASS_TEX, PlantType.GRASS, Game.GetBlockId<GrassBlock>(), redRock).SetStackable(true);
+
+    private static Texture TREE_TEX = ResourceLoader.Load("res://Images/itemTree.png") as Texture;
+    public static Item tree = new ItemPlant((byte) ItemID.TREE, "Tree", TREE_TEX, PlantType.TREE, Game.GetBlockId<TreeBlock>(), redRock /* TODO: change to tree */).SetStackable(true);
+
     public static void RegisterBlockItem(byte id, Item item)
     {
         blockItems[id] = item;
@@ -60,9 +67,6 @@ public class ItemStorage
 
     public static Item GetItemFromBlock(byte b)
     {
-        if (!blockItems.ContainsKey(b))
-            return null;
-
-        return blockItems[b];
+        return blockItems.ContainsKey(b) ? blockItems[b] : null;
     }
 }

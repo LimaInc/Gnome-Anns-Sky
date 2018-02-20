@@ -19,6 +19,6 @@ class Defossiliser
 
     public Defossiliser()
     {
-
+        defossiliserGUI = null;
     }
 }
