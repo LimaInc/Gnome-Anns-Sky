@@ -9,6 +9,7 @@ public class Game : Node
     public const string WORLD_ENVIRO_PATH = GAME_PATH + "/WorldEnvironment";
     public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
     public const string PLAYER_PATH = GAME_PATH + "/Player";
+    public const string CAMERA_PATH = PLAYER_PATH+"/Camera";
 
     public ExoWorld World {get; private set;}
 

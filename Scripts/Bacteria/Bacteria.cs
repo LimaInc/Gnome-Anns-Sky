@@ -27,4 +27,9 @@ public class Bacteria
     {
         OptimalAmount += additionalCapacity;
     }
+
+    public void AddAmt(float amt)
+    {
+        Amount += amt;
+    }
 }

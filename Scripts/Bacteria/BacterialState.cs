@@ -19,7 +19,8 @@ public class BacterialState
         bacteriaTypes = new Dictionary<BacteriumType, Bacteria>();
         foreach(BacteriumType bt in Enum.GetValues(typeof(BacteriumType)))
         {
-            bacteriaTypes[bt] = new Bacteria(0, bacteriaInitis[bt].Item1, bacteriaInitis[bt].Item2);
+            bacteriaTypes[bt] = new Bacteria(0,0,bacteriaInitis[bt].Item2);
+            //bacteriaTypes[bt] = new Bacteria(0, bacteriaInitis[bt].Item1, bacteriaInitis[bt].Item2);
         }
         this.dynamics = dynamics;
     }

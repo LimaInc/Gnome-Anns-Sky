@@ -47,10 +47,14 @@ public class Player : KinematicBody
 
     private Interaction interaction;
 
+    private Game game;
+
     private bool dead;
 
     public override void _Ready()
     {
+        game = GetNode(Game.GAME_PATH) as Game;
+
         Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
 
@@ -61,7 +65,7 @@ public class Player : KinematicBody
         b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         collisionShape.SetShape(b);
 
-        interaction = GetNode("/root/Game/Player/Camera") as Interaction;
+        interaction = GetNode(Game.CAMERA_PATH) as Interaction;
 
         // CapsuleShape c = new CapsuleShape();
         // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
@@ -275,6 +279,16 @@ public class Player : KinematicBody
         else if (i is ItemDrink d)
         {
             ReplenishThirst(d.ReplenishValue);
+
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
+        }
+        else if(i is ItemBacteriaVial vial)
+        {
+            game.World.Bacteria.TryGetBacteria(vial.BacteriaType(), out Bacteria bacteria);
+            bacteria.AddAmt(vial.Amount);
 
             if (this.ItemInHand.GetCount() == 1)
                 this.ItemInHand = null;

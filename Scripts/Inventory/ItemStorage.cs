@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class ItemStorage
 {
-    enum ItemID : byte {
+    public enum ItemID : byte {
         RED_ROCK, FOSSIL, STONE_BLOCK,
         OXYGEN_BACTERIA_FOSSIL, NITROGEN_BACTERIA_FOSSIL, CARBON_DIOXIDE_BACTERIA_FOSSIL,
         OXYGEN_BACTERIA_VIAL, NITROGEN_BACTERIA_VIAL, CARBON_DIOXIDE_BACTERIA_VIAL,

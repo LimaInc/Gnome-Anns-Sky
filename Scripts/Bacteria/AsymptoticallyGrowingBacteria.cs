@@ -8,7 +8,10 @@ class AsymptoticallyGrowingBacteria : IBacterialStateComponent
     {
         bs.GetBacteriaList().ForEach(b =>
         {
-            b.Amount = (float)(b.OptimalAmount + (b.Amount - b.OptimalAmount) * Math.Exp(-b.GrowthRate * delta));
+            if (b.Amount > 0)
+            {
+                b.Amount = (float)(b.OptimalAmount + (b.Amount - b.OptimalAmount) * Math.Exp(-b.GrowthRate * delta));
+            }
         });
     }
 }
