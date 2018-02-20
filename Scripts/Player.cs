@@ -49,6 +49,8 @@ public class Player : KinematicBody
 
     private bool dead;
 
+    private Plants plants;
+
     public override void _Ready()
     {
         Input.SetCustomMouseCursor(CURSOR);
@@ -79,11 +81,16 @@ public class Player : KinematicBody
         playerGUI = new PlayerGUI(this);
         this.AddChild(playerGUI);
 
+        plants = GetNode("/root/Game/Plants") as Plants;
+
         consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);
         blockInventory = new Inventory(this, Item.Type.BLOCK);
         blockInventory.AddItem(ItemStorage.redRock, 20);
         blockInventory.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
+        fossilInventory.AddItem(ItemStorage.fossil, 10);
+        fossilInventory.AddItem(ItemStorage.grass, 10);
+        fossilInventory.AddItem(ItemStorage.tree, 10);
         consumableInventory.AddItem(ItemStorage.chocolate, 10);
         blockInventory.AddItem(ItemStorage.redRock, 15);
         blockInventory.AddItem(ItemStorage.redRock, 34);
@@ -274,6 +281,12 @@ public class Player : KinematicBody
             ReplenishThirst(d.ReplenishValue);
 
             success = true;
+        }
+        else if (i is ItemPlant p)
+        {
+            IntVector3? blockPos = this.interaction.GetBlockUnderCursor();
+            if (blockPos.HasValue)
+                success = plants.Plant(p, blockPos.Value);
         }
 
         if (success)
