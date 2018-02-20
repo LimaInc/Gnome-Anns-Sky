@@ -3,7 +3,7 @@ using System;
 
 public class Player : KinematicBody
 {
-    private static bool DEBUG_DEATH_ENABLED = true;
+    private static bool DEBUG_DEATH_ENABLED = false;
 
     private float moveSpeed = 30.0f;
     private float jumpPower = 12.0f;
@@ -118,10 +118,7 @@ public class Player : KinematicBody
 
             Vector2 rel = emm.GetRelative();
 
-            int relX = (int) -rel.y;
-            int relY = (int) -rel.x;
-
-            Vector3 rotd = new Vector3(relX * camRotateSpeed, relY * camRotateSpeed, 0.0f);
+            Vector3 rotd = new Vector3(-rel.y * camRotateSpeed, -rel.x * camRotateSpeed, 0.0f);
 
             Vector3 targetRotation = myCam.GetRotation() + rotd;
 
@@ -145,22 +142,25 @@ public class Player : KinematicBody
                 byte b = interaction.RemoveBlock();
                 Item ib = ItemStorage.GetItemFromBlock(b);
 
-                bool addedToHand = false;
-
-                if (this.ItemInHand != null)
+                if (ib != null)
                 {
-                    Item i = this.ItemInHand.GetItem();
-                    if (i is ItemBlock curBlock)
+                    bool addedToHand = false;
+
+                    if (this.ItemInHand != null)
                     {
-                        if (curBlock.Block == b)
+                        Item i = this.ItemInHand.GetItem();
+                        if (i is ItemBlock curBlock)
                         {
-                            this.ItemInHand.AddToQuantity(1);
-                            addedToHand = true;
+                            if (curBlock.Block == b)
+                            {
+                                this.ItemInHand.AddToQuantity(1);
+                                addedToHand = true;
+                            }
                         }
                     }
+                    if (!addedToHand)
+                        this.blockInventory.AddItem(ib, 1);
                 }
-                if (!addedToHand)
-                    this.blockInventory.AddItem(ib, 1);
             }
         }
     }
@@ -220,6 +220,11 @@ public class Player : KinematicBody
             this.CurrentThirst = 0;
             this.Kill();
         }
+    }
+
+    public void Push(Vector3 v)
+    {
+        velocity += v;
     }
 
     public void Kill()
