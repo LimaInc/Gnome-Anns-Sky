@@ -20,6 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -49,7 +50,30 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripts\Atmosphere\Atmosphere.cs" />
+    <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
+    <Compile Include="Scripts\Atmosphere\Gas.cs" />
+    <Compile Include="Scripts\Atmosphere\SimpleGraphicsAtmosphereComponent - Copy.cs" />
+    <Compile Include="Scripts\Atmosphere\ColorMixingAtmosphereComponent.cs" />
+    <Compile Include="Scripts\Atmosphere\StaticAtmosphereComponent.cs" />
+    <Compile Include="Scripts\Bacteria\AsymptoticallyGrowingBacteria.cs" />
+    <Compile Include="Scripts\Bacteria\Bacteria.cs" />
+    <Compile Include="Scripts\Bacteria\BacterialState.cs" />
+    <Compile Include="Scripts\Bacteria\BacteriumType.cs" />
+    <Compile Include="Scripts\Bacteria\IBacterialStateComponent.cs" />
+    <Compile Include="Scripts\Bacteria\StaticBacterialStateComponent.cs" />
+    <Compile Include="Scripts\Blocks\Block.cs" />
+    <Compile Include="Scripts\Blocks\BlockFace.cs" />
+    <Compile Include="Scripts\Blocks\CubeBlock.cs" />
+    <Compile Include="Scripts\Blocks\DefossiliserBlock.cs" />
+    <Compile Include="Scripts\Blocks\FossilBlock.cs" />
+    <Compile Include="Scripts\Blocks\BacteriaFossilBlocks.cs" />
+    <Compile Include="Scripts\Blocks\RedRock.cs" />
+    <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Blocks\HabitationBlock.cs" />
+    <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\ItemFood.cs" />
@@ -58,15 +82,14 @@
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
     <Compile Include="Scripts\GUI\PlayerGUI.cs" />
     <Compile Include="Scripts\GUI\GUI.cs" />
-    <Compile Include="Scripts\GUI\GUIHorizontalBar.cs" />
-    <Compile Include="Scripts\GUI\GUIVerticalBar.cs" />
     <Compile Include="Scripts\GUI\GUIBox.cs" />
+    <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
     <Compile Include="Scripts\GUI\GUIObject.cs" />
     <Compile Include="Scripts\GUI\InventoryGUI.cs" />
+    <Compile Include="Scripts\GUI\GUIHorizontalBar.cs" />
+    <Compile Include="Scripts\GUI\GUIVerticalBar.cs" />
     <Compile Include="Scripts\GUI\DeadGUI.cs" />
-    <Compile Include="Scripts\Inventory\Inventory.cs" />
-    <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
-    <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\Interaction.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Blocks\Block.cs" />
@@ -74,15 +97,20 @@
     <Compile Include="Scripts\Blocks\CubeBlock.cs" />
     <Compile Include="Scripts\Blocks\RedRock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
+    <Compile Include="Scripts\Util\CMYKColor.cs" />
+    <Compile Include="Scripts\Util\Colors.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
-    <Compile Include="Scripts\Interaction.cs" />
-    <Compile Include="Scripts\World\Terrain.cs" />
-    <Compile Include="Scripts\Util\TextureManager.cs" />
-    <Compile Include="Scripts\World\WorldGenerator.cs" />
     <Compile Include="Scripts\Util\Noise.cs" />
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripts\Util\TextureManager.cs" />
+    <Compile Include="Scripts\World\Chunk.cs" />
+    <Compile Include="Scripts\World\ExoWorld.cs" />
+    <Compile Include="Scripts\World\Terrain.cs" />
+    <Compile Include="Scripts\World\WorldGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\Fossils\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\Fossils\" />

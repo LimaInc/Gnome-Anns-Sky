@@ -82,9 +82,8 @@ public class Player : KinematicBody
         consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);
         blockInventory = new Inventory(this, Item.Type.BLOCK);
-
         blockInventory.AddItem(ItemStorage.redRock, 20);
-        fossilInventory.AddItem(ItemStorage.fossil, 10);
+        blockInventory.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
         consumableInventory.AddItem(ItemStorage.chocolate, 10);
         blockInventory.AddItem(ItemStorage.redRock, 15);
         blockInventory.AddItem(ItemStorage.redRock, 34);
@@ -92,6 +91,9 @@ public class Player : KinematicBody
         consumableInventory.AddItem(ItemStorage.cake, 3);
 
         consumableInventory.AddItem(ItemStorage.water, 5);
+        fossilInventory.AddItem(ItemStorage.oxygenBacteriaVial, 5);
+        fossilInventory.AddItem(ItemStorage.nitrogenBacteriaVial, 5);
+        fossilInventory.AddItem(ItemStorage.carbonDioxideBacteriaVial, 5);
     }
 
     public CollisionShape GetCollisionShape()
@@ -99,7 +101,7 @@ public class Player : KinematicBody
         return this.collisionShape;
     }
 
-    public bool isInventoryOpen()
+    public bool IsInventoryOpen()
     {
         return inventoryOpen;
     }
@@ -131,10 +133,8 @@ public class Player : KinematicBody
             myCam.SetRotation(targetRotation);
         }
 
-        if (e is InputEventMouseButton)
+        if (e is InputEventMouseButton iemb)
         {
-            InputEventMouseButton iemb = (InputEventMouseButton) e;
-
             if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
             {
                 this.HandleUseItem();
@@ -150,10 +150,8 @@ public class Player : KinematicBody
                 if (this.ItemInHand != null)
                 {
                     Item i = this.ItemInHand.GetItem();
-                    if (i is ItemBlock)
+                    if (i is ItemBlock curBlock)
                     {
-                        ItemBlock curBlock = (ItemBlock) i;
-
                         if (curBlock.Block == b)
                         {
                             this.ItemInHand.AddToQuantity(1);
@@ -243,7 +241,7 @@ public class Player : KinematicBody
         this.AddChild(dg);
     }
 
-    public bool isDead()
+    public bool IsDead()
     {
         return dead;
     }
@@ -255,10 +253,8 @@ public class Player : KinematicBody
 
         Item i = this.ItemInHand.GetItem();
 
-        if (i is ItemBlock)
+        if (i is ItemBlock b)
         {
-            ItemBlock b = (ItemBlock) i;
-
             if (this.interaction.PlaceBlock(b.Block))
             {
                 if (this.ItemInHand.GetCount() == 1)
@@ -266,20 +262,18 @@ public class Player : KinematicBody
                 else
                     this.ItemInHand.SubtractCount(1);
             }
-        } else if (i is ItemFood)
+        }
+        else if (i is ItemFood f)
         {
-            ItemFood f = (ItemFood) i;
-
             ReplenishHunger(f.ReplenishValue);
 
             if (this.ItemInHand.GetCount() == 1)
                 this.ItemInHand = null;
             else
                 this.ItemInHand.SubtractCount(1);
-        } else if (i is ItemDrink)
+        }
+        else if (i is ItemDrink d)
         {
-            ItemDrink d = (ItemDrink) i;
-
             ReplenishThirst(d.ReplenishValue);
 
             if (this.ItemInHand.GetCount() == 1)

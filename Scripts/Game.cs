@@ -5,15 +5,28 @@ using System.Linq;
 
 public class Game : Node
 {
+    public const string GAME_PATH = "/root/Game";
+    public const string WORLD_ENVIRO_PATH = GAME_PATH + "/WorldEnvironment";
+    public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
+    public const string PLAYER_PATH = GAME_PATH + "/Player";
+
+    public ExoWorld World {get; private set;}
+
     public Game()
     {
         //Register blocks
         Game.RegisterBlock(new Stone());
         Game.RegisterBlock(new RedRock());
+        Game.RegisterBlock(new OxygenBacteriaFossilBlock());
+        Game.RegisterBlock(new NitrogenBacteriaFossilBlock());
+        Game.RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
         Game.RegisterBlock(new HabitationBlock());
 
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
+
+        World = new ExoWorld();
+        AddChild(World);
     }
 
     public static Texture TextureAtlas { get; private set; }
@@ -59,8 +72,7 @@ public class Game : Node
             }
         }
 
-        Rect2[] uvs;
-        TextureAtlas = TextureManager.PackTextures(textures.ToArray(), out uvs);
+        TextureAtlas = TextureManager.PackTextures(textures.ToArray(), out Rect2[] uvs);
 
         int index = 0;
 
