@@ -17,6 +17,8 @@ public class WorldGenerator
     public static float BASE_RADIUS = 8.0f;
     public static float BASE_RADIUS_SQRD = BASE_RADIUS * BASE_RADIUS;
 
+    public static int GRASS_HEIGHT = 3;
+
     public byte[,,] GetChunk(int x, int z, int sX, int sY, int sZ)
     {
         byte[,,] chunk = new byte[sX, sY, sZ];
@@ -42,25 +44,24 @@ public class WorldGenerator
                 {
                     if(j < weighted)
                         chunk[i,j,k] = stoneId;
-                    else if(j < weighted + 3) //3 layers of grass on top of stone
+                    else if(j < weighted + GRASS_HEIGHT) //3 layers of grass on top of stone
                         chunk[i,j,k] = grassId;
 
                     float startAdjustedY = j - STARTING_HEIGHT;
                     if ((Math.Abs(wx) < BASE_RADIUS || Math.Abs(startAdjustedY) < BASE_RADIUS || Math.Abs(wz) < BASE_RADIUS) && wx < BASE_RADIUS - 3)
                     {
-                        int SOME_MAGIC_NUMBER = 2;
                         float blockSphereDist = (float) Math.Sqrt(wx * wx + startAdjustedY * startAdjustedY + wz * wz);
-                        if (blockSphereDist < BASE_RADIUS && startAdjustedY > SOME_MAGIC_NUMBER)
+                        if (blockSphereDist < BASE_RADIUS && startAdjustedY > GRASS_HEIGHT - 1)
                         {
                             chunk[i, j, k] = 0;
                         }
-                        if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f && startAdjustedY > SOME_MAGIC_NUMBER)
+                        if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f && startAdjustedY > GRASS_HEIGHT - 1)
                         {
                             chunk[i,j,k] = habId;
                         }
                         if (wx * wx + wz * wz < BASE_RADIUS_SQRD)
                         {
-                            if (Math.Abs(j - (weighted + SOME_MAGIC_NUMBER)) < 0.5f)
+                            if (Math.Abs(j - (weighted + GRASS_HEIGHT - 1)) < 0.5f)
                             {
                                 chunk[i,j,k] = habId;
                             }
