@@ -74,7 +74,7 @@ public class Interaction : Camera
         return false;
     }
 
-    public IntVector3? GetBlockUnderCursor()
+    public IntVector3? GetBlockPositionUnderCursor()
     {
         Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
 
@@ -95,8 +95,8 @@ public class Interaction : Camera
     {
         if (!Game.isBreakable(GetBlock()))
             return 0;
-            
-        IntVector3? blockPossible = this.GetBlockUnderCursor();
+
+        IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
         if (blockPossible.HasValue)
         {
             IntVector3 blockPos = blockPossible.Value;
