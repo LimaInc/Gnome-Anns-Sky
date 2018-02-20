@@ -258,29 +258,26 @@ public class Player : KinematicBody
 
         Item i = this.ItemInHand.GetItem();
 
+        bool success = false;
         if (i is ItemBlock b)
         {
-            if (this.interaction.PlaceBlock(b.Block))
-            {
-                if (this.ItemInHand.GetCount() == 1)
-                    this.ItemInHand = null;
-                else
-                    this.ItemInHand.SubtractCount(1);
-            }
+            success = this.interaction.PlaceBlock(b.Block);
         }
         else if (i is ItemFood f)
         {
             ReplenishHunger(f.ReplenishValue);
 
-            if (this.ItemInHand.GetCount() == 1)
-                this.ItemInHand = null;
-            else
-                this.ItemInHand.SubtractCount(1);
+            success = true;
         }
         else if (i is ItemDrink d)
         {
             ReplenishThirst(d.ReplenishValue);
 
+            success = true;
+        }
+
+        if (success)
+        {
             if (this.ItemInHand.GetCount() == 1)
                 this.ItemInHand = null;
             else
