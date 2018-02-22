@@ -30,38 +30,37 @@ public class GUIObject : Node
         this.AddChild(sprite);
     }
 
-    public virtual void onClick() { }
+    public virtual void OnClick() { }
 
-    public virtual void onHover() { }
+    public virtual void OnHover() { }
 
-    public virtual void onHoverOff() { }
+    public virtual void OnHoverOff() { }
 
     public override void _Input(InputEvent e)
     {
-        if (e is InputEventMouseButton)
+        if (e is InputEventMouseButton iemb)
         {
-            InputEventMouseButton iemb = (InputEventMouseButton) e;
             Vector2 pos = iemb.GetPosition();
             if (iemb.ButtonIndex == 1 && iemb.Pressed && rect.HasPoint(pos))
             {
-                onClick();
+                OnClick();
             }
         }
 
-        if (e is InputEventMouseMotion)
+        if (e is InputEventMouseMotion iemm)
         {
-            InputEventMouseMotion iemm = (InputEventMouseMotion) e;
             Vector2 pos = iemm.GetPosition();
             if (rect.HasPoint(pos))
             {
                 hovered = true;
-                onHover();
-            } else
+                OnHover();
+            }
+            else
             {
                 if (hovered)
                 {
                     hovered = false;
-                    onHoverOff();
+                    OnHoverOff();
                 }
             }
         }

@@ -94,6 +94,48 @@ public class Terrain : Spatial
         }
     }
 
+    public void SetBlocks(Tuple<IntVector3, byte>[] blocks)
+    {
+        HashSet<IntVector2> chunks = new HashSet<IntVector2>();
+        foreach (Tuple<IntVector3, byte> b in blocks)
+        {
+            IntVector3 pos = b.Item1;
+            byte block = b.Item2;
+
+            //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
+            IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.CHUNK_SIZE.x),
+                                                   (int)Mathf.Floor((float)pos.z / Chunk.CHUNK_SIZE.z));
+
+            Chunk chunk = loadedChunks[chunkIndex].Item1;
+
+            IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.CHUNK_SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.CHUNK_SIZE.z);
+
+            chunk.SetBlockInChunk(positionInChunk, block);
+
+            IntVector2 right = chunkIndex + new IntVector2(1,0);
+            IntVector2 left = chunkIndex + new IntVector2(-1,0);
+            IntVector2 above = chunkIndex + new IntVector2(0,1);
+            IntVector2 below = chunkIndex + new IntVector2(0,-1);
+
+            chunks.Add(chunkIndex);
+
+            if (positionInChunk.x == Chunk.CHUNK_SIZE.x - 1)
+                chunks.Add(right);
+
+            if (positionInChunk.x == 0)
+                chunks.Add(left);
+
+            if (positionInChunk.z == Chunk.CHUNK_SIZE.z - 1)
+                chunks.Add(above);
+
+            if (positionInChunk.z == 0)
+                chunks.Add(below);
+        }
+
+        foreach (IntVector2 chunk in chunks)
+            chunksToUpdate.Enqueue(chunk);
+    }
+
     public void SetBlock(IntVector3 pos, byte block)
     {
         //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(

@@ -297,10 +297,8 @@ public class InventoryGUI : GUI
 
     public override void _Input(InputEvent e)
     {
-        if (e is InputEventMouseMotion)
+        if (e is InputEventMouseMotion iemm)
         {
-            InputEventMouseMotion iemm = (InputEventMouseMotion) e;
-
             floatingSlot.SetPosition(iemm.GetPosition());
 
             if (this.hoverLabel != null)
