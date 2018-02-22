@@ -17,8 +17,8 @@ public class ExoWorld : Node
 
     public ExoWorld()
     {
-        this.Atmosphere = new Atmosphere(new StaticAtmosphereComponent(), new ColorMixingAtmosphereComponent());
-        this.Bacteria = new BacterialState(new AsymptoticallyGrowingBacteria());
+        this.Atmosphere = new Atmosphere(new GasEscapingAC(), new ColorMixingAtmosphereComponent());
+        this.Bacteria = new BacterialState(new AsymptoticGrowthBSC(), new ProductionBSC());
     }
 
     public override void _Ready()

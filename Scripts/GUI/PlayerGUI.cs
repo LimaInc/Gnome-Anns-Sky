@@ -7,13 +7,13 @@ public class PlayerGUI : GUI
     
     public static Texture CROSSHAIR_TEX = ResourceLoader.Load("res://Images/crosshairWhite.png") as Texture;
 
-    private readonly static Color AIR_COLOR = new Color(0.0f, 1.0f, 1.0f);
-    private readonly static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
-    private readonly static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
-
     private readonly static Color OXYGEN_COLOR = Colors.MAGENTA;
     private readonly static Color NITROGEN_COLOR = Colors.CYAN;
     private readonly static Color CARBON_DIOXIDE_COLOR = Colors.YELLOW;
+
+    private readonly static Color AIR_COLOR = OXYGEN_COLOR;
+    private readonly static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
+    private readonly static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
 
     private Player player;
 

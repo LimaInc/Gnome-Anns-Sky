@@ -5,6 +5,8 @@ using System.Linq;
 
 public class Atmosphere : Node
 {
+    private static readonly float DEFAULT_TEMPERATURE = 300;
+
     private static readonly IDictionary<Gas, float> gasGoals = new Dictionary<Gas, float>
     {
         [Gas.OXYGEN] = 0.2f,
@@ -12,30 +14,34 @@ public class Atmosphere : Node
         [Gas.CARBON_DIOXIDE] = 0.1f
     };
     private IDictionary<Gas,float> gases;
-    private IAtmosphericComponent dynamics;
-    private IAtmosphericComponent graphics;
-    public float Pressure { get; private set; }
+    private List<IAtmosphericComponent> components;
 
-    public Atmosphere(IAtmosphericComponent dynamics, IAtmosphericComponent graphics)
+    public float Pressure { get; private set; }
+    public float Temperature { get; private set; }
+
+    public Atmosphere(params IAtmosphericComponent[] components)
     {
+        Temperature = DEFAULT_TEMPERATURE;
         gases = new Dictionary<Gas,float>();
         foreach (Gas g in Enum.GetValues(typeof(Gas)))
         {
             gases[g] = 0;
         }
-        this.dynamics = dynamics;
-        this.graphics = graphics;
+        this.components = new List<IAtmosphericComponent>(components);
     }
 
     public float GetGasAmt(Gas gas) => gases[gas];
 
-    public float UpdatePressure() => Pressure = gases.Values.Sum();
+    public List<Gas> GetGases() => gases.Keys.ToList();
 
-    public IList<Gas> GetGases() => gases.Keys.ToList();
-
-    public void SetGas(Gas gas, float amt)
+    public void SetGasAmt(Gas gas, float amt)
     {
         gases[gas] = amt;
+    }
+
+    public void ChangeGasAmt(Gas gas, float amt)
+    {
+        gases[gas] += amt;
     }
 
     public float GetGasProgress(Gas gas)
@@ -45,7 +51,18 @@ public class Atmosphere : Node
 
     public void Update(float delta, ExoWorld world)
     {
-        dynamics.Update(delta, world, this);
-        graphics.Update(delta, world, this);
+        ValidateState();
+        components.ForEach(c => c.Update(delta, world, this));
+        ValidateState();
+    }
+
+    private void ValidateState()
+    {
+        UpdatePressure();
+    }
+
+    private void UpdatePressure()
+    {
+        Pressure = gases.Values.Sum();
     }
 }

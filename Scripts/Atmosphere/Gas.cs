@@ -2,6 +2,5 @@
 {
     OXYGEN,
     NITROGEN,
-    CARBON_DIOXIDE,
-    VACUUM
+    CARBON_DIOXIDE
 }

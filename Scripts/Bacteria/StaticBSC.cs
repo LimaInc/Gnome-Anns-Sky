@@ -1,4 +1,4 @@
-public class StaticBacterialStateComponent : IBacterialStateComponent
+public class StaticBSC : IBacterialStateComponent
 {
     public void Update(float delta, ExoWorld w, BacterialState bs)
     {

@@ -10,6 +10,7 @@ public class Game : Node
     public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
     public const string PLAYER_PATH = GAME_PATH + "/Player";
     public const string CAMERA_PATH = PLAYER_PATH+"/Camera";
+    public const string PLANTS_PATH = GAME_PATH+"/Plants";
 
     public ExoWorld World {get; private set;}
 

@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-class AsymptoticallyGrowingBacteria : IBacterialStateComponent
+class AsymptoticGrowthBSC : IBacterialStateComponent
 {
     public void Update(float delta, ExoWorld w, BacterialState bs)
     {

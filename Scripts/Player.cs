@@ -85,7 +85,7 @@ public class Player : KinematicBody
         playerGUI = new PlayerGUI(this);
         this.AddChild(playerGUI);
 
-        plants = GetNode("/root/Game/Plants") as Plants;
+        plants = GetNode(Game.PLANTS_PATH) as Plants;
 
         consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);

@@ -5,16 +5,18 @@ using static Atmosphere;
 
 public class ColorMixingAtmosphereComponent : IAtmosphericComponent
 {
+    private static readonly Tuple<Color, Color> DEFAULT_COLORS = new Tuple<Color, Color>(Colors.BLACK, Colors.DARK_GRAY);
     private static readonly IDictionary<Gas, Tuple<Color,Color>> colorTable = new Dictionary<Gas, Tuple<Color, Color>> {
             [Gas.OXYGEN] = new Tuple<Color, Color>(Colors.MAGENTA, Colors.GRAY),
             [Gas.NITROGEN] = new Tuple<Color, Color>(Colors.CYAN, Colors.GRAY),
-            [Gas.CARBON_DIOXIDE] = new Tuple<Color, Color>(Colors.YELLOW, Colors.GRAY),
-            [Gas.VACUUM] = new Tuple<Color, Color>(Colors.BLACK, Colors.DARK_GRAY)
+            [Gas.CARBON_DIOXIDE] = new Tuple<Color, Color>(Colors.YELLOW, Colors.GRAY)
     };
+
+    private bool init = true;
 
     public void Update(float delta, ExoWorld w, Atmosphere atm)
     {
-        Tuple<Color, Color> colors = new Tuple<Color, Color>(Colors.BLACK, Colors.BLACK);
+        Tuple<Color, Color> colors = DEFAULT_COLORS;
         float weightSum = 0;
         foreach (Gas g in atm.GetGases())
         {
@@ -37,11 +39,15 @@ public class ColorMixingAtmosphereComponent : IAtmosphericComponent
         Godot.Environment env = w.WorldEnv.GetEnvironment();
         env.SetBackground(Godot.Environment.BGMode.Sky);
         ProceduralSky sky = env.GetSky() as ProceduralSky;
+        if (init) // TODO: place in _Ready() once everything is a Godot Node
+        {
+            sky.SetSkyCurve(0.3f);
+            sky.SetGroundCurve(0.3f);
+            init = false;
+        }
         sky.SetSkyTopColor(skyColor);
-        sky.SetSkyCurve(0.3f);
         sky.SetSkyHorizonColor(skyHorizonColor);
         sky.SetGroundHorizonColor(groundHorizonColor);
-        sky.SetGroundCurve(0.3f);
         sky.SetGroundBottomColor(groundColor);
     }
 }
