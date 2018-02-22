@@ -2,9 +2,9 @@
 using System;
 using System.Linq;
 
-class AsymptoticGrowthBSC : IBacterialStateComponent
+class AsymptoticGrowthBSC : BacterialStateComponent
 {
-    public void Update(float delta, ExoWorld w, BacterialState bs)
+    public override void _PhysicsProcess(float delta)
     {
         bs.GetBacteriaList().ForEach(b =>
         {

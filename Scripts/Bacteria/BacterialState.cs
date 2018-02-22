@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 
-public class BacterialState
+public class BacterialState : Node
 {
     private static readonly IDictionary<BacteriumType, Tuple<float,float,float,float>> bInits = 
         new Dictionary<BacteriumType, Tuple<float, float, float, float>>
@@ -13,27 +14,24 @@ public class BacterialState
     };
 
     private IDictionary<BacteriumType,Bacteria> bacteriaTypes;
-    private List<IBacterialStateComponent> components;
 
-    public BacterialState(params IBacterialStateComponent[] dynamics)
+    public void Init(params BacterialStateComponent[] components)
     {
         bacteriaTypes = new Dictionary<BacteriumType, Bacteria>();
         foreach(BacteriumType bt in Enum.GetValues(typeof(BacteriumType)))
         {
             bacteriaTypes[bt] = new Bacteria(bt, bInits[bt].Item1, bInits[bt].Item2, bInits[bt].Item3, bInits[bt].Item4);
         }
-        this.components = new List<IBacterialStateComponent>(dynamics);
+        foreach (BacterialStateComponent cmp in components)
+        {
+            this.AddChild(cmp);
+        }
     }
 
     public Bacteria GetBacteria(BacteriumType type) => bacteriaTypes[type];
 
     public bool TryGetBacteria(BacteriumType type, out Bacteria bacteria) 
         => bacteriaTypes.TryGetValue(type, out bacteria);
-
-    public void Update(float delta, ExoWorld world)
-    {
-        components.ForEach(c => c.Update(delta, world, this));
-    }
 
     public List<Bacteria> GetBacteriaList() => bacteriaTypes.Values.ToList();
 }

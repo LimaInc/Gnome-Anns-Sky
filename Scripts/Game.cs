@@ -6,13 +6,15 @@ using System.Linq;
 public class Game : Node
 {
     public const string GAME_PATH = "/root/Game";
-    public const string WORLD_ENVIRO_PATH = GAME_PATH + "/WorldEnvironment";
     public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
     public const string PLAYER_PATH = GAME_PATH + "/Player";
     public const string CAMERA_PATH = PLAYER_PATH+"/Camera";
-    public const string PLANTS_PATH = GAME_PATH+"/Plants";
+    public const string WORLD_ENVIRO_PATH = GAME_PATH + "/WorldEnvironment";
+    public const string PLANTS_PATH = WORLD_ENVIRO_PATH + "/Plants";
+    public const string ATMOSPHERE_PATH = WORLD_ENVIRO_PATH + "/Atmosphere";
+    public const string BACTERIAL_STATE_PATH = WORLD_ENVIRO_PATH + "/BacterialState";
 
-    public ExoWorld World {get; private set;}
+    public PlanetEnvironment World {get; private set;}
 
     public Game()
     {
@@ -31,7 +33,7 @@ public class Game : Node
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
 
-        World = new ExoWorld();
+        World = new PlanetEnvironment();
         AddChild(World);
     }
 

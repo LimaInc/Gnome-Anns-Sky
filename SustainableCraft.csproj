@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\Atmosphere\Atmosphere.cs" />
-    <Compile Include="Scripts\Atmosphere\IAtmosphericComponent.cs" />
+    <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
     <Compile Include="Scripts\Atmosphere\Gas.cs" />
     <Compile Include="Scripts\Atmosphere\ColorMixingAC.cs" />
     <Compile Include="Scripts\Atmosphere\GasEscapingAC.cs" />
@@ -62,7 +62,7 @@
     <Compile Include="Scripts\Bacteria\Bacteria.cs" />
     <Compile Include="Scripts\Bacteria\BacterialState.cs" />
     <Compile Include="Scripts\Bacteria\BacteriumType.cs" />
-    <Compile Include="Scripts\Bacteria\IBacterialStateComponent.cs" />
+    <Compile Include="Scripts\Bacteria\BacterialStateComponent.cs" />
     <Compile Include="Scripts\Bacteria\StaticBSC.cs" />
     <Compile Include="Scripts\Blocks\Block.cs" />
     <Compile Include="Scripts\Blocks\BlockFace.cs" />
@@ -113,7 +113,7 @@
     <Compile Include="Scripts\Util\Noise.cs" />
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
     <Compile Include="Scripts\Util\TextureManager.cs" />
-    <Compile Include="Scripts\World\ExoWorld.cs" />
+    <Compile Include="Scripts\World\PlanetEnvironment.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\World\WorldGenerator.cs" />
   </ItemGroup>

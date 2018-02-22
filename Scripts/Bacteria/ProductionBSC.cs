@@ -2,11 +2,18 @@
 using System;
 using System.Linq;
 
-class ProductionBSC : IBacterialStateComponent
+class ProductionBSC : BacterialStateComponent
 {
-    public void Update(float delta, ExoWorld w, BacterialState bs)
+    protected static Atmosphere atm;
+
+    public override void _Ready()
     {
-        Atmosphere atm = w.Atmosphere;
+        base._Ready();
+        atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
+    }
+
+    public override void _PhysicsProcess(float delta)
+    {
         bs.GetBacteriaList().ForEach(b =>
         {
             atm.ChangeGasAmt(b.GasType, delta * b.Amount * b.ProductionRate);

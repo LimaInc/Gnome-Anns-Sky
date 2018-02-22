@@ -14,20 +14,22 @@ public class Atmosphere : Node
         [Gas.CARBON_DIOXIDE] = 0.1f
     };
     private IDictionary<Gas,float> gases;
-    private List<IAtmosphericComponent> components;
 
     public float Pressure { get; private set; }
     public float Temperature { get; private set; }
 
-    public Atmosphere(params IAtmosphericComponent[] components)
+    internal void Init(params AtmosphericComponent[] components)
     {
         Temperature = DEFAULT_TEMPERATURE;
-        gases = new Dictionary<Gas,float>();
+        gases = new Dictionary<Gas, float>();
         foreach (Gas g in Enum.GetValues(typeof(Gas)))
         {
             gases[g] = 0;
         }
-        this.components = new List<IAtmosphericComponent>(components);
+        foreach (AtmosphericComponent cmp in components)
+        {
+            this.AddChild(cmp);
+        }
     }
 
     public float GetGasAmt(Gas gas) => gases[gas];
@@ -49,10 +51,9 @@ public class Atmosphere : Node
         return Math.Min(gases[gas]/gasGoals[gas],1);
     }
 
-    public void Update(float delta, ExoWorld world)
+    public override void _PhysicsProcess(float delta)
     {
-        ValidateState();
-        components.ForEach(c => c.Update(delta, world, this));
+        base._PhysicsProcess(delta);
         ValidateState();
     }
 

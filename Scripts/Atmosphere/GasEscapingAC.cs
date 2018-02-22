@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
-public class GasEscapingAC : IAtmosphericComponent
+public class GasEscapingAC : AtmosphericComponent
 {
     private static readonly float escapability = 0.1f;
 
     public static float EscapeVelocity { get; } = 10f;
 
-    public void Update(float delta, ExoWorld w, Atmosphere atm)
+    public override void _PhysicsProcess(float delta)
     {
         atm.GetGases().ForEach(g =>
         {
