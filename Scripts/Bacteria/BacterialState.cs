@@ -8,9 +8,9 @@ public class BacterialState : Node
     private static readonly IDictionary<BacteriumType, Tuple<float,float,float,float>> bInits = 
         new Dictionary<BacteriumType, Tuple<float, float, float, float>>
     {
-        [BacteriumType.OXYGEN] = Tuple.Create(0f, 1f, 0.0008f, 0.05f),
-        [BacteriumType.NITROGEN] = Tuple.Create(0f, 1f, 0.0003f, 0.05f),
-        [BacteriumType.CARBON_DIOXIDE] = Tuple.Create(0f, 1f, 0.002f, 0.05f)
+        [BacteriumType.OXYGEN] = Tuple.Create(0f, 1f, 0.0008f, 0.10f),
+        [BacteriumType.NITROGEN] = Tuple.Create(0f, 1f, 0.0003f, 0.15f),
+        [BacteriumType.CARBON_DIOXIDE] = Tuple.Create(0f, 1f, 0.0015f, 0.05f)
     };
 
     private IDictionary<BacteriumType,Bacteria> bacteriaTypes;
