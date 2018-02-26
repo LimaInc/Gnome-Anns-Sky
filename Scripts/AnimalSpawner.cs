@@ -215,6 +215,8 @@ public class AnimalSpawner : Node
         physicsComponent.SetScript(physicsScript);
 
         var behaviourComponent = new Node();
+        kb.AddChild(behaviourComponent);
+
         behaviourComponent.SetName("BehaviourComponent");
         behaviourComponent.SetScript(baseBehaviourScript);
 
@@ -225,11 +227,7 @@ public class AnimalSpawner : Node
         behaviourComponent.Set("breedability", preset.breedability);
         behaviourComponent.Set("presetName", preset.presetName);
 
-        
-
         kb.AddChild(physicsComponent);
-        kb.AddChild(behaviourComponent);
-
         kb.SetTranslation(position);
 
         AddChild(kb);
