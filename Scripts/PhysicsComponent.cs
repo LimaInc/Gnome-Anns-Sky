@@ -98,10 +98,6 @@ public class PhysicsComponent : BaseComponent
         watchList.Add(groupName);
     }
 
-    //TODO: add "watchfor" functionality, so once signal received to watch for a certain group, throws signals when those groups get in range
-    //then implement the raycast in the behaviour component
-    //then make eat, mate, etc
-
     public override void _Ready()
     {
         watchList = new List<String>();

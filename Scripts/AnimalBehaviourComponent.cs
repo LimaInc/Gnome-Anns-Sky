@@ -2,10 +2,6 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-//TODO: REFACTOR OF THIS CLASS
-// Got a bit large and messy. Need to separate this out before doing more work.
-// Particularly the breeding behaviour which is probably a little buggy due to the messy logic here.
-
 public class AnimalBehaviourComponent : BaseComponent
 {
     public enum Sex
@@ -30,15 +26,13 @@ public class AnimalBehaviourComponent : BaseComponent
 
     //exports: stats that are generated from spawner
     [Export]
-    private int sex; //from Sex enum
+    public int sex { get; private set; } //from Sex enum
 
     [Export]
-    private int diet; //from Diet enum
+    public int diet { get; private set; } //from Diet enum
 
     [Export]
-    private int foodChainLevel; //0 is "eaten by everything", no max
-
-    private KinematicBody parent;
+    public int foodChainLevel { get; private set; } //0 is "eaten by everything", no max
 
     private float jumpMagnitude = 5.0f;
 
@@ -63,33 +57,38 @@ public class AnimalBehaviourComponent : BaseComponent
     private List<PhysicsBody> foodInRange;
     private List<PhysicsBody> breedableTargets;
 
-    private BehaviourState state = BehaviourState.Idle;
+    //private BehaviourState state = BehaviourState.Idle;
 
     private PhysicsBody target;
     private PhysicsBody breedingTarget;
 
-    [Export]
-    private string breedingTargetName = "";
+    public KinematicBody body { get; private set; }
 
     [Export]
-    float satiated = 80.0f; //100 is max, 0 is starved to death
+    public float satiated { get; set; }  = 80.0f; //100 is max, 0 is starved to death
 
     [Export]
-    int breedability;
+    public int breedability { get; private set; }
 
     [Export]
-    string presetName;
+    public string presetName { get; private set; }
 
     const float timeToDeath = 50.0f;
 
-    // TODO add rotations.
+    private BaseStrategy state;
 
-    private void SetRandomDirection()
+    public void _SetActiveState(BaseStrategy strategy)
     {
-        Random r = new Random();
-        Vector2 d = new Vector2((float)(r.NextDouble() * 2.0 - 1.0), (float)(r.NextDouble() * 2.0 - 1.0));
-        //GD.Print("Direction set sent: ", d.x, " ", d.y);
-        parent.EmitSignal("setDirection", d);
+        if(state != null)
+        {
+            state.active = false;
+        }
+        state = strategy;     
+    }
+
+    public void _DeactivateState(BaseStrategy strategy)
+    {
+        state = null;
     }
 
     private void OnTerrainInterference()
@@ -117,9 +116,9 @@ public class AnimalBehaviourComponent : BaseComponent
 
     protected void SetupInitialisationSignals()
     {
-        parent.EmitSignal("setSpeed", 150.0f);
-        parent.EmitSignal("watchFor", "plants");
-        parent.EmitSignal("watchFor", "animals");
+        body.EmitSignal("setSpeed", 150.0f);
+        body.EmitSignal("watchFor", "plants");
+        body.EmitSignal("watchFor", "animals");
     }
 
     protected void SetVisionRange(float range)
@@ -180,7 +179,8 @@ public class AnimalBehaviourComponent : BaseComponent
         if(state == BehaviourState.Hunting && target != null && collision.Collider.Equals(target))
         {
             eat(collision.Collider);            
-        }else if(state == BehaviourState.Breeding && breedingTarget != null && collision.Collider.Equals(breedingTarget)) //is this right?
+        }
+        else if(state == BehaviourState.Breeding && breedingTarget != null && collision.Collider.Equals(breedingTarget)) //is this right?
         {
             breedingCollision = true;
             if(breedingCollisionTimer >= breedingCollisionsThreshold)
@@ -202,16 +202,7 @@ public class AnimalBehaviourComponent : BaseComponent
         }
     }
 
-    protected void eat(Godot.Object nom)
-    {
-        GD.Print("Nom!");
-        satiated = Math.Max(100.0f, satiated + 20.0f);
-        if(nom is Node)
-        {
-            ((Node)nom).QueueFree();          
-        }
-        state = BehaviourState.Idle;
-    }
+    
 
     protected void hungry(float delta)
     {
@@ -277,25 +268,12 @@ public class AnimalBehaviourComponent : BaseComponent
         state = BehaviourState.Breeding;
     }
 
-    protected void AttemptBreeding(KinematicBody body)
+    private void SetRandomDirection()
     {
-        GD.Print(parent.GetName(), ": Breeding request received!");
-        if (satiated < satiatedBreedThreshold) return;
         Random r = new Random();
-        int n = r.Next(0, 100);
-        if(n < breedability)
-        {
-            GD.Print(parent.GetName(),": Breeding request approved!");
-            breedingTarget = body;
-            breedingTargetName = body.GetName();
-
-            SetupBreedingState();
-            breedingSignalled = true;
-        }
-        else
-        {
-            GD.Print(parent.GetName(),": Breeding request rejected");
-        }
+        Vector2 d = new Vector2((float)(r.NextDouble() * 2.0 - 1.0), (float)(r.NextDouble() * 2.0 - 1.0));
+        //GD.Print("Direction set sent: ", d.x, " ", d.y);
+        component.body.EmitSignal("setDirection", d);
     }
 
     public override void _Process(float delta)
