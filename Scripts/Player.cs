@@ -50,8 +50,9 @@ public class Player : KinematicBody
     private Game game;
 
     private bool dead;
-
+    
     private Plants plants;
+    private Atmosphere atmosphere;
 
     public override void _Ready()
     {
@@ -105,6 +106,8 @@ public class Player : KinematicBody
         fossilInventory.AddItem(ItemStorage.oxygenBacteriaVial, 5);
         fossilInventory.AddItem(ItemStorage.nitrogenBacteriaVial, 5);
         fossilInventory.AddItem(ItemStorage.carbonDioxideBacteriaVial, 5);
+
+        this.atmosphere = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
     }
 
     public CollisionShape GetCollisionShape()
@@ -195,6 +198,9 @@ public class Player : KinematicBody
 
     public void ReplenishAir(float v)
     {
+        if (v != v) //isNaN
+            return;
+
         this.CurrentAir += v;
 
         if (this.CurrentAir > MAX_AIR)
@@ -334,8 +340,10 @@ public class Player : KinematicBody
     //single frame
     private static float JUMP_DEGRED = 0.05f;
     
-    private static float BASE_AIR_REGEN = 0.005f;
+    private static float BASE_AIR_REGEN = 0.015f;
     private static float SPRINT_DEGRED_MULT = 4.0f;
+
+    private static float ATMOSPHERE_AIR_REGEN = 0.010f;
 
     private void ProcessAlive(float delta)
     {
@@ -348,8 +356,10 @@ public class Player : KinematicBody
 
         if (position.x * position.x + position.z * position.z < WorldGenerator.BASE_RADIUS_SQRD)
         {
-            this.ReplenishAir(BASE_AIR_REGEN);
+            this.ReplenishAir(BASE_AIR_REGEN * delta);
         }
+
+        this.ReplenishAir(ATMOSPHERE_AIR_REGEN * delta * Mathf.Pow(atmosphere.GetGasProgress(Gas.OXYGEN),2));
 
         //Basic degredation
         this.DepleteAir(BASIC_DEGRED * delta * DEGRED_BALANCE_AIR);
