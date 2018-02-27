@@ -50,8 +50,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Scenes\DisasterManager.cs" />
-    <Compile Include="Scenes\Sandstorm.cs" />
+    <Compile Include="Scripts\NaturalDisasters\DisasterManager.cs" />
     <Compile Include="Scripts\NaturalDisasters\DisasterProperties.cs" />
     <Compile Include="Scripts\NaturalDisasters\DisasterPropertiesSandstorm.cs" />
     <Compile Include="Scripts\NaturalDisasters\Sandstorm.cs" />

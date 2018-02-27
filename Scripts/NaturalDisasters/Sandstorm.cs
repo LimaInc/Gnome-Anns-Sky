@@ -18,7 +18,7 @@ public class Sandstorm : Spatial
 			(float) Math.Sin(rndRad)
 			);
 			
-		player = GetNode("/root/Game/Player") as Player; 
+		player = GetNode(Game.PLAYER_PATH) as Player; 
 		
 		lifeTime = 60;      
 		timeAlive = 0; 
