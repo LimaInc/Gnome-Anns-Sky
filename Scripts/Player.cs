@@ -47,12 +47,16 @@ public class Player : KinematicBody
 
     private Interaction interaction;
 
+    private Game game;
+
     private bool dead;
 
     private Plants plants;
 
     public override void _Ready()
     {
+        game = GetNode(Game.GAME_PATH) as Game;
+
         Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
 
@@ -63,7 +67,7 @@ public class Player : KinematicBody
         b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         collisionShape.SetShape(b);
 
-        interaction = GetNode("/root/Game/Player/Camera") as Interaction;
+        interaction = GetNode(Game.CAMERA_PATH) as Interaction;
 
         // CapsuleShape c = new CapsuleShape();
         // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
@@ -81,7 +85,7 @@ public class Player : KinematicBody
         playerGUI = new PlayerGUI(this);
         this.AddChild(playerGUI);
 
-        plants = GetNode("/root/Game/Plants") as Plants;
+        plants = GetNode(Game.PLANTS_PATH) as Plants;
 
         consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
         fossilInventory = new Inventory(this, Item.Type.FOSSIL);
@@ -141,6 +145,15 @@ public class Player : KinematicBody
         {
             if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
             {
+                if(this.ItemInHand == null)
+                {
+                    byte b = interaction.GetBlock();
+                    Block block = Game.GetBlock(b);
+                    if (block is DefossiliserBlock db)
+                    {
+                        db.HandleInput(e);
+                    }
+                }
                 this.HandleUseItem();
             }
 
@@ -291,6 +304,16 @@ public class Player : KinematicBody
 
         if (success)
         {
+            if (this.ItemInHand.GetCount() == 1)
+                this.ItemInHand = null;
+            else
+                this.ItemInHand.SubtractCount(1);
+        }
+        else if(i is ItemBacteriaVial vial)
+        {
+            game.World.Bacteria.TryGetBacteria(vial.BacteriaType(), out Bacteria bacteria);
+            bacteria.AddAmt(vial.Amount);
+
             if (this.ItemInHand.GetCount() == 1)
                 this.ItemInHand = null;
             else

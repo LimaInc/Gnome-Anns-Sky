@@ -5,9 +5,11 @@ public class WorldGenerator
 {
     OctaveNoise noise = new OctaveNoise(16);
 
-    private byte stoneId = Game.GetBlockId<Stone>();
-    private byte grassId = Game.GetBlockId<RedRock>();
-    private byte habId = Game.GetBlockId<HabitationBlock>();
+    private readonly byte stoneId = Game.GetBlockId<Stone>();
+    private readonly byte grassId = Game.GetBlockId<RedRock>();
+    private readonly byte habId = Game.GetBlockId<HabitationBlock>();
+    private readonly byte defossiliserId = Game.GetBlockId<DefossiliserBlock>();
+    private readonly byte airId = 0;
 
     private static float SIGMOID_PARAM_A = -40.0f;
     private static float SIGMOID_PARAM_B = 4.9f;
@@ -48,12 +50,15 @@ public class WorldGenerator
                         chunk[i,j,k] = grassId;
 
                     float startAdjustedY = j - STARTING_HEIGHT;
-                    if ((Math.Abs(wx) < BASE_RADIUS || Math.Abs(startAdjustedY) < BASE_RADIUS || Math.Abs(wz) < BASE_RADIUS) && wx < BASE_RADIUS - 3)
+                    if ((Math.Abs(wx) < BASE_RADIUS || 
+                        Math.Abs(startAdjustedY) < BASE_RADIUS || 
+                        Math.Abs(wz) < BASE_RADIUS) && 
+                        wx < BASE_RADIUS - GRASS_HEIGHT)
                     {
                         float blockSphereDist = (float) Math.Sqrt(wx * wx + startAdjustedY * startAdjustedY + wz * wz);
                         if (blockSphereDist < BASE_RADIUS && startAdjustedY > GRASS_HEIGHT - 1)
                         {
-                            chunk[i, j, k] = 0;
+                            chunk[i, j, k] = airId;
                         }
                         if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f && startAdjustedY > GRASS_HEIGHT - 1)
                         {
@@ -70,6 +75,8 @@ public class WorldGenerator
                 }
             }
         }
+        if(x==0 && z==-1)
+            chunk[0, (int)STARTING_HEIGHT + GRASS_HEIGHT, sZ - (int)BASE_RADIUS + 2] = defossiliserId;
 
         return chunk;
     }

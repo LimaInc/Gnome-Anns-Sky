@@ -5,36 +5,45 @@ using System.Linq;
 
 public class Atmosphere : Node
 {
+    private static readonly float DEFAULT_TEMPERATURE = 300;
+
     private static readonly IDictionary<Gas, float> gasGoals = new Dictionary<Gas, float>
     {
-        [Gas.OXYGEN] = 4*0.2f,
-        [Gas.NITROGEN] = 4 * 0.7f,
-        [Gas.CARBON_DIOXIDE] = 4 * 0.1f
+        [Gas.OXYGEN] = 0.2f,
+        [Gas.NITROGEN] = 0.7f,
+        [Gas.CARBON_DIOXIDE] = 0.1f
     };
     private IDictionary<Gas,float> gases;
-    private IAtmosphericComponent dynamics;
-    private IAtmosphericComponent graphics;
 
-    public Atmosphere(IAtmosphericComponent dynamics, IAtmosphericComponent graphics)
+    public float Pressure { get; private set; }
+    public float Temperature { get; private set; }
+
+    internal void Init(params AtmosphericComponent[] components)
     {
-        gases = new Dictionary<Gas,float>();
+        Temperature = DEFAULT_TEMPERATURE;
+        gases = new Dictionary<Gas, float>();
         foreach (Gas g in Enum.GetValues(typeof(Gas)))
         {
             gases[g] = 0;
         }
-        this.dynamics = dynamics;
-        this.graphics = graphics;
+        foreach (AtmosphericComponent cmp in components)
+        {
+            this.AddChild(cmp);
+        }
     }
 
     public float GetGasAmt(Gas gas) => gases[gas];
 
-    public float GetPressure() => gases.Values.Sum();
+    public List<Gas> GetGases() => gases.Keys.ToList();
 
-    public IList<Gas> GetGases() => gases.Keys.ToList();
-
-    public void SetGas(Gas gas, float amt)
+    public void SetGasAmt(Gas gas, float amt)
     {
         gases[gas] = amt;
+    }
+
+    public void ChangeGasAmt(Gas gas, float amt)
+    {
+        gases[gas] += amt;
     }
 
     public float GetGasProgress(Gas gas)
@@ -42,9 +51,19 @@ public class Atmosphere : Node
         return Math.Min(gases[gas]/gasGoals[gas],1);
     }
 
-    public void Update(float delta, ExoWorld world)
+    public override void _PhysicsProcess(float delta)
     {
-        dynamics.Update(delta, world, this);
-        graphics.Update(delta, world, this);
+        base._PhysicsProcess(delta);
+        ValidateState();
+    }
+
+    private void ValidateState()
+    {
+        UpdatePressure();
+    }
+
+    private void UpdatePressure()
+    {
+        Pressure = gases.Values.Sum();
     }
 }

@@ -54,15 +54,16 @@
     <Compile Include="Scripts\Atmosphere\Atmosphere.cs" />
     <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
     <Compile Include="Scripts\Atmosphere\Gas.cs" />
-    <Compile Include="Scripts\Atmosphere\SimpleGraphicsAtmosphereComponent - Copy.cs" />
-    <Compile Include="Scripts\Atmosphere\ColorMixingAtmosphereComponent.cs" />
-    <Compile Include="Scripts\Atmosphere\StaticAtmosphereComponent.cs" />
-    <Compile Include="Scripts\Bacteria\AsymptoticallyGrowingBacteria.cs" />
+    <Compile Include="Scripts\Atmosphere\ColorMixingAC.cs" />
+    <Compile Include="Scripts\Atmosphere\GasEscapingAC.cs" />
+    <Compile Include="Scripts\Atmosphere\GasMolecule.cs" />
+    <Compile Include="Scripts\Bacteria\ProductionBSC.cs" />
+    <Compile Include="Scripts\Bacteria\AsymptoticGrowthBSC.cs" />
     <Compile Include="Scripts\Bacteria\Bacteria.cs" />
     <Compile Include="Scripts\Bacteria\BacterialState.cs" />
     <Compile Include="Scripts\Bacteria\BacteriumType.cs" />
-    <Compile Include="Scripts\Bacteria\IBacterialStateComponent.cs" />
-    <Compile Include="Scripts\Bacteria\StaticBacterialStateComponent.cs" />
+    <Compile Include="Scripts\Bacteria\BacterialStateComponent.cs" />
+    <Compile Include="Scripts\Bacteria\StaticBSC.cs" />
     <Compile Include="Scripts\Blocks\Block.cs" />
     <Compile Include="Scripts\Blocks\BlockFace.cs" />
     <Compile Include="Scripts\Blocks\BacteriaFossilBlocks.cs" />
@@ -75,9 +76,13 @@
     <Compile Include="Scripts\Blocks\RedRock.cs" />
     <Compile Include="Scripts\Blocks\TreeBlock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
+    <Compile Include="Scripts\Fossils\Defossiliser.cs" />
+    <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\GUI\DefossiliserGUI.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
+    <Compile Include="Scripts\Inventory\ItemBacteriaVial.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\ItemFood.cs" />
     <Compile Include="Scripts\Inventory\ItemBlock.cs" />
@@ -108,15 +113,9 @@
     <Compile Include="Scripts\Util\Noise.cs" />
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
     <Compile Include="Scripts\Util\TextureManager.cs" />
-    <Compile Include="Scripts\World\ExoWorld.cs" />
+    <Compile Include="Scripts\World\PlanetEnvironment.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\World\WorldGenerator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\Fossils\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\Fossils\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

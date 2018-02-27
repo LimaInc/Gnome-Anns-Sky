@@ -5,26 +5,45 @@ using System.Linq;
 
 public class Bacteria
 {
-    private static readonly float DEFAULT_OPTIMAL_AMT = 1;
-    private static readonly float DEFAULT_GROWTH_RATE = 0.002f;
+    public static readonly IDictionary<BacteriumType, Gas> defaultProduction = new Dictionary<BacteriumType, Gas>
+    {
+        [BacteriumType.OXYGEN] = Gas.OXYGEN,
+        [BacteriumType.NITROGEN] = Gas.NITROGEN,
+        [BacteriumType.CARBON_DIOXIDE] = Gas.CARBON_DIOXIDE
+    };
 
+    private const float DEFAULT_OPTIMAL_AMT = 1;
+    private const float DEFAULT_GROWTH_RATE = 0.002f;
+    private const float DEFAULT_PRODUCTION_RATE = 0.2f;
+
+    public BacteriumType Type { get; }
+    public Gas GasType { get; }
     public float OptimalAmount { get; private set; }
     public float Amount { get; set; }
     public float GrowthRate { get; private set; }
+    public float ProductionRate { get; private set; }
 
-    public Bacteria(float optimal) : this(0, DEFAULT_OPTIMAL_AMT, DEFAULT_GROWTH_RATE) {}
+    public Bacteria(BacteriumType type, float amt = 0, float optimal = DEFAULT_OPTIMAL_AMT, 
+                        float growthRate = DEFAULT_GROWTH_RATE, float productionRate = DEFAULT_PRODUCTION_RATE)
+        : this(type, defaultProduction[type], amt, optimal, growthRate, productionRate) { }
 
-    public Bacteria(float amt, float optimal) : this(0, optimal, DEFAULT_GROWTH_RATE) { }
-
-    public Bacteria(float amt, float optimal, float growthRate)
+    public Bacteria(BacteriumType type, Gas g, float amt, float optimal, float growthRate, float productionRate)
     {
+        Type = type;
+        GasType = g;
         Amount = amt;
         OptimalAmount = optimal;
         GrowthRate = growthRate;
+        ProductionRate = productionRate;
     }
 
     public void AddCapacity(float additionalCapacity)
     {
         OptimalAmount += additionalCapacity;
+    }
+
+    public void AddAmt(float amt)
+    {
+        Amount += amt;
     }
 }

@@ -1,4 +1,12 @@
-public interface IAtmosphericComponent
+using Godot;
+
+public abstract class AtmosphericComponent : Node
 {
-    void Update(float delta, ExoWorld w, Atmosphere atm);
+    protected static Atmosphere atm;
+
+    public override void _Ready()
+    {
+        base._Ready();
+        atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
+    }
 }

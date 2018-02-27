@@ -1,27 +1,43 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using static Atmosphere;
 
-public class ColorMixingAtmosphereComponent : IAtmosphericComponent
+public class ColorMixingAtmosphereComponent : AtmosphericComponent
 {
+    private static readonly Tuple<Color, Color> DEFAULT_COLORS = new Tuple<Color, Color>(Colors.BLACK, Colors.DARK_GRAY);
+    private static readonly float DEFAULT_COLOR_WEIGHT = WeightFromAmt(0.01f);
     private static readonly IDictionary<Gas, Tuple<Color,Color>> colorTable = new Dictionary<Gas, Tuple<Color, Color>> {
             [Gas.OXYGEN] = new Tuple<Color, Color>(Colors.MAGENTA, Colors.GRAY),
             [Gas.NITROGEN] = new Tuple<Color, Color>(Colors.CYAN, Colors.GRAY),
-            [Gas.CARBON_DIOXIDE] = new Tuple<Color, Color>(Colors.YELLOW, Colors.GRAY),
-            [Gas.VACUUM] = new Tuple<Color, Color>(Colors.BLACK, Colors.DARK_GRAY)
+            [Gas.CARBON_DIOXIDE] = new Tuple<Color, Color>(Colors.YELLOW, Colors.GRAY)
     };
 
-    public void Update(float delta, ExoWorld w, Atmosphere atm)
+    private bool init = true;
+
+    protected static ProceduralSky sky;
+
+    public override void _Ready()
     {
-        Tuple<Color, Color> colors = new Tuple<Color, Color>(Colors.BLACK, Colors.BLACK);
-        float weightSum = 0;
+        base._Ready();
+        WorldEnvironment we = GetNode(Game.WORLD_ENVIRO_PATH) as WorldEnvironment;
+        Godot.Environment env = we.GetEnvironment();
+
+        env.SetBackground(Godot.Environment.BGMode.Sky);
+        sky = env.GetSky() as ProceduralSky;
+        sky.SetSkyCurve(0.3f);
+        sky.SetGroundCurve(0.3f);
+    }
+
+    public override void _Process(float delta)
+    {
+        Tuple<Color, Color> colors = DEFAULT_COLORS;
+        float weightSum = DEFAULT_COLOR_WEIGHT;
         foreach (Gas g in atm.GetGases())
         {
             float gAmt = atm.GetGasAmt(g);
             if (gAmt > 0)
             {
-                float gWeight = gAmt * gAmt * gAmt;
+                float gWeight = WeightFromAmt(gAmt);
                 weightSum += gWeight;
                 Tuple<Color, Color> gColors = colorTable[g];
                 Color newSkyCol = colors.Item1.LinearInterpolate(gColors.Item1, gWeight / weightSum);
@@ -33,15 +49,15 @@ public class ColorMixingAtmosphereComponent : IAtmosphericComponent
         Color groundColor = colors.Item2;
         Color skyHorizonColor = skyColor.LinearInterpolate(groundColor, 0.5f);
         Color groundHorizonColor = skyColor.LinearInterpolate(groundColor, 0.5f);
-
-        Godot.Environment env = w.WorldEnv.GetEnvironment();
-        env.SetBackground(Godot.Environment.BGMode.Sky);
-        ProceduralSky sky = env.GetSky() as ProceduralSky;
+        
         sky.SetSkyTopColor(skyColor);
-        sky.SetSkyCurve(0.3f);
         sky.SetSkyHorizonColor(skyHorizonColor);
         sky.SetGroundHorizonColor(groundHorizonColor);
-        sky.SetGroundCurve(0.3f);
         sky.SetGroundBottomColor(groundColor);
+    }
+
+    public static float WeightFromAmt(float amt)
+    {
+        return amt * amt * amt;
     }
 }

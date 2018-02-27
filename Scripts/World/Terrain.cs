@@ -5,22 +5,27 @@ using System.Linq;
 
 public class Terrain : Spatial
 {
-    //Stores the loaded chunks, indexed by their position. Also stores a bool indicating whether chunk model is currently loaded.
-    private Dictionary<IntVector2, Tuple<Chunk, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool>>();
+    //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
+    private Dictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>();
 
     public WorldGenerator worldGenerator = new WorldGenerator();
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
     private void CreateChunk(IntVector2 chunkIndex, bool buildMesh)
     {
-        Tuple<Chunk, bool> tuple;
+        Tuple<Chunk, bool, bool> tuple;
 
         if(loadedChunks.TryGetValue(chunkIndex, out tuple)) //Chunk already created
         {
             if(buildMesh && !tuple.Item2) //But maybe we need to build a mesh for it?
             {
-                loadedChunks[chunkIndex] = new Tuple<Chunk, bool>(tuple.Item1, true);
+                loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(tuple.Item1, true, tuple.Item3);
                 chunksToUpdate.Enqueue(chunkIndex);
+            }
+
+            if(!tuple.Item3) // If node not created, but it is in memory
+            {
+                tuple.Item1.Visible = true;
             }
         }
         else
@@ -28,7 +33,7 @@ public class Terrain : Spatial
             byte[,,] blocks = worldGenerator.GetChunk(chunkIndex.x, chunkIndex.y, Chunk.CHUNK_SIZE.x, Chunk.CHUNK_SIZE.y, Chunk.CHUNK_SIZE.z);
             Chunk chunk = new Chunk(this, chunkIndex, blocks);
             this.AddChild(chunk);
-            loadedChunks[chunkIndex] = new Tuple<Chunk, bool>(chunk, buildMesh);
+            loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
             if(buildMesh)
                 chunksToUpdate.Enqueue(chunkIndex);
         }
@@ -38,8 +43,9 @@ public class Terrain : Spatial
     {
         Chunk chunk = loadedChunks[chunkIndex].Item1;
         chunk.Visible = false;
-        chunk.QueueFree();
-        loadedChunks.Remove(chunkIndex);
+        //chunk.QueueFree();
+        loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, false, false);
+        //loadedChunks.Remove(chunkIndex); // Can't be fucked to implement proper saving/loading, so lets just keep them all in memory >:)
     }
 
     public byte GetBlock(IntVector3 v)
@@ -55,7 +61,7 @@ public class Terrain : Spatial
 
         IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.CHUNK_SIZE);
 
-        Tuple<Chunk, bool> tuple;
+        Tuple<Chunk, bool, bool> tuple;
         if(loadedChunks.TryGetValue(chunkIndex, out tuple))
             return tuple.Item1.GetBlockInChunk(positionInChunk);
         else //Should only happen when outside chunks are checking for adjacent blocks

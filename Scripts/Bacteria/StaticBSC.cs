@@ -1,6 +1,6 @@
-public class StaticBacterialStateComponent : IBacterialStateComponent
+public class StaticBSC : BacterialStateComponent
 {
-    public void Update(float delta, ExoWorld w, BacterialState bs)
+    public void Update(float delta, PlanetEnvironment w, BacterialState bs)
     {
         bs.TryGetBacteria(BacteriumType.OXYGEN, out Bacteria bOxy);
         bs.TryGetBacteria(BacteriumType.NITROGEN, out Bacteria bNito);
