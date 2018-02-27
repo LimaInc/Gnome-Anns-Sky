@@ -41,7 +41,7 @@ public class GUIObject : Node
         if (e is InputEventMouseButton iemb)
         {
             Vector2 pos = iemb.GetPosition();
-            if (iemb.ButtonIndex == 1 && iemb.Pressed && rect.HasPoint(pos))
+            if (InputUtil.IsLeftPress(iemb) && rect.HasPoint(pos))
             {
                 OnClick();
             }

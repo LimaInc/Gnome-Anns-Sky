@@ -80,6 +80,8 @@
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\GUI\DefossiliserGUI.cs" />
+    <Compile Include="Scripts\GUI\GUIComplexObject.cs" />
+    <Compile Include="Scripts\GUI\GUIInventorySlotArray.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemBacteriaVial.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="Scripts\Plants\TreeManager.cs" />
     <Compile Include="Scripts\Plants\PlantType.cs" />
     <Compile Include="Scripts\Player.cs" />
+    <Compile Include="Scripts\Util\InputUtil.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Util\CMYKColor.cs" />
     <Compile Include="Scripts\Util\Colors.cs" />
@@ -116,6 +119,15 @@
     <Compile Include="Scripts\World\PlanetEnvironment.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\World\WorldGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include=".mono\assemblies\GodotSharp.dll" />
+    <Content Include=".mono\assemblies\GodotSharp.pdb" />
+    <Content Include=".mono\assemblies\GodotSharp.xml" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.dll" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.pdb" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

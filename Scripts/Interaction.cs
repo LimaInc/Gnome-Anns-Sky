@@ -106,18 +106,12 @@ public class Interaction : Camera
 
     public byte GetBlock()
     {
-        Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
-
-        Vector3 from = this.ProjectRayOrigin(midScreenPoint);
-        Node[] exc = { this };
-        Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
-
-        if (hitInfo.Count != 0) //Hit something
+        IntVector3? blockPossible = this.GetBlockUnderCursor();
+        if (blockPossible.HasValue)
         {
-            Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
-            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
-
-            return terrain.GetBlock(blockPos);
+            IntVector3 blockPos = blockPossible.Value;
+            byte ret = terrain.GetBlock(blockPos);
+            return ret;
         }
 
         return 0;

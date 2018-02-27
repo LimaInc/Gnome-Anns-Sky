@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public abstract class GUI : Node
+public abstract class GUI : GUIComplexObject
 {
     private Node viewportSource;
 
@@ -17,8 +17,6 @@ public abstract class GUI : Node
         return this.viewportSource.GetViewport().GetSize();
     }
 
-    public abstract void HandleResize();
-
     public override void _Process(float delta)
     {
         Vector2 curViewportSize = GetViewportDimensions();
@@ -27,5 +25,13 @@ public abstract class GUI : Node
             HandleResize();
 
         oldViewportSize = GetViewportDimensions();
+    }
+
+    public virtual void HandleClose()
+    {
+    }
+
+    public virtual void HandleOpen(Node parent)
+    {
     }
 }

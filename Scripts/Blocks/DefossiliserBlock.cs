@@ -31,8 +31,8 @@ class DefossiliserBlock : CubeBlock
         Machine = new Defossiliser();
     }
 
-    public void HandleInput(InputEvent e)
+    public void HandleInput(InputEvent e, Player p)
     {
-
+        Machine.HandleInput(e, p);
     }
 }

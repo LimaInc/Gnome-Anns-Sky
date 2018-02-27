@@ -47,6 +47,11 @@ public class PlayerGUI : GUI
 
     bool first = true;
 
+    public override void HandleOpen(Node parent)
+    {
+        Input.SetMouseMode(Input.MouseMode.Captured);
+    }
+
     public override void HandleResize()
     {
         if (!first)

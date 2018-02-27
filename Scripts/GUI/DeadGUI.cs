@@ -14,8 +14,10 @@ public class DeadGUI : GUI
 
     public override void HandleResize()
     {
-        ColorRect cr = new ColorRect();
-        cr.Color = bgCol;
+        ColorRect cr = new ColorRect
+        {
+            Color = bgCol
+        };
         cr.SetSize(this.GetViewportDimensions());
         this.AddChild(cr);
 

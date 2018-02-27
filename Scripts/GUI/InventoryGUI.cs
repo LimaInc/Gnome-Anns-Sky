@@ -11,9 +11,9 @@ public class InventoryGUI : GUI
 
     private static Vector2 BOX_SIZE = new Vector2(550.0f, 400.0f);
 
-    private Inventory consumableInventory;
-    private Inventory fossilInventory;
-    private Inventory blockInventory;
+    public Inventory ConsumableInventory { get; private set; }
+    public Inventory FossilInventory { get; private set; }
+    public Inventory BlockInventory { get; private set; }
 
     //This follows the mouse to allow the player to move items around
     private GUIInventorySlot floatingSlot;
@@ -37,12 +37,17 @@ public class InventoryGUI : GUI
     public InventoryGUI(Player player, Inventory cinv, Inventory finv, Inventory binv, Node vSource) : base(vSource)
     {
         this.player = player;
-        this.consumableInventory = cinv;
-        this.fossilInventory = finv;
-        this.blockInventory = binv;
+        this.ConsumableInventory = cinv;
+        this.FossilInventory = finv;
+        this.BlockInventory = binv;
     }
 
     private bool first = true;
+
+    public void UpdateHandSlot()
+    {
+        this.handSlot.ReassignItemStack(player.ItemInHand);
+    }
 
     public override void HandleResize()
     {
@@ -89,15 +94,15 @@ public class InventoryGUI : GUI
 
                 Vector2 consPos = pos - GUIInventorySlot.SIZE / 2.0f;
                 GUIInventorySlot cons = consSlots[ind] = new GUIInventorySlot(this, Item.Type.CONSUMABLE, ind, consPos);
-                cons.AssignItemStack(consumableInventory.GetItemStack(ind));
+                cons.AssignItemStack(ConsumableInventory.GetItemStack(ind));
 
                 Vector2 fossPos = consPos + new Vector2(sectionSize.x + sectionSpacing, 0.0f);
                 GUIInventorySlot foss = fossSlots[ind] = new GUIInventorySlot(this, Item.Type.FOSSIL, ind, fossPos);
-                foss.AssignItemStack(fossilInventory.GetItemStack(ind));
+                foss.AssignItemStack(FossilInventory.GetItemStack(ind));
 
                 Vector2 blocPos = consPos + (new Vector2(sectionSize.x + sectionSpacing, 0.0f)) * 2.0f;
                 GUIInventorySlot bloc = blocSlots[ind] = new GUIInventorySlot(this, Item.Type.BLOCK, ind, blocPos);
-                bloc.AssignItemStack(blockInventory.GetItemStack(ind));
+                bloc.AssignItemStack(BlockInventory.GetItemStack(ind));
 
                 this.AddChild(cons);
                 this.AddChild(foss);
@@ -145,18 +150,32 @@ public class InventoryGUI : GUI
         this.hoverLabel = null;
     }
 
-    public void HandleClose()
+    public override void HandleOpen(Node parent)
     {
-        ItemStack i = floatingSlot.GetCurItemStack();
-        if (i != null)
+        Input.SetMouseMode(Input.MouseMode.Visible);
+    }
+
+    public override void HandleClose()
+    {
+        this.AddItemStack(floatingSlot.GetCurItemStack());
+    }
+
+    private void AddItemStack(ItemStack itemStack)
+    {
+        if (itemStack != null)
         {
-            Item.Type type = i.GetItem().GetType();
-            if (type == Item.Type.CONSUMABLE)
-                consumableInventory.AddItemStack(i);
-            if (type == Item.Type.FOSSIL)
-                fossilInventory.AddItemStack(i);
-            if (type == Item.Type.BLOCK)
-                blockInventory.AddItemStack(i);
+            switch (itemStack.GetItem().GetType())
+            {
+                case Item.Type.CONSUMABLE:
+                    ConsumableInventory.AddItemStack(itemStack);
+                    break;
+                case Item.Type.FOSSIL:
+                    FossilInventory.AddItemStack(itemStack);
+                    break;
+                case Item.Type.BLOCK:
+                    BlockInventory.AddItemStack(itemStack);
+                    break;
+            }
         }
     }
 
@@ -226,15 +245,15 @@ public class InventoryGUI : GUI
             
             if (iiType == Item.Type.CONSUMABLE)
             {
-                consumableInventory.RemoveItemStack(index);
+                ConsumableInventory.RemoveItemStack(index);
             }
             if (iiType == Item.Type.FOSSIL)
             {
-                fossilInventory.RemoveItemStack(index);
+                FossilInventory.RemoveItemStack(index);
             }
             if (iiType == Item.Type.BLOCK)
             {
-                blockInventory.RemoveItemStack(index);
+                BlockInventory.RemoveItemStack(index);
             }
 
             return;
@@ -249,15 +268,15 @@ public class InventoryGUI : GUI
             
             if (ffType == Item.Type.CONSUMABLE)
             {
-                consumableInventory.AddItemStack(floatingItemStack, index);
+                ConsumableInventory.AddItemStack(floatingItemStack, index);
             }
             if (ffType == Item.Type.FOSSIL)
             {
-                fossilInventory.AddItemStack(floatingItemStack, index);
+                FossilInventory.AddItemStack(floatingItemStack, index);
             }
             if (ffType == Item.Type.BLOCK)
             {
-                blockInventory.AddItemStack(floatingItemStack, index);
+                BlockInventory.AddItemStack(floatingItemStack, index);
             }
 
             slot.AssignItemStack(floatingItemStack);
@@ -280,18 +299,37 @@ public class InventoryGUI : GUI
             
         if (iType == Item.Type.CONSUMABLE)
         {
-            consumableInventory.RemoveItemStack(index);
-            consumableInventory.AddItemStack(floatingItemStack, index);
+            ConsumableInventory.RemoveItemStack(index);
+            ConsumableInventory.AddItemStack(floatingItemStack, index);
         }
         if (iType == Item.Type.FOSSIL)
         {
-            fossilInventory.RemoveItemStack(index);
-            fossilInventory.AddItemStack(floatingItemStack, index);
+            FossilInventory.RemoveItemStack(index);
+            FossilInventory.AddItemStack(floatingItemStack, index);
         }
         if (iType == Item.Type.BLOCK)
         {
-            blockInventory.RemoveItemStack(index);
-            blockInventory.AddItemStack(floatingItemStack, index);
+            BlockInventory.RemoveItemStack(index);
+            BlockInventory.AddItemStack(floatingItemStack, index);
+        }
+    }
+
+    internal void AddItem(Item i, int v)
+    {
+        if (i != null)
+        {
+            switch (i.GetType())
+            {
+                case Item.Type.CONSUMABLE:
+                    ConsumableInventory.AddItem(i, v);
+                    break;
+                case Item.Type.FOSSIL:
+                    FossilInventory.AddItem(i, v);
+                    break;
+                case Item.Type.BLOCK:
+                    BlockInventory.AddItem(i, v);
+                    break;
+            }
         }
     }
 

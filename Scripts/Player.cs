@@ -22,14 +22,10 @@ public class Player : KinematicBody
     private CollisionShape collisionShape;
     private Camera myCam;
 
-    private bool inventoryOpen = false;
+    public GUI OpenedGUI { get; set; }
 
-    private InventoryGUI inventoryGUI;
+    public InventoryGUI InventoryGUI { get; private set; }
     private PlayerGUI playerGUI;
-
-    private Inventory consumableInventory;
-    private Inventory fossilInventory;
-    private Inventory blockInventory;
 
     public ItemStack ItemInHand { get; set; }
 
@@ -88,9 +84,14 @@ public class Player : KinematicBody
 
         plants = GetNode(Game.PLANTS_PATH) as Plants;
 
-        consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
-        fossilInventory = new Inventory(this, Item.Type.FOSSIL);
-        blockInventory = new Inventory(this, Item.Type.BLOCK);
+        Inventory consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
+        Inventory fossilInventory = new Inventory(this, Item.Type.FOSSIL);
+        Inventory blockInventory = new Inventory(this, Item.Type.BLOCK);
+
+        InventoryGUI = new InventoryGUI(this, consumableInventory, fossilInventory, blockInventory, this);
+        playerGUI = new PlayerGUI(this);
+
+
         blockInventory.AddItem(ItemStorage.redRock, 20);
         blockInventory.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
         fossilInventory.AddItem(ItemStorage.fossil, 10);
@@ -117,72 +118,76 @@ public class Player : KinematicBody
 
     public bool IsInventoryOpen()
     {
-        return inventoryOpen;
+        return OpenedGUI == InventoryGUI;
     }
 
     public override void _Input(InputEvent e)
     {
         if (dead) return;
 
-        if (e is InputEventMouseMotion && !inventoryOpen)
+        if(OpenedGUI == null)
         {
-            Vector3 rot = this.GetRotation();
-
-            InputEventMouseMotion emm = (InputEventMouseMotion) e;
-
-            Vector2 rel = emm.GetRelative();
-
-            Vector3 rotd = new Vector3(-rel.y * camRotateSpeed, -rel.x * camRotateSpeed, 0.0f);
-
-            Vector3 targetRotation = myCam.GetRotation() + rotd;
-
-            //Clamp x rotation between -180 and 180 degrees
-            float xRot = targetRotation.x;
-            xRot = Mathf.Clamp(xRot, -Mathf.PI / 2, Mathf.PI / 2);
-            targetRotation = new Vector3(xRot, targetRotation.y, targetRotation.z);
-
-            myCam.SetRotation(targetRotation);
-        }
-
-        if (e is InputEventMouseButton iemb)
-        {
-            if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
+            if (e is InputEventMouseMotion)
             {
-                if(this.ItemInHand == null)
-                {
-                    byte b = interaction.GetBlock();
-                    Block block = Game.GetBlock(b);
-                    if (block is DefossiliserBlock db)
-                    {
-                        db.HandleInput(e);
-                    }
-                }
-                this.HandleUseItem();
+                Vector3 rot = this.GetRotation();
+
+                InputEventMouseMotion emm = (InputEventMouseMotion)e;
+
+                Vector2 rel = emm.GetRelative();
+
+                Vector3 rotd = new Vector3(-rel.y * camRotateSpeed, -rel.x * camRotateSpeed, 0.0f);
+
+                Vector3 targetRotation = myCam.GetRotation() + rotd;
+
+                //Clamp x rotation between -180 and 180 degrees
+                float xRot = targetRotation.x;
+                xRot = Mathf.Clamp(xRot, -Mathf.PI / 2, Mathf.PI / 2);
+                targetRotation = new Vector3(xRot, targetRotation.y, targetRotation.z);
+
+                myCam.SetRotation(targetRotation);
             }
-
-            if (iemb.ButtonIndex == 1 && iemb.Pressed && !inventoryOpen)
+            else if (e is InputEventMouseButton iemb)
             {
-                byte b = interaction.RemoveBlock();
-                Item ib = ItemStorage.GetItemFromBlock(b);
-
-                if (ib != null)
+                if (InputUtil.IsRighPress(iemb))
                 {
-                    bool addedToHand = false;
-
-                    if (this.ItemInHand != null)
+                    if (this.ItemInHand == null)
                     {
-                        Item i = this.ItemInHand.GetItem();
-                        if (i is ItemBlock curBlock)
+                        byte b = interaction.GetBlock();
+                        Block block = Game.GetBlock(b);
+                        if (block is DefossiliserBlock db)
                         {
-                            if (curBlock.Block == b)
-                            {
-                                this.ItemInHand.AddToQuantity(1);
-                                addedToHand = true;
-                            }
+                            db.HandleInput(e, this);
                         }
                     }
-                    if (!addedToHand)
-                        this.blockInventory.AddItem(ib, 1);
+                    else
+                    {
+                        this.HandleUseItem();
+                    }
+                }
+                else if (InputUtil.IsLeftPress(iemb))
+                {
+                    byte b = interaction.RemoveBlock();
+                    Item ib = ItemStorage.GetItemFromBlock(b);
+
+                    if (ib != null)
+                    {
+                        bool addedToHand = false;
+
+                        if (this.ItemInHand != null)
+                        {
+                            Item i = this.ItemInHand.GetItem();
+                            if (i is ItemBlock curBlock)
+                            {
+                                if (curBlock.Block == b)
+                                {
+                                    this.ItemInHand.AddToQuantity(1);
+                                    addedToHand = true;
+                                }
+                            }
+                        }
+                        if (!addedToHand)
+                            InventoryGUI.AddItem(ib, 1);
+                    }
                 }
             }
         }
@@ -198,7 +203,7 @@ public class Player : KinematicBody
 
     public void ReplenishAir(float v)
     {
-        if (v != v) //isNaN
+        if (Single.IsNaN(v))
             return;
 
         this.CurrentAir += v;
@@ -263,9 +268,9 @@ public class Player : KinematicBody
 
         this.dead = true;
 
-        if (inventoryOpen)
-            this.RemoveChild(inventoryGUI);
-        else 
+        if (OpenedGUI != null)
+            this.CloseGUI();
+        else
             this.RemoveChild(playerGUI);
 
         DeadGUI dg = new DeadGUI(this);
@@ -307,23 +312,21 @@ public class Player : KinematicBody
             if (blockPos.HasValue)
                 success = plants.Plant(p, blockPos.Value);
         }
-
-        if (success)
-        {
-            if (this.ItemInHand.GetCount() == 1)
-                this.ItemInHand = null;
-            else
-                this.ItemInHand.SubtractCount(1);
-        }
-        else if(i is ItemBacteriaVial vial)
+        else if (i is ItemBacteriaVial vial)
         {
             game.World.Bacteria.TryGetBacteria(vial.BacteriaType(), out Bacteria bacteria);
             bacteria.AddAmt(vial.Amount);
+            success = true;
+        }
 
-            if (this.ItemInHand.GetCount() == 1)
+        if (success)
+        {
+            this.ItemInHand.SubtractCount(1);
+            if (this.ItemInHand.GetCount() == 0)
+            {
                 this.ItemInHand = null;
-            else
-                this.ItemInHand.SubtractCount(1);
+            }
+            this.InventoryGUI.UpdateHandSlot();
         }
     }
 
@@ -368,25 +371,21 @@ public class Player : KinematicBody
 
         if (Input.IsActionJustPressed("inventory"))
         {
-            if (!inventoryOpen)
+            if (OpenedGUI == null)
             {
-                inventoryGUI = new InventoryGUI(this, consumableInventory, fossilInventory, blockInventory, this);
-                inventoryOpen = true;
-                this.AddChild(inventoryGUI);
+                playerGUI.HandleClose();
                 this.RemoveChild(playerGUI);
-                Input.SetMouseMode(Input.MouseMode.Visible);
-            } else 
+                OpenGUI(InventoryGUI);
+            }
+            else
             {
-                playerGUI = new PlayerGUI(this);
+                CloseGUI();
+                playerGUI.HandleOpen(this);
                 this.AddChild(playerGUI);
-                inventoryOpen = false;
-                inventoryGUI.HandleClose();
-                this.RemoveChild(inventoryGUI);
-                Input.SetMouseMode(Input.MouseMode.Captured);
             }
         }
 
-        if (!inventoryOpen)
+        if (OpenedGUI == null)
         {
             if (Input.IsActionJustPressed("jump") && onFloor)
             {
@@ -405,7 +404,7 @@ public class Player : KinematicBody
         float sin = (float) Math.Sin(rot.y);
         float cos = (float) Math.Cos(rot.y);
 
-        if (!inventoryOpen)
+        if (OpenedGUI == null)
         {
             Vector3 movDir = new Vector3();
             if (Input.IsActionPressed("forward"))
@@ -452,7 +451,25 @@ public class Player : KinematicBody
 
         onFloor = this.IsOnFloor();
     }
-    
+
+    public void OpenGUI(GUI gui)
+    {
+        CloseGUI();
+        gui.HandleOpen(this);
+        this.AddChild(gui);
+        OpenedGUI = gui;
+    }
+
+    public void CloseGUI()
+    {
+        if (OpenedGUI != null)
+        {
+            OpenedGUI.HandleClose();
+            this.RemoveChild(OpenedGUI);
+            OpenedGUI = null;
+        }
+    }
+
     public void ProcessDead(float delta)
     {
 

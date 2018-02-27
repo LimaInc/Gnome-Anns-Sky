@@ -60,6 +60,12 @@ public class GUIInventorySlot : GUIObject
         }
     }
 
+    internal void ReassignItemStack(ItemStack i)
+    {
+        ClearItemStack();
+        AssignItemStack(i);
+    }
+
     public Item.Type GetItemType()
     {
         return this.type;

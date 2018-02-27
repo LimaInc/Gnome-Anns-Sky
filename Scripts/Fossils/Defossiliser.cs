@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Godot;
 
-class Defossiliser
+public class Defossiliser
 {
     private static readonly IDictionary<Item, DefossiliserAction> transforms = new Dictionary<Item, DefossiliserAction>
     {
@@ -15,10 +16,11 @@ class Defossiliser
             new DefossiliserAction(ItemStorage.carbonDioxideBacteriaFossil, ItemStorage.carbonDioxideBacteriaVial),
     };
 
-    private DefossiliserGUI defossiliserGUI;
-
-    public Defossiliser()
+    public void HandleInput(InputEvent e, Player p)
     {
-        defossiliserGUI = null;
+        if (e is InputEventMouseButton iemb && InputUtil.IsRighPress(iemb))
+        {
+            p.OpenGUI(new DefossiliserGUI(this, p.InventoryGUI, p));
+        }
     }
 }

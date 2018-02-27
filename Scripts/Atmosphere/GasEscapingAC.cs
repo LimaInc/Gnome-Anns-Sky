@@ -4,7 +4,7 @@ using Godot;
 
 public class GasEscapingAC : AtmosphericComponent
 {
-    private static readonly float escapability = 0.2f;
+    private const float escapability = 0.2f;
 
     public static float EscapeVelocity { get; } = 10f;
 
