@@ -2,154 +2,172 @@ using System;
 using System.Collections.Generic;
 using Godot;
 
+// TODO: remove most of this class, this is very not DRY as most of it is already in InventoryGUI
 public class DefossiliserGUI : GUI
 {
     public static readonly IntVector2 IN_SLOT_COUNT = new IntVector2(2, 3);
     public static readonly IntVector2 OUT_SLOT_COUNT = new IntVector2(2, 3);
+    private static readonly IntVector2 INVENTORY_SLOT_COUNT = new IntVector2(4, 10);
 
-    private static readonly Vector2 BOX_SIZE = new Vector2(550, 400);
+    private static readonly Vector2 BOX_SIZE = new Vector2(600, 400);
     private static readonly Vector2 SLOT_SPACING = new Vector2(2, 2);
-
     private static readonly Vector2 SLOT_OFFSET = new Vector2(20, 30);
+    private static readonly Vector2 LABEL_SHIFT = new Vector2(0, -16);
+
+    private Defossiliser defossiliser;
+    private Player player;
+    private IDictionary<Item.Type, Inventory> subInventories;
 
     private GUIBox box;
 
-    public DefossiliserGUI(Defossiliser d, InventoryGUI inventory, Node vdSource) : base(vdSource)
+    private GUIFloatingSlot floatingSlot;
+    private GUIInventorySlotArray inSlotArray;
+    private GUIInventorySlotArray outSlotArray;
+    private IDictionary<Item.Type, GUILabeledSlotArray> subArrays = new Dictionary<Item.Type, GUILabeledSlotArray>
     {
-        throw new NotImplementedException();
-        /*
-        box = new GUIBox(new Rect2(this.GetViewportDimensions() / 2, BOX_SIZE));
-        this.AddChild(box);
+        [Item.Type.BLOCK] = null,
+        [Item.Type.CONSUMABLE] = null,
+        [Item.Type.FOSSIL] = null
+    };
 
-        Vector2 sectionSize = new Vector2(SLOT_COUNT.x, SLOT_COUNT.y) * (SLOT_SPACING + GUIInventorySlot.SIZE);
-        Vector2 sideSpace = SLOT_OFFSET * 2.0f;
-        float sectionSpacing = (BOX_SIZE.x - 3 * sectionSize.x) / 2.0f - SLOT_OFFSET.x;
+    private static readonly IDictionary<Item.Type, String> subInventoryNames = new Dictionary<Item.Type, String>
+    {
+        [Item.Type.BLOCK] = "Blocks",
+        [Item.Type.CONSUMABLE] = "Consumables",
+        [Item.Type.FOSSIL] = "Fossils"
+    };
+    private static readonly IDictionary<Item.Type, int> subInvIndices = new Dictionary<Item.Type, int>
+    {
+        [Item.Type.CONSUMABLE] = 0,
+        [Item.Type.FOSSIL] = 1,
+        [Item.Type.BLOCK] = 2
+    };
+    private static readonly IDictionary<Item.Type, Label> subInvLabels = new Dictionary<Item.Type, Label>
+    {
+        [Item.Type.BLOCK] = null,
+        [Item.Type.CONSUMABLE] = null,
+        [Item.Type.FOSSIL] = null
+    };
 
-        Vector2 totOff = SLOT_OFFSET + this.GetViewportDimensions() / 2 - BOX_SIZE / 2.0f;
+    public DefossiliserGUI(Defossiliser defossiliser, Player p, 
+        IDictionary<Item.Type,Inventory> inventories, Node vSource) : base(vSource)
+    {
+        this.defossiliser = defossiliser;
+        this.subInventories = inventories;
+        this.player = p;
+    }
 
-        for (int x = 0; x < SLOT_COUNT.x; x++)
+    private void Initialize()
+    {
+        Vector2 empty = new Vector2();
+        floatingSlot = new GUIFloatingSlot();
+        inSlotArray = new GUIInventorySlotArray(floatingSlot, Item.Type.ANY, IN_SLOT_COUNT, empty);
+        outSlotArray = new GUIInventorySlotArray(floatingSlot, Item.Type.ANY, OUT_SLOT_COUNT, empty);
+        foreach (Item.Type type in new List<Item.Type>(subArrays.Keys))
         {
-            for (int y = 0; y < SLOT_COUNT.y; y++)
-            {
-                Vector2 pos = totOff + new Vector2(x, y) * (GUIInventorySlot.SIZE + SLOT_SPACING) + GUIInventorySlot.SIZE / 2.0f;
-
-                int ind = x + y * SLOT_COUNT.x;
-
-                Vector2 consPos = pos - GUIInventorySlot.SIZE / 2.0f;
-                GUIInventorySlot cons = consSlots[ind] = new GUIInventorySlot(this, Item.Type.CONSUMABLE, ind, consPos);
-                cons.AssignItemStack(consumableInventory.GetItemStack(ind));
-
-                Vector2 fossPos = consPos + new Vector2(sectionSize.x + sectionSpacing, 0.0f);
-                GUIInventorySlot foss = fossSlots[ind] = new GUIInventorySlot(this, Item.Type.FOSSIL, ind, fossPos);
-                foss.AssignItemStack(fossilInventory.GetItemStack(ind));
-
-                Vector2 blocPos = consPos + (new Vector2(sectionSize.x + sectionSpacing, 0.0f)) * 2.0f;
-                GUIInventorySlot bloc = blocSlots[ind] = new GUIInventorySlot(this, Item.Type.BLOCK, ind, blocPos);
-                bloc.AssignItemStack(blockInventory.GetItemStack(ind));
-
-                this.AddChild(cons);
-                this.AddChild(foss);
-                this.AddChild(bloc);
-            }
+            subArrays[type] = new GUILabeledSlotArray(floatingSlot, type, subInventoryNames[type], INVENTORY_SLOT_COUNT, 
+                empty, empty);
         }
+        AddChildren();
+    }
 
-        consLabel = new Label();
-        consLabel.SetText("Consumables");
-        consLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 0 - new Vector2(0.0f, 16.0f));
-        this.AddChild(consLabel);
+    private void UpdateSlots()
+    {
+        inSlotArray.OverrideFromInventory(defossiliser.InInventory);
+        inSlotArray.OverrideFromInventory(defossiliser.OutInventory);
+        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subArrays)
+        {
+            kvPair.Value.OverrideFromInventory(subInventories[kvPair.Key]);
+        }
+    }
 
-        fossLabel = new Label();
-        fossLabel.SetText("Fossils");
-        fossLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 1 - new Vector2(0.0f, 16.0f));
-        this.AddChild(fossLabel);
-
-        blocLabel = new Label();
-        blocLabel.SetText("Blocks");
-        blocLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 2 - new Vector2(0.0f, 16.0f));
-        this.AddChild(blocLabel);
-
-        floatingSlot = new GUIInventorySlot();
-        this.AddChild(floatingSlot);
-        */
+    private void SaveSlotState()
+    {
+        inSlotArray.SaveToInventory(defossiliser.InInventory);
+        inSlotArray.SaveToInventory(defossiliser.OutInventory);
+        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subArrays)
+        {
+            kvPair.Value.SaveToInventory(subInventories[kvPair.Key]);
+        }
     }
 
     public override void HandleResize()
     {
-        throw new NotImplementedException();
-        /*{
-            this.RemoveChild(box);
-            this.RemoveChild(consLabel);
-            this.RemoveChild(fossLabel);
-            this.RemoveChild(blocLabel);
+        RemoveChildren();
+        ResizeSlotArrays();
+        AddChildren();
+    }
 
-            foreach (GUIInventorySlot g in consSlots)
-                this.RemoveChild(g);
-
-            foreach (GUIInventorySlot g in fossSlots)
-                this.RemoveChild(g);
-
-            foreach (GUIInventorySlot g in blocSlots)
-                this.RemoveChild(g);
-
-            this.RemoveChild(floatingSlot);
-            this.RemoveChild(handSlot);
-        }
-
-        box = new GUIBox(new Rect2(this.GetViewportDimensions() / 2, BOX_SIZE));
-        this.AddChild(box);
-
-        handSlot = new GUIInventorySlot(this, Item.Type.BLOCK, -2, this.GetViewportDimensions() / 2.0f + new Vector2(-16.0f, 170.0f));
-        handSlot.AssignItemStack(player.ItemInHand);
-        this.AddChild(handSlot);
-
-        Vector2 sectionSize = new Vector2(SLOT_COUNT.x, SLOT_COUNT.y) * (SLOT_SPACING + GUIInventorySlot.SIZE);
-        Vector2 sideSpace = SLOT_OFFSET * 2.0f;
-        float sectionSpacing = (BOX_SIZE.x - 3 * sectionSize.x) / 2.0f - SLOT_OFFSET.x;
-
-        Vector2 totOff = SLOT_OFFSET + this.GetViewportDimensions() / 2 - BOX_SIZE / 2.0f;
-
-        for (int x = 0; x < SLOT_COUNT.x; x++)
+    private void RemoveChildren()
+    {
+        this.RemoveChild(floatingSlot);
+        foreach (GUILabeledSlotArray slotArr in subArrays.Values)
         {
-            for (int y = 0; y < SLOT_COUNT.y; y++)
-            {
-                Vector2 pos = totOff + new Vector2(x, y) * (GUIInventorySlot.SIZE + SLOT_SPACING) + GUIInventorySlot.SIZE / 2.0f;
+            this.box.RemoveChild(slotArr);
+        }
+        this.box.RemoveChild(inSlotArray);
+        this.box.RemoveChild(outSlotArray);
+        this.RemoveChild(box);
+    }
 
-                int ind = x + y * SLOT_COUNT.x;
+    private void ResizeSlotArrays()
+    {
+        Vector2 perSlotSize = SLOT_SPACING + GUIInventorySlot.SIZE;
+        Vector2 subArraySize = (Vector2)INVENTORY_SLOT_COUNT * perSlotSize;
+        float defossiliserArrayWidth = Mathf.Max(IN_SLOT_COUNT.x, OUT_SLOT_COUNT.x) * perSlotSize.x;
+        float sectionSpacing = (BOX_SIZE.x - subArrays.Count * subArraySize.x - SLOT_OFFSET.x * 2 -
+            defossiliserArrayWidth) / subArrays.Count;
 
-                Vector2 consPos = pos - GUIInventorySlot.SIZE / 2.0f;
-                GUIInventorySlot cons = consSlots[ind] = new GUIInventorySlot(this, Item.Type.CONSUMABLE, ind, consPos);
-                cons.AssignItemStack(consumableInventory.GetItemStack(ind));
+        Vector2 offset = SLOT_OFFSET - BOX_SIZE / 2;
+        Vector2 delta = new Vector2(subArraySize.x + sectionSpacing, 0);
 
-                Vector2 fossPos = consPos + new Vector2(sectionSize.x + sectionSpacing, 0.0f);
-                GUIInventorySlot foss = fossSlots[ind] = new GUIInventorySlot(this, Item.Type.FOSSIL, ind, fossPos);
-                foss.AssignItemStack(fossilInventory.GetItemStack(ind));
-
-                Vector2 blocPos = consPos + (new Vector2(sectionSize.x + sectionSpacing, 0.0f)) * 2.0f;
-                GUIInventorySlot bloc = blocSlots[ind] = new GUIInventorySlot(this, Item.Type.BLOCK, ind, blocPos);
-                bloc.AssignItemStack(blockInventory.GetItemStack(ind));
-
-                this.AddChild(cons);
-                this.AddChild(foss);
-                this.AddChild(bloc);
-            }
+        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subArrays)
+        {
+            kvPair.Value.SetPosition(offset + delta * subInvIndices[kvPair.Key]);
+            kvPair.Value.SetSize(SLOT_SPACING, LABEL_SHIFT);
         }
 
-        consLabel = new Label();
-        consLabel.SetText("Consumables");
-        consLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 0 - new Vector2(0.0f, 16.0f));
-        this.AddChild(consLabel);
+        inSlotArray.SetPosition(offset + delta * subArrays.Count);
 
-        fossLabel = new Label();
-        fossLabel.SetText("Fossils");
-        fossLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 1 - new Vector2(0.0f, 16.0f));
-        this.AddChild(fossLabel);
+        outSlotArray.SetPosition(offset + delta * subArrays.Count + 
+            new Vector2(0, BOX_SIZE.y - OUT_SLOT_COUNT.y * perSlotSize.y - SLOT_OFFSET.y));
+    }
 
-        blocLabel = new Label();
-        blocLabel.SetText("Blocks");
-        blocLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 2 - new Vector2(0.0f, 16.0f));
-        this.AddChild(blocLabel);
+    private void AddChildren()
+    {
+        box = new GUIBox(this.GetViewportDimensions() / 2, new Rect2(new Vector2(), BOX_SIZE));
+        this.AddChild(box);
+        foreach (GUILabeledSlotArray slotArr in subArrays.Values)
+        {
+            this.box.AddChild(slotArr);
+        }
+        this.box.AddChild(inSlotArray);
+        this.box.AddChild(outSlotArray);
+        this.AddChild(floatingSlot);
+    }
 
-        floatingSlot = new GUIInventorySlot();
-        this.AddChild(floatingSlot);*/
+    public override void HandleOpen(Node parent)
+    {
+        Input.SetMouseMode(Input.MouseMode.Visible);
+        UpdateSlots();
+    }
+
+    public override void HandleClose()
+    {
+        SaveSlotState();
+        ItemStack stack = floatingSlot.GetCurItemStack();
+        if (stack != null)
+        {
+            this.subInventories[stack.GetItem().GetType()].AddItemStack(stack);
+            floatingSlot.ClearItemStack();
+        }
+    }
+
+    public override void _Input(InputEvent e)
+    {
+        if (e is InputEventMouseMotion iemm)
+        {
+            floatingSlot.SetPosition(iemm.GetPosition());
+        }
     }
 }

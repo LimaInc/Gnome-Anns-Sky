@@ -15,7 +15,7 @@ public class GUIBox : GUIObject
     private Sprite right = new Sprite();
     private Sprite bottom = new Sprite();
 
-    public GUIBox(Rect2 r) : base(r, GUI_SHEET, r.Size / 16.0f)
+    public GUIBox(Vector2 pos, Rect2 r) : base(pos, r, GUI_SHEET, r.Size / 16.0f)
     {
         this.sprite.SetRegion(true);
         this.sprite.SetRegionRect(new Rect2(16, 16, 16, 16));
@@ -48,28 +48,28 @@ public class GUIBox : GUIObject
         top.SetRegion(true);
         top.SetRegionRect(new Rect2(16, 0, 16, 16));
         top.SetPosition(new Vector2(r.Position.x, r.Position.y - r.Size.y / 2.0f));
-        top.SetScale(new Vector2(r.Size.x / 16.0f,1.0f));
+        top.SetScale(new Vector2(r.Size.x / 16.0f, 1.0f));
         this.AddChild(top);
 
         bottom.SetTexture(GUI_SHEET);
         bottom.SetRegion(true);
         bottom.SetRegionRect(new Rect2(16, 32, 16, 16));
         bottom.SetPosition(new Vector2(r.Position.x, r.Position.y + r.Size.y / 2.0f));
-        bottom.SetScale(new Vector2(r.Size.x / 16.0f,1.0f));
+        bottom.SetScale(new Vector2(r.Size.x / 16.0f, 1.0f));
         this.AddChild(bottom);
 
         right.SetTexture(GUI_SHEET);
         right.SetRegion(true);
         right.SetRegionRect(new Rect2(32, 16, 16, 16));
         right.SetPosition(new Vector2(r.Position.x + r.Size.x / 2.0f, r.Position.y));
-        right.SetScale(new Vector2(1.0f,r.Size.y / 16.0f));
+        right.SetScale(new Vector2(1.0f, r.Size.y / 16.0f));
         this.AddChild(right);
 
         left.SetTexture(GUI_SHEET);
         left.SetRegion(true);
         left.SetRegionRect(new Rect2(0, 16, 16, 16));
         left.SetPosition(new Vector2(r.Position.x - r.Size.x / 2.0f, r.Position.y));
-        left.SetScale(new Vector2(1.0f,r.Size.y / 16.0f));
+        left.SetScale(new Vector2(1.0f, r.Size.y / 16.0f));
         this.AddChild(left);
-    } 
+    }
 }

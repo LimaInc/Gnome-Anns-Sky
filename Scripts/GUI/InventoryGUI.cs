@@ -1,335 +1,186 @@
 using System;
+using System.Collections.Generic;
 using Godot;
 
 public class InventoryGUI : GUI
 {
-    private static IntVector2 SLOT_COUNT = new IntVector2(4,10);
+    public const int BOX_Z = 0;
+    public const int ARRAY_SLOT_Z = 1;
+    public const int HAND_SLOT_Z = 1;
+    public const int FLOATING_SLOT_Z = 5;
 
-    private static Vector2 SLOT_SPACING = new Vector2(2, 2);
+    private static readonly IntVector2 SLOT_COUNT = new IntVector2(4,10);
 
-    private static Vector2 SLOT_OFFSET = new Vector2(20.0f, 30.0f);
+    private static readonly Vector2 SLOT_SPACING = new Vector2(2, 2);
+    private static readonly Vector2 SLOT_OFFSET = new Vector2(20.0f, 30.0f);
+    private static readonly Vector2 BOX_SIZE = new Vector2(550.0f, 400.0f);
+    private static readonly Vector2 HAND_SLOT_OFFSET = new Vector2(-16.0f, 170.0f);
+    private static readonly Vector2 LABEL_SHIFT = new Vector2(0, 16);
 
-    private static Vector2 BOX_SIZE = new Vector2(550.0f, 400.0f);
+    private IDictionary<Item.Type, Inventory> subInventories = new Dictionary<Item.Type, Inventory>
+    {
+        [Item.Type.BLOCK] = null,
+        [Item.Type.CONSUMABLE] = null,
+        [Item.Type.FOSSIL] = null
+    };
 
-    public Inventory ConsumableInventory { get; private set; }
-    public Inventory FossilInventory { get; private set; }
-    public Inventory BlockInventory { get; private set; }
-
-    //This follows the mouse to allow the player to move items around
+    // This follows the mouse to allow the player to move items around
     private GUIInventorySlot floatingSlot;
 
-    private GUIInventorySlot[] consSlots = new GUIInventorySlot[40];
-    private GUIInventorySlot[] fossSlots = new GUIInventorySlot[40];
-    private GUIInventorySlot[] blocSlots = new GUIInventorySlot[40];
+    private IDictionary<Item.Type, GUILabeledSlotArray> subInvSlots = new Dictionary<Item.Type, GUILabeledSlotArray>
+    {
+        [Item.Type.BLOCK] = null,
+        [Item.Type.CONSUMABLE] = null,
+        [Item.Type.FOSSIL] = null
+    };
+
+    private static readonly IDictionary<Item.Type, String> subInventoryNames = new Dictionary<Item.Type, String>
+    {
+        [Item.Type.BLOCK] = "Blocks",
+        [Item.Type.CONSUMABLE] = "Consumables",
+        [Item.Type.FOSSIL] = "Fossils"
+    };
+
+    private static readonly IDictionary<Item.Type, int> subInvIndices = new Dictionary<Item.Type, int>
+    {
+        [Item.Type.CONSUMABLE] = 0,
+        [Item.Type.FOSSIL] = 1,
+        [Item.Type.BLOCK] = 2
+    };
+
+    private static readonly IDictionary<Item.Type, Label> subInvLabels = new Dictionary<Item.Type, Label>
+    {
+        [Item.Type.BLOCK] = null,
+        [Item.Type.CONSUMABLE] = null,
+        [Item.Type.FOSSIL] = null
+    };
 
     private GUIInventorySlot handSlot;
 
-    private Label consLabel;
-    private Label fossLabel;
-    private Label blocLabel;
-
     private GUIBox box;
-
-    private Label hoverLabel;
 
     private Player player;
 
-    public InventoryGUI(Player player, Inventory cinv, Inventory finv, Inventory binv, Node vSource) : base(vSource)
+    public InventoryGUI(Player player, IDictionary<Item.Type,Inventory> inventories, Node vSource) : base(vSource)
     {
         this.player = player;
-        this.ConsumableInventory = cinv;
-        this.FossilInventory = finv;
-        this.BlockInventory = binv;
-    }
+        this.subInventories = inventories;
 
-    private bool first = true;
+        this.Initialize();
+    }
 
     public void UpdateHandSlot()
     {
-        this.handSlot.ReassignItemStack(player.ItemInHand);
+        this.handSlot.AssignItemStack(player.ItemInHand);
     }
 
     public override void HandleResize()
     {
-        if (!first)
+        RemoveChildren();
+        ResizeSlotArrays();
+        AddChildren();
+    }
+
+    private void Initialize()
+    {
+        floatingSlot = new GUIFloatingSlot
         {
-            this.RemoveChild(box);
-            this.RemoveChild(consLabel);
-            this.RemoveChild(fossLabel);
-            this.RemoveChild(blocLabel);
-
-            foreach (GUIInventorySlot g in consSlots)
-                this.RemoveChild(g);
-
-            foreach (GUIInventorySlot g in fossSlots)
-                this.RemoveChild(g);
-
-            foreach (GUIInventorySlot g in blocSlots)
-                this.RemoveChild(g);
-
-            this.RemoveChild(floatingSlot);
-            this.RemoveChild(handSlot);
-        }
-
-        box = new GUIBox(new Rect2(this.GetViewportDimensions() / 2,BOX_SIZE));
-        this.AddChild(box);
-
-        handSlot = new GUIInventorySlot(this, Item.Type.BLOCK, -2, this.GetViewportDimensions() / 2.0f + new Vector2(-16.0f, 170.0f));
-        handSlot.AssignItemStack(player.ItemInHand);
-        this.AddChild(handSlot);
-
-        Vector2 sectionSize = new Vector2(SLOT_COUNT.x, SLOT_COUNT.y) * (SLOT_SPACING + GUIInventorySlot.SIZE);
-        Vector2 sideSpace = SLOT_OFFSET * 2.0f;
-        float sectionSpacing = (BOX_SIZE.x - 3 * sectionSize.x) / 2.0f - SLOT_OFFSET.x;
-
-        Vector2 totOff = SLOT_OFFSET + this.GetViewportDimensions() / 2 - BOX_SIZE / 2.0f;
-
-        for (int x = 0; x < SLOT_COUNT.x; x++)
+            ZAsRelative = true,
+            ZIndex = FLOATING_SLOT_Z
+        };
+        foreach (Item.Type type in new List<Item.Type>(subInvSlots.Keys))
         {
-            for (int y = 0; y < SLOT_COUNT.y; y++)
+            Vector2 empty = new Vector2();
+            subInvSlots[type] = new GUILabeledSlotArray(floatingSlot, type, subInventoryNames[type], SLOT_COUNT,
+                empty, empty)
             {
-                Vector2 pos = totOff + new Vector2(x, y) * (GUIInventorySlot.SIZE + SLOT_SPACING) + GUIInventorySlot.SIZE / 2.0f;
-
-                int ind = x + y * SLOT_COUNT.x;
-
-                Vector2 consPos = pos - GUIInventorySlot.SIZE / 2.0f;
-                GUIInventorySlot cons = consSlots[ind] = new GUIInventorySlot(this, Item.Type.CONSUMABLE, ind, consPos);
-                cons.AssignItemStack(ConsumableInventory.GetItemStack(ind));
-
-                Vector2 fossPos = consPos + new Vector2(sectionSize.x + sectionSpacing, 0.0f);
-                GUIInventorySlot foss = fossSlots[ind] = new GUIInventorySlot(this, Item.Type.FOSSIL, ind, fossPos);
-                foss.AssignItemStack(FossilInventory.GetItemStack(ind));
-
-                Vector2 blocPos = consPos + (new Vector2(sectionSize.x + sectionSpacing, 0.0f)) * 2.0f;
-                GUIInventorySlot bloc = blocSlots[ind] = new GUIInventorySlot(this, Item.Type.BLOCK, ind, blocPos);
-                bloc.AssignItemStack(BlockInventory.GetItemStack(ind));
-
-                this.AddChild(cons);
-                this.AddChild(foss);
-                this.AddChild(bloc);
-            }
+                ZAsRelative = true,
+                ZIndex = ARRAY_SLOT_Z
+            };
         }
+        AddChildren();
+    }
 
-        consLabel = new Label();
-        consLabel.SetText("Consumables");
-        consLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 0 - new Vector2(0.0f, 16.0f));
-        this.AddChild(consLabel);
+    private void UpdateSlots()
+    {
+        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subInvSlots)
+        {
+            kvPair.Value.OverrideFromInventory(subInventories[kvPair.Key]);
+        }
+    }
 
-        fossLabel = new Label();
-        fossLabel.SetText("Fossils");
-        fossLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 1 - new Vector2(0.0f, 16.0f));
-        this.AddChild(fossLabel);
+    private void SaveSlotState()
+    {
+        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subInvSlots)
+        {
+            kvPair.Value.SaveToInventory(subInventories[kvPair.Key]);
+        }
+        player.ItemInHand = handSlot.GetCurItemStack();
+    }
 
-        blocLabel = new Label();
-        blocLabel.SetText("Blocks");
-        blocLabel.SetPosition(totOff + new Vector2(sectionSize.x + sectionSpacing, 0.0f) * 2 - new Vector2(0.0f, 16.0f));
-        this.AddChild(blocLabel);
+    private void RemoveChildren()
+    {
+        this.RemoveChild(floatingSlot);
+        this.box.RemoveChild(handSlot);
+        foreach (GUILabeledSlotArray slotArr in subInvSlots.Values)
+        {
+            this.box.RemoveChild(slotArr);
+        }
+        this.RemoveChild(box);
+    }
 
-        floatingSlot = new GUIInventorySlot();
+    private void ResizeSlotArrays()
+    {
+        Vector2 sectionSize = (Vector2)SLOT_COUNT * (SLOT_SPACING + GUIInventorySlot.SIZE);
+        float sectionSpacing = (BOX_SIZE.x - subInvSlots.Count * sectionSize.x - 2 * SLOT_OFFSET.x) / (subInvSlots.Count - 1);
+
+        Vector2 offset = SLOT_OFFSET - BOX_SIZE / 2;
+        Vector2 delta = new Vector2(sectionSize.x + sectionSpacing, 0.0f);
+
+        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subInvSlots)
+        {
+            kvPair.Value.SetPosition(offset + delta * subInvIndices[kvPair.Key]);
+            kvPair.Value.SetSize(SLOT_SPACING, LABEL_SHIFT);
+        }
+    }
+
+    private void AddChildren()
+    {
+        box = new GUIBox(this.GetViewportDimensions() / 2, new Rect2(new Vector2(), BOX_SIZE))
+        {
+            ZAsRelative = true,
+            ZIndex = BOX_Z
+        };
+        handSlot = new GUIInventorySlot(floatingSlot, Item.Type.ANY, -2, HAND_SLOT_OFFSET)
+        {
+            ZAsRelative = true,
+            ZIndex = HAND_SLOT_Z
+        };
+        handSlot.AssignItemStack(player.ItemInHand);
+
+        this.AddChild(box);
+        foreach (GUILabeledSlotArray slotArr in subInvSlots.Values)
+        {
+            this.box.AddChild(slotArr);
+        }
+        this.box.AddChild(handSlot);
         this.AddChild(floatingSlot);
-
-        first = false;
-    }
-
-    public void HandleHover(ItemStack ist)
-    {
-        if (ist == null || hoverLabel != null)
-            return;
-
-        this.hoverLabel = new Label();
-        this.hoverLabel.SetText(ist.GetItem().GetName());
-        this.AddChild(this.hoverLabel);
-    }
-
-    public void HandleHoverOff()
-    {
-        if (this.hoverLabel == null)
-            return;
-
-        this.RemoveChild(this.hoverLabel);
-        this.hoverLabel = null;
     }
 
     public override void HandleOpen(Node parent)
     {
         Input.SetMouseMode(Input.MouseMode.Visible);
+        UpdateSlots();
     }
 
     public override void HandleClose()
     {
-        this.AddItemStack(floatingSlot.GetCurItemStack());
-    }
-
-    private void AddItemStack(ItemStack itemStack)
-    {
-        if (itemStack != null)
+        SaveSlotState();
+        ItemStack stack = floatingSlot.GetCurItemStack();
+        if (stack != null)
         {
-            switch (itemStack.GetItem().GetType())
-            {
-                case Item.Type.CONSUMABLE:
-                    ConsumableInventory.AddItemStack(itemStack);
-                    break;
-                case Item.Type.FOSSIL:
-                    FossilInventory.AddItemStack(itemStack);
-                    break;
-                case Item.Type.BLOCK:
-                    BlockInventory.AddItemStack(itemStack);
-                    break;
-            }
-        }
-    }
-
-    public void HandleSlotClick(int index, Item.Type type)
-    {
-        ItemStack floatingItemStack = floatingSlot.GetCurItemStack();
-
-        //Hand slot
-        if (index == -2)
-        {
-            ItemStack ist = handSlot.GetCurItemStack();
-
-            if (ist == null && floatingItemStack == null)
-                return;
-
-            if (floatingItemStack == null)
-            {
-                floatingSlot.AssignItemStack(ist);
-                handSlot.ClearItemStack();
-                player.ItemInHand = null;
-                return;
-            }
-
-            if (ist == null)
-            {
-                handSlot.AssignItemStack(floatingItemStack);
-                player.ItemInHand = floatingItemStack;
-                floatingSlot.ClearItemStack();
-                return;
-            }
-
-            handSlot.ClearItemStack();
-            handSlot.AssignItemStack(floatingItemStack);
-            player.ItemInHand = floatingItemStack;
+            this.subInventories[stack.GetItem().GetType()].AddItemStack(stack);
             floatingSlot.ClearItemStack();
-            floatingSlot.AssignItemStack(ist);
-
-            return;
-        }
-
-        GUIInventorySlot slot = null;
-
-        if (type == Item.Type.CONSUMABLE)
-        {
-            slot = consSlots[index];
-        }
-        if (type == Item.Type.FOSSIL)
-        {
-            slot = fossSlots[index];
-        }
-        if (type == Item.Type.BLOCK)
-        {
-            slot = blocSlots[index];
-        }
-
-        ItemStack iStack = slot.GetCurItemStack();
-
-        if (iStack == null && floatingItemStack == null)
-            return;
-
-        if (floatingItemStack == null)
-        {
-            Item.Type iiType = iStack.GetItem().GetType();
-
-            floatingSlot.AssignItemStack(iStack);
-            slot.ClearItemStack();
-            
-            if (iiType == Item.Type.CONSUMABLE)
-            {
-                ConsumableInventory.RemoveItemStack(index);
-            }
-            if (iiType == Item.Type.FOSSIL)
-            {
-                FossilInventory.RemoveItemStack(index);
-            }
-            if (iiType == Item.Type.BLOCK)
-            {
-                BlockInventory.RemoveItemStack(index);
-            }
-
-            return;
-        }
-
-        if (iStack == null)
-        {
-            Item.Type ffType = floatingItemStack.GetItem().GetType();
-
-            if (ffType != slot.GetItemType())
-                return;
-            
-            if (ffType == Item.Type.CONSUMABLE)
-            {
-                ConsumableInventory.AddItemStack(floatingItemStack, index);
-            }
-            if (ffType == Item.Type.FOSSIL)
-            {
-                FossilInventory.AddItemStack(floatingItemStack, index);
-            }
-            if (ffType == Item.Type.BLOCK)
-            {
-                BlockInventory.AddItemStack(floatingItemStack, index);
-            }
-
-            slot.AssignItemStack(floatingItemStack);
-            floatingSlot.ClearItemStack();
-            return;
-        }
-        
-        Item.Type iType = iStack.GetItem().GetType();
-        Item.Type fType = floatingItemStack.GetItem().GetType();
-
-        if (fType != iType)
-            return;
-
-        //Both slots contain something
-        slot.ClearItemStack();
-        floatingSlot.ClearItemStack();
-
-        slot.AssignItemStack(floatingItemStack);
-        floatingSlot.AssignItemStack(iStack);
-            
-        if (iType == Item.Type.CONSUMABLE)
-        {
-            ConsumableInventory.RemoveItemStack(index);
-            ConsumableInventory.AddItemStack(floatingItemStack, index);
-        }
-        if (iType == Item.Type.FOSSIL)
-        {
-            FossilInventory.RemoveItemStack(index);
-            FossilInventory.AddItemStack(floatingItemStack, index);
-        }
-        if (iType == Item.Type.BLOCK)
-        {
-            BlockInventory.RemoveItemStack(index);
-            BlockInventory.AddItemStack(floatingItemStack, index);
-        }
-    }
-
-    internal void AddItem(Item i, int v)
-    {
-        if (i != null)
-        {
-            switch (i.GetType())
-            {
-                case Item.Type.CONSUMABLE:
-                    ConsumableInventory.AddItem(i, v);
-                    break;
-                case Item.Type.FOSSIL:
-                    FossilInventory.AddItem(i, v);
-                    break;
-                case Item.Type.BLOCK:
-                    BlockInventory.AddItem(i, v);
-                    break;
-            }
         }
     }
 
@@ -338,9 +189,6 @@ public class InventoryGUI : GUI
         if (e is InputEventMouseMotion iemm)
         {
             floatingSlot.SetPosition(iemm.GetPosition());
-
-            if (this.hoverLabel != null)
-                this.hoverLabel.SetPosition(iemm.GetPosition() + new Vector2(10.0f, 10.0f));
         }
     }
 }

@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class Player : KinematicBody
 {
@@ -46,7 +47,10 @@ public class Player : KinematicBody
     private Game game;
 
     private bool dead;
-    
+
+    public const int PLAYER_INVENTORY_COUNT = 40;
+
+    public IDictionary<Item.Type, Inventory> Inventories { get; private set; }
     private Plants plants;
     private Atmosphere atmosphere;
 
@@ -76,7 +80,6 @@ public class Player : KinematicBody
         this.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
 
         myCam = (Camera) this.GetChild(0);
-
         myCam.SetTranslation(camOffset);
 
         playerGUI = new PlayerGUI(this);
@@ -84,31 +87,39 @@ public class Player : KinematicBody
 
         plants = GetNode(Game.PLANTS_PATH) as Plants;
 
-        Inventory consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
-        Inventory fossilInventory = new Inventory(this, Item.Type.FOSSIL);
-        Inventory blockInventory = new Inventory(this, Item.Type.BLOCK);
+        Inventories = new Dictionary<Item.Type, Inventory>
+        {
+            [Item.Type.CONSUMABLE] = new Inventory(Item.Type.CONSUMABLE, PLAYER_INVENTORY_COUNT),
+            [Item.Type.FOSSIL] = new Inventory(Item.Type.FOSSIL, PLAYER_INVENTORY_COUNT),
+            [Item.Type.BLOCK] = new Inventory(Item.Type.BLOCK, PLAYER_INVENTORY_COUNT)
+        };
 
-        InventoryGUI = new InventoryGUI(this, consumableInventory, fossilInventory, blockInventory, this);
-        playerGUI = new PlayerGUI(this);
+        InventoryGUI = new InventoryGUI(this, Inventories, this);
 
 
-        blockInventory.AddItem(ItemStorage.redRock, 20);
-        blockInventory.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
-        fossilInventory.AddItem(ItemStorage.fossil, 10);
-        fossilInventory.AddItem(ItemStorage.grass, 10);
-        fossilInventory.AddItem(ItemStorage.tree, 10);
-        consumableInventory.AddItem(ItemStorage.chocolate, 10);
-        blockInventory.AddItem(ItemStorage.redRock, 15);
-        blockInventory.AddItem(ItemStorage.redRock, 34);
+        this.AddItem(ItemStorage.redRock, 20);
+        this.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
+        this.AddItem(ItemStorage.redRock, 15);
+        this.AddItem(ItemStorage.redRock, 34);
 
-        consumableInventory.AddItem(ItemStorage.cake, 3);
+        this.AddItem(ItemStorage.fossil, 10);
+        this.AddItem(ItemStorage.grass, 10);
+        this.AddItem(ItemStorage.tree, 10);
 
-        consumableInventory.AddItem(ItemStorage.water, 5);
-        fossilInventory.AddItem(ItemStorage.oxygenBacteriaVial, 5);
-        fossilInventory.AddItem(ItemStorage.nitrogenBacteriaVial, 5);
-        fossilInventory.AddItem(ItemStorage.carbonDioxideBacteriaVial, 5);
+        this.AddItem(ItemStorage.cake, 3);
+        this.AddItem(ItemStorage.chocolate, 10);
+        this.AddItem(ItemStorage.water, 5);
+
+        this.AddItem(ItemStorage.oxygenBacteriaVial, 5);
+        this.AddItem(ItemStorage.nitrogenBacteriaVial, 5);
+        this.AddItem(ItemStorage.carbonDioxideBacteriaVial, 5);
 
         this.atmosphere = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
+    }
+
+    private void AddItem(Item i, int n)
+    {
+        Inventories[i.GetType()].AddItem(i, n);
     }
 
     public CollisionShape GetCollisionShape()
@@ -186,7 +197,9 @@ public class Player : KinematicBody
                             }
                         }
                         if (!addedToHand)
-                            InventoryGUI.AddItem(ib, 1);
+                        {
+                            this.AddItem(ib, 1);
+                        }
                     }
                 }
             }
@@ -373,15 +386,13 @@ public class Player : KinematicBody
         {
             if (OpenedGUI == null)
             {
-                playerGUI.HandleClose();
-                this.RemoveChild(playerGUI);
+                playerGUI.BackgroundMode = true;
                 OpenGUI(InventoryGUI);
             }
             else
             {
-                CloseGUI();
-                playerGUI.HandleOpen(this);
-                this.AddChild(playerGUI);
+                this.CloseGUI();
+                playerGUI.BackgroundMode = false;
             }
         }
 
@@ -454,7 +465,7 @@ public class Player : KinematicBody
 
     public void OpenGUI(GUI gui)
     {
-        CloseGUI();
+        this.CloseGUI();
         gui.HandleOpen(this);
         this.AddChild(gui);
         OpenedGUI = gui;

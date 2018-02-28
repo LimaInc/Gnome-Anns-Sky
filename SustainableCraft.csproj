@@ -53,8 +53,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\Atmosphere\Atmosphere.cs" />
     <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
-    <Compile Include="Scripts\Atmosphere\Gas.cs" />
     <Compile Include="Scripts\Atmosphere\ColorMixingAC.cs" />
+    <Compile Include="Scripts\Atmosphere\Gas.cs" />
     <Compile Include="Scripts\Atmosphere\GasEscapingAC.cs" />
     <Compile Include="Scripts\Atmosphere\GasMolecule.cs" />
     <Compile Include="Scripts\Bacteria\ProductionBSC.cs" />
@@ -81,7 +81,10 @@
     <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\GUI\DefossiliserGUI.cs" />
     <Compile Include="Scripts\GUI\GUIComplexObject.cs" />
+    <Compile Include="Scripts\GUI\GUIFloatingSlot.cs" />
+    <Compile Include="Scripts\GUI\GUILabeledSlotArray.cs" />
     <Compile Include="Scripts\GUI\GUIInventorySlotArray.cs" />
+    <Compile Include="Scripts\GUI\Label2D.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemBacteriaVial.cs" />

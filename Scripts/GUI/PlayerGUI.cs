@@ -15,6 +15,16 @@ public class PlayerGUI : GUI
     private readonly static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
     private readonly static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
 
+    private const float BAR_LENGTH = 200;
+    private const float BAR_SEPARATION = 30;
+    private const float BAR_EDGE_OFFSET = 20;
+    private readonly static Vector2 ICON_SCALE = new Vector2(2, 2);
+    private readonly static Vector2 ICON_OFFSET = new Vector2(30, -20);
+
+    private const float ATM_BAR_LENGTH = 280;
+    private const float ATM_BAR_EDGE_OFFSET = 25;
+    private const float ATM_BAR_SPACING = 50;
+
     private Player player;
 
     private GUIVerticalBar air;
@@ -35,6 +45,27 @@ public class PlayerGUI : GUI
 
     private Atmosphere atm;
 
+    private bool backgroundMode = false;
+
+    public bool BackgroundMode
+    {
+        get { return backgroundMode; }
+        set
+        {
+            if (backgroundMode && !value)
+            {
+                ChangeToForegroundMode();
+            }
+            else if (!backgroundMode && value)
+            {
+                ChangeToBackgroundMode();
+            }
+            backgroundMode = value;
+        }
+    }
+
+    bool first = true;
+
     public PlayerGUI(Player p) : base(p)
     {
         this.player = p;
@@ -42,13 +73,22 @@ public class PlayerGUI : GUI
 
     public override void _Ready()
     {
-        this.atm = (GetNode(Game.GAME_PATH) as Game).World.Atmosphere;
+        this.atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
     }
 
-    bool first = true;
-
-    public override void HandleOpen(Node parent)
+    public PlayerGUI(Node vdSource) : base(vdSource)
     {
+        this.BackgroundMode = false;
+    }
+
+    private void ChangeToBackgroundMode()
+    {
+        this.RemoveChild(crosshair);
+    }
+
+    private void ChangeToForegroundMode()
+    {
+        this.AddChild(crosshair);
         Input.SetMouseMode(Input.MouseMode.Captured);
     }
 
@@ -71,59 +111,56 @@ public class PlayerGUI : GUI
             this.RemoveChild(this.inHandLabel);
         }
 
-        float barHeight = 200.0f;
-
-        Vector2 baseStatusOffset = new Vector2(50.0f, this.GetViewportDimensions().y - barHeight / 2.0f - 40.0f);
+        Vector2 baseStatusOffset = new Vector2(BAR_EDGE_OFFSET, this.GetViewportDimensions().y - BAR_LENGTH - BAR_EDGE_OFFSET);
 
         Vector2 airPos = baseStatusOffset;
-        this.air = new GUIVerticalBar(airPos, barHeight, AIR_COLOR);
+        this.air = new GUIVerticalBar(airPos, BAR_LENGTH, AIR_COLOR);
 
-        Vector2 thirstPos = airPos + new Vector2(30.0f + GUIHorizontalBar.WIDTH, 0.0f);
-        this.thirst = new GUIVerticalBar(thirstPos, barHeight, THIRST_COLOR);
+        Vector2 thirstPos = airPos + new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0.0f);
+        this.thirst = new GUIVerticalBar(thirstPos, BAR_LENGTH, THIRST_COLOR);
 
-        Vector2 hungerPos = thirstPos + new Vector2(30.0f + GUIHorizontalBar.WIDTH, 0.0f);
-        this.hunger = new GUIVerticalBar(hungerPos, barHeight, HUNGER_COLOR);
+        Vector2 hungerPos = thirstPos + new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0.0f);
+        this.hunger = new GUIVerticalBar(hungerPos, BAR_LENGTH, HUNGER_COLOR);
 
         this.AddChild(this.air);
         this.AddChild(this.thirst);
         this.AddChild(this.hunger);
 
         hungerIcon = ItemStorage.cake.GenerateGUISprite();
-        hungerIcon.SetPosition(hungerPos - new Vector2(0.0f, 150.0f));
-        hungerIcon.SetScale(new Vector2(2.0f, 2.0f));
+        hungerIcon.SetPosition(hungerPos + ICON_OFFSET);
+        hungerIcon.SetScale(ICON_SCALE);
         this.AddChild(hungerIcon);
 
         thirstIcon = ItemStorage.water.GenerateGUISprite();
-        thirstIcon.SetPosition(thirstPos - new Vector2(0.0f, 150.0f));
-        thirstIcon.SetScale(new Vector2(2.0f, 2.0f));
+        thirstIcon.SetPosition(thirstPos + ICON_OFFSET);
+        thirstIcon.SetScale(ICON_SCALE);
         this.AddChild(thirstIcon);
 
         airIcon = new Sprite();
         airIcon.SetTexture(AIR_ICON_TEX);
-        airIcon.SetPosition(airPos - new Vector2(0.0f, 150.0f));
-        airIcon.SetScale(new Vector2(2.0f, 2.0f));
+        airIcon.SetPosition(airPos + ICON_OFFSET);
+        airIcon.SetScale(ICON_SCALE);
         this.AddChild(airIcon);
 
-        Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 - (barHeight - 5.0f) * 1.5f,50.0f);
+        Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 + ATM_BAR_LENGTH / 2, ATM_BAR_EDGE_OFFSET);
 
-        Vector2 atmos0Pos = baseAtmosOffset;
-        this.atmosOxygen = new GUIHorizontalBar(atmos0Pos, barHeight, OXYGEN_COLOR);
+        Vector2 atmos1Pos = baseAtmosOffset; 
+        this.atmosNitrogen = new GUIHorizontalBar(atmos1Pos, ATM_BAR_LENGTH, NITROGEN_COLOR);
 
-        Vector2 atmos1Pos = atmos0Pos + new Vector2(barHeight + 80.0f, 0.0f);
-        this.atmosNitrogen = new GUIHorizontalBar(atmos1Pos, barHeight, NITROGEN_COLOR);
+        Vector2 atmos0Pos = atmos1Pos - new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0.0f);
+        this.atmosOxygen = new GUIHorizontalBar(atmos0Pos, ATM_BAR_LENGTH, OXYGEN_COLOR);
 
-        Vector2 atmos2Pos = atmos1Pos + new Vector2(barHeight + 80.0f, 0.0f);
-        this.atmosCarbonDioxide = new GUIHorizontalBar(atmos2Pos, barHeight, CARBON_DIOXIDE_COLOR);
+        Vector2 atmos2Pos = atmos1Pos + new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0.0f);
+        this.atmosCarbonDioxide = new GUIHorizontalBar(atmos2Pos, ATM_BAR_LENGTH, CARBON_DIOXIDE_COLOR);
 
         this.AddChild(this.atmosOxygen);
         this.AddChild(this.atmosNitrogen);
         this.AddChild(this.atmosCarbonDioxide);
 
         inHandLabel = new Label();
-
         inHandLabel.SetPosition(new Vector2(this.GetViewportDimensions().x / 2.0f - 80.0f, this.GetViewportDimensions().y - 15.0f));
-
         this.AddChild(inHandLabel);
+
         crosshair = new Sprite();
         crosshair.SetTexture(CROSSHAIR_TEX);
         crosshair.SetPosition(this.GetViewportDimensions() / 2.0f);
@@ -153,7 +190,7 @@ public class PlayerGUI : GUI
             this.atmosCarbonDioxide.SetPercentage(0.0f);
         }
 
-        if (player.ItemInHand != null)
+        if (!BackgroundMode && player.ItemInHand != null)
         {
             inHandLabel.SetText("Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    Quantity : " + player.ItemInHand.GetCount());
         }

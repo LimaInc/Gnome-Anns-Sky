@@ -1,27 +1,29 @@
 using System;
 using Godot;
 
-public class GUIObject : Node
+public class GUIObject : Node2D
 {
     protected Rect2 rect;
     protected Sprite sprite;
 
     private bool hovered;
 
-    public GUIObject(Rect2 r, Texture t)
+    public GUIObject(Vector2 pos, Rect2 r, Texture t)
     {
+        this.SetPosition(pos);
         this.rect = r;
         this.sprite = new Sprite();
         if (t != null)
             sprite.SetTexture(t);
-        sprite.SetPosition(r.Position + r.Size / 2.0f);
+        sprite.SetPosition(r.Position + r.Size / 2);
         sprite.SetScale(new Vector2(r.Size.x / t.GetSize().x, r.Size.y / t.GetSize().y));
         this.AddChild(sprite);
     }
 
     //For GUI objects that need manual scalling
-    public GUIObject(Rect2 r, Texture t, Vector2 scale)
+    public GUIObject(Vector2 pos, Rect2 r, Texture t, Vector2 scale)
     {
+        this.SetPosition(pos);
         this.rect = r;
         this.sprite = new Sprite();
         sprite.SetTexture(t);
@@ -30,7 +32,7 @@ public class GUIObject : Node
         this.AddChild(sprite);
     }
 
-    public virtual void OnClick() { }
+    public virtual void OnLeftPress() { }
 
     public virtual void OnHover() { }
 
@@ -41,9 +43,9 @@ public class GUIObject : Node
         if (e is InputEventMouseButton iemb)
         {
             Vector2 pos = iemb.GetPosition();
-            if (InputUtil.IsLeftPress(iemb) && rect.HasPoint(pos))
+            if (InputUtil.IsLeftPress(iemb) && rect.HasPoint(this.ToLocal(pos)))
             {
-                OnClick();
+                OnLeftPress();
             }
         }
 

@@ -79,4 +79,9 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
     {
         return String.Format("({0}, {1})", this.x.ToString(format), this.y.ToString(format));
     }
+
+    public static explicit operator Vector2(IntVector2 v)
+    {
+        return new Vector2(v.x, v.y);
+    }
 }

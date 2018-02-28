@@ -3,17 +3,15 @@ using System;
 
 public class Inventory
 {
-    private Player player;
-
-    public static int SLOT_COUNT = 40;
+    public readonly int size;
     private Item.Type type;
     private ItemStack[] stacks;
 
-    public Inventory(Player p, Item.Type type)
+    public Inventory(Item.Type type, int size)
     {
-        this.player = p;
         this.type = type;
-        this.stacks = new ItemStack[SLOT_COUNT];
+        this.size = size;
+        this.stacks = new ItemStack[this.size];
     }
 
     public void RemoveItemStack(int ind)
@@ -21,12 +19,12 @@ public class Inventory
         stacks[ind] = null;
     }
 
-    //Add item at specific index, used in GUI
-    //Please be careful when using this function in other contexts
-    //Returns true if place successful, otherwise false
+    // Add item at specific index, used in GUI
+    // Please be careful when using this function in other contexts
+    // Returns true if place successful, otherwise false
     public bool AddItemStack(ItemStack item, int ind)
     {
-        if (stacks[ind] != null) //hopefully, this shouldn't happen...
+        if (stacks[ind] != null) // hopefully, this shouldn't happen...
             return false;
 
         stacks[ind] = item;
@@ -52,7 +50,7 @@ public class Inventory
         {
             for (int j = 0; j < cnt; j++)
             {
-                for (int i = 0; i < SLOT_COUNT; i++)
+                for (int i = 0; i < this.size; i++)
                 {
                     if (stacks[i] == null)
                     {
@@ -63,11 +61,12 @@ public class Inventory
                 // endOfLoop : {}
             }
             return;
-        } else
+        }
+        else
         {
             if (Contains(item))
             {
-                for (int i = 0; i < SLOT_COUNT; i++)
+                for (int i = 0; i < this.size; i++)
                 {
                     if (stacks[i] == null) continue;
 
@@ -77,9 +76,10 @@ public class Inventory
                         return;
                     }
                 }
-            } else 
+            }
+            else 
             {
-                for (int i = 0; i < SLOT_COUNT; i++)
+                for (int i = 0; i < this.size; i++)
                 {
                     if (stacks[i] == null)
                     {
@@ -93,7 +93,7 @@ public class Inventory
 
     public bool Contains(Item item)
     {
-        for (int i = 0; i < SLOT_COUNT; i++)
+        for (int i = 0; i < this.size; i++)
         {
             if (stacks[i] == null) continue;
 
