@@ -64,6 +64,8 @@
     <Compile Include="Scripts\Bacteria\BacteriumType.cs" />
     <Compile Include="Scripts\Bacteria\BacterialStateComponent.cs" />
     <Compile Include="Scripts\Bacteria\StaticBSC.cs" />
+    <Compile Include="Scripts\Blocks\AnimalFossilBlocks.cs" />
+    <Compile Include="Scripts\Blocks\PlantFossilBlocks.cs" />
     <Compile Include="Scripts\Blocks\Block.cs" />
     <Compile Include="Scripts\Blocks\BlockFace.cs" />
     <Compile Include="Scripts\Blocks\BacteriaFossilBlocks.cs" />

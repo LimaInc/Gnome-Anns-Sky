@@ -7,9 +7,10 @@ public class ItemStorage
     public enum ItemID : byte {
         RED_ROCK, STONE_BLOCK,
         OXYGEN_BACTERIA_FOSSIL, NITROGEN_BACTERIA_FOSSIL, CARBON_DIOXIDE_BACTERIA_FOSSIL,
+        GRASS_FOSSIL, TREE_FOSSIL, ANIMAL_FOSSIL,
         OXYGEN_BACTERIA_VIAL, NITROGEN_BACTERIA_VIAL, CARBON_DIOXIDE_BACTERIA_VIAL,
-        CHOCOLATE, CAKE, WATER,
         GRASS, TREE,
+        CHOCOLATE, CAKE, WATER
     }
   
     private static Dictionary<byte, Item> blockItems = new Dictionary<byte, Item>();
@@ -38,6 +39,18 @@ public class ItemStorage
 
     public static Item carbonDioxideBacteriaFossil = 
         new ItemBlock((byte)ItemID.CARBON_DIOXIDE_BACTERIA_FOSSIL, "CarbonDioxideBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>()).SetStackable(true);
+    
+    private static Texture GRASS_FOSSIL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemGrassFossil.png") as Texture;
+    public static Item grassFossil =
+        new ItemBlock((byte)ItemID.GRASS_FOSSIL, "GrassFossil", GRASS_FOSSIL_TEX, Game.GetBlockId<GrassFossilBlock>()).SetStackable(true);
+
+    private static Texture TREE_FOSSIL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemTreeFossil.png") as Texture;
+    public static Item treeFossil =
+        new ItemBlock((byte)ItemID.TREE_FOSSIL, "TreeFossil", TREE_FOSSIL_TEX, Game.GetBlockId<TreeFossilBlock>()).SetStackable(true);
+
+    private static Texture ANIMAL_FOSSIL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemAnimalFossil.png") as Texture;
+    public static Item animalFossil =
+        new ItemBlock((byte)ItemID.ANIMAL_FOSSIL, "AnimalFossil", ANIMAL_FOSSIL_TEX, Game.GetBlockId<AnimalFossilBlock>()).SetStackable(true);
 
     private static Texture OXYGEN_BACTERIA_VIAL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemOxygenBacteriaVial.png") as Texture;
     public static Item oxygenBacteriaVial = 

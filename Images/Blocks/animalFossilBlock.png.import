@@ -7,10 +7,10 @@ path="res://.import/animalFossilBlock.png-5f1377c0cb3c455b8583dd52e4b66841.stex"
 [deps]
 
 source_file="res://Images/Blocks/animalFossilBlock.png"
-source_md5="0f71bd236a516adf8298de66e0027500"
+source_md5="061fa9f778d2b8dda034c83ddd9f68aa"
 
 dest_files=[ "res://.import/animalFossilBlock.png-5f1377c0cb3c455b8583dd52e4b66841.stex" ]
-dest_md5="e8cd132277d781a31fa6c53d6df77f96"
+dest_md5="1cfb9acc1bc400b85755e6eac5db3036"
 
 [params]
 

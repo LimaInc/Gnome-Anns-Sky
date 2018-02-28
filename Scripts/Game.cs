@@ -25,13 +25,19 @@ public class Game : Node
         //Register blocks
         Game.RegisterBlock(new Stone());
         Game.RegisterBlock(new RedRock());
+
         Game.RegisterBlock(new OxygenBacteriaFossilBlock());
         Game.RegisterBlock(new NitrogenBacteriaFossilBlock());
         Game.RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
-        Game.RegisterBlock(new HabitationBlock());
+        Game.RegisterBlock(new GrassFossilBlock());
+        Game.RegisterBlock(new TreeFossilBlock());
+        Game.RegisterBlock(new AnimalFossilBlock());
+
         Game.RegisterBlock(new GrassBlock());
         Game.RegisterBlock(new TreeBlock());
         Game.RegisterBlock(new LeafBlock());
+
+        Game.RegisterBlock(new HabitationBlock());
         Game.RegisterBlock(new DefossiliserBlock());
 
         //Generate texture atlas once all blocks are registered

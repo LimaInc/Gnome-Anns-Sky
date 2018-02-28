@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/itemRedRock.png-04a223cb22664094ba4d0d70544ebdd9.stex"
+path="res://.import/itemAnimalFossil.PNG-0771378d76a45b8137aa912feb6a61bf.stex"
 
 [deps]
 
-source_file="res://Images/Items/itemRedRock.png"
-source_md5="69b96c738506d97213fb4749e2468bfd"
+source_file="res://Images/Items/itemAnimalFossil.PNG"
+source_md5="37765e0944f2dc1ba8a5938588a56cc7"
 
-dest_files=[ "res://.import/itemRedRock.png-04a223cb22664094ba4d0d70544ebdd9.stex" ]
-dest_md5="d32f5ea2b9fb35c56ec3cc380c8b045c"
+dest_files=[ "res://.import/itemAnimalFossil.PNG-0771378d76a45b8137aa912feb6a61bf.stex" ]
+dest_md5="4c506d8da96cfaa1b0fa55e1a88dbd5c"
 
 [params]
 

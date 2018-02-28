@@ -7,10 +7,10 @@ path="res://.import/itemBacteriaFossil.png-6ed9d8480737e6f0c337b92f0e5c0108.stex
 [deps]
 
 source_file="res://Images/Items/itemBacteriaFossil.png"
-source_md5="4c985c41c9ca805611116d2ba6c176aa"
+source_md5="cff6dd746f74a8f6dab48e3030b898ed"
 
 dest_files=[ "res://.import/itemBacteriaFossil.png-6ed9d8480737e6f0c337b92f0e5c0108.stex" ]
-dest_md5="3922bb4e75ccb78ac6a6329bfac5e098"
+dest_md5="0ce16719687fe54371838cb74143e60b"
 
 [params]
 

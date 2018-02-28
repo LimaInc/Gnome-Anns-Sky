@@ -20,8 +20,8 @@ public class Plants : Node
 
     public bool Plant(ItemPlant plantItem, IntVector3 blockPos)
     {
-        if (plantManagers.ContainsKey(plantItem.plantType))
-            return plantManagers[plantItem.plantType].PlantOn(blockPos);
+        if (plantManagers.ContainsKey(plantItem.PlantType))
+            return plantManagers[plantItem.PlantType].PlantOn(blockPos);
         return false;
     }
 

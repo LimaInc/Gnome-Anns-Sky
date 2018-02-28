@@ -12,9 +12,11 @@ public class Defossiliser : Node
     public readonly IList<DefossiliserAction> possibleProcesses;
     public static readonly IList<DefossiliserAction> DEFAULT_PROCESSES = new List<DefossiliserAction>
     {
-        new DefossiliserAction(ItemStorage.oxygenBacteriaFossil, ItemStorage.oxygenBacteriaVial),
-        new DefossiliserAction(ItemStorage.nitrogenBacteriaFossil, ItemStorage.nitrogenBacteriaVial),
-        new DefossiliserAction(ItemStorage.carbonDioxideBacteriaFossil, ItemStorage.carbonDioxideBacteriaVial)
+        new DefossiliserAction(ItemStorage.oxygenBacteriaFossil, ItemStorage.oxygenBacteriaVial, processingTime: 12),
+        new DefossiliserAction(ItemStorage.nitrogenBacteriaFossil, ItemStorage.nitrogenBacteriaVial, processingTime: 10),
+        new DefossiliserAction(ItemStorage.carbonDioxideBacteriaFossil, ItemStorage.carbonDioxideBacteriaVial, processingTime: 7),
+        new DefossiliserAction(ItemStorage.grassFossil, ItemStorage.grass, processingTime: 15),
+        new DefossiliserAction(ItemStorage.treeFossil, ItemStorage.tree, processingTime: 30)
     };
 
     public Inventory OutInventory { get; private set; }
