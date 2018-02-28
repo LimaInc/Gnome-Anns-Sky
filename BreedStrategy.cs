@@ -7,10 +7,9 @@ public class BreedStrategy : BaseStrategy
     private List<PhysicsBody> breedableTargets;
 
     private PhysicsBody target;
-    private string targetName {
-        get { return targetName; }
-        set { targetName = value; component.Set("BreedingTargetName", value); }
-    }
+
+    private string targetName = "";
+    private string GetBreedingTargetName() { return targetName; }
 
     private float breedingTimer = 0.0f;
     private const float breedingThreshold = 2.0f;
@@ -27,8 +26,7 @@ public class BreedStrategy : BaseStrategy
 
     enum BreedState
     {
-        SeenTarget,
-        ApproachedTarget,
+        ApproachingTarget,
         WaitingForResponse,
         GoingForBreed,
         Breeding
@@ -40,9 +38,7 @@ public class BreedStrategy : BaseStrategy
     {
         switch (state)
         {
-            case BreedState.SeenTarget:
-                break;
-            case BreedState.ApproachedTarget:               
+            case BreedState.ApproachingTarget:               
                 break;
             case BreedState.GoingForBreed:
                 break;
@@ -59,16 +55,18 @@ public class BreedStrategy : BaseStrategy
     public override void Ready()
     {
         breedableTargets = new List<PhysicsBody>();
-
-        component.Set("breedingTargetName", "");
         component.body.AddUserSignal("attemptingBreeding");
+
+        component.RegisterCustomProperty("breedingTargetName", this, nameof(GetBreedingTargetName));
+        component.RegisterCustomProperty("breedingRequest", this, nameof(AttemptBreeding));
+
     }
 
     public override void ObjectInRange(PhysicsBody body)
     {
         base.ObjectInRange(body);
         Node behaviourComponent = body.GetNode("BehaviourComponent");
-        if (behaviourComponent.Get("presetName").Equals(component.presetName) && (int)behaviourComponent.Get("sex") != component.sex)
+        if (behaviourComponent.Get("presetName").Equals(component.presetName) && (int)behaviourComponent.Get("_sex") != component.sex)
         {
             breedableTargets.Add(body);
         }
@@ -78,7 +76,7 @@ public class BreedStrategy : BaseStrategy
     {
         base.ObjectOutOfRange(body);
         Node behaviourComponent = body.GetNode("BehaviourComponent");
-        if(behaviourComponent.Get("presetName").Equals(component.presetName) && (int)behaviourComponent.Get("sex") != component.sex)
+        if(behaviourComponent.Get("presetName").Equals(component.presetName) && (int)behaviourComponent.Get("_sex") != component.sex)
         {
             breedableTargets.Remove(body);
         }
@@ -100,7 +98,7 @@ public class BreedStrategy : BaseStrategy
                 {
                     if (component.sex == (int)AnimalBehaviourComponent.Sex.Female)
                     {
-                        Node spawnNode = GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner");
+                        Node spawnNode = component.GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner");
                         Random r = new Random();
                         int nextSex = r.Next(0, 2);
 
@@ -112,30 +110,26 @@ public class BreedStrategy : BaseStrategy
         }
     }
 
-    public override List<Tuple<string, Node, string>> GetConnections()
-    {
-        var l = new List<Tuple<string, Node, string>>();
-        l.Add(Tuple.Create("attemptBreeding", component.GetParent(), nameof(AttemptBreeding)));
-
-        return l;
-    }
-
     public override void StartState(params object[] args)
     {
-        SetState(BreedState.SeenTarget);
+        base.StartState(args);
+        SetState(BreedState.ApproachingTarget);
         target = (PhysicsBody)args[0];
         targetName = target.GetName();
     } 
 
-    protected void AttemptBreeding(KinematicBody otherBody)
+    protected void AttemptBreeding(object[] args)
     {
+        KinematicBody otherBody = (KinematicBody)args[0];
+        GD.Print(component.body.GetName(), ": Received breed request from ", otherBody.GetName());
         if (otherBody.GetName() == targetName)
         {
+            GD.Print("Already had that target!");
             SetState(BreedState.GoingForBreed);
         }
         else
         {
-            if (!active || state == BreedState.SeenTarget)
+            if (!active || state == BreedState.ApproachingTarget)
             {
                 if (component.satiated < satiatedThreshold) return;
                 Random r = new Random();
@@ -157,9 +151,47 @@ public class BreedStrategy : BaseStrategy
         }
     }
 
-    public override void Process(float delta) //TODO: need BehaviourComponent to setup connections on strategy's behalf.
+    public override void Process(float delta)
     {
         breedableTargets.RemoveAll(p => p == null);
+    }
+
+    public PhysicsBody ShouldBreedState()
+    {
+        //only attempt breed if there is a breedable target in sight
+        PhysicsBody found = null;
+
+        foreach (PhysicsBody body in breedableTargets)
+        {
+            if (body == null) continue;
+            // Identify whether we can see the target by raycasting
+            PhysicsDirectSpaceState spaceState = body.GetWorld().GetDirectSpaceState();
+            var result = spaceState.IntersectRay(component.body.GetTranslation(), body.GetTranslation(), new[] { component.body, body });
+
+            if (result.Count == 0)
+            {
+                found = body;
+                break;
+            }
+        }
+
+        if (found == null) return null;
+
+        breedingTimer = 0;
+
+        Random r = new Random();
+        int n = r.Next(0, 100);
+        if ((component.sex == (int)AnimalBehaviourComponent.Sex.Female))
+        {
+            n = 100;
+        }
+        if (n < component.breedability)
+        {
+            GD.Print("Found partner to attempt to breed with! Path: ", found.GetName());
+            return found;
+        }
+
+        return null;
     }
 
     public override void PhysicsProcess(float delta)
@@ -169,23 +201,37 @@ public class BreedStrategy : BaseStrategy
             active = false;
             return;
         }
-        if (state == BreedState.ApproachedTarget)
+        if (state == BreedState.ApproachingTarget)
         {
-            float distanceSquared = target.GetTranslation().DistanceSquaredTo(component.body.GetTranslation());
+            Vector3 direction = target.GetTranslation() - component.body.GetTranslation();
+            component.body.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
+
+            float distanceSquared = direction.LengthSquared();
             if (distanceSquared <= 30 * 30)
             {
-                target.EmitSignal("attemptingBreeding", component.body);
-                state = BreedState.WaitingForResponse;
+                GD.Print(component.body.GetName(), ": Close enough to send request. Sending!");
+                Node c = target.GetNode("BehaviourComponent");
+                GD.Print("Node:", c);
+                //target.GetNode("BehaviourComponent").Call("GetCustomProperty", "breedingRequest", new[] { component.body });
+                SetState(BreedState.WaitingForResponse);
             }
         }
         else if (state == BreedState.WaitingForResponse)
         {
-            string targetString = (string)target.GetNode("BehaviourComponent").Get("breedingTargetName");
 
+            AnimalBehaviourComponent behaviour = (AnimalBehaviourComponent)target.GetNode("BehaviourComponent");
+            string targetString = (string)target.GetNode("BehaviourComponent")
+                
+                
+                .Call("GetCustomProperty", "breedingTargetName", new string[] { "lol", "hello" });
+
+            targetString = "test";
             if (targetString.Equals(component.body.GetName()))
             {
+                GD.Print(component.body.GetName(), ": Detected acceptance!");
                 Vector3 direction = target.GetTranslation() - component.body.GetTranslation();
                 component.body.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
+                SetState(BreedState.Breeding);
             }
             else
             {
@@ -193,10 +239,11 @@ public class BreedStrategy : BaseStrategy
                 waitingTimer += delta;
                 if (waitingTimer > waitingThreshold)
                 {
+                    GD.Print(component.body.GetName(), ": Detected rejection. Idling.");    
                     // Must have been rejected!
                     active = false;
 
-                    GD.Print(component.body.GetName(), ": Detected rejection. Idling.");
+                    
                 }
             }
         }
