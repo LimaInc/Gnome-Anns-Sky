@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class AnimalSpawner : Node
 {
     private List<AnimalPreset> presets;
-    Script entityScript = (Script)ResourceLoader.Load("res://Entity.cs");
+    Script entityScript = (Script)ResourceLoader.Load("res://Scripts/Animals/Entity.cs");
 
     private void HollisticDemo()
     {

@@ -50,14 +50,16 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseStrategy.cs" />
-    <Compile Include="BreedStrategy.cs" />
-    <Compile Include="EatStrategy.cs" />
-    <Compile Include="Entity.cs" />
-    <Compile Include="Scripts\AnimalBehaviourComponent.cs" />
-    <Compile Include="Scripts\AnimalPreset.cs" />
-    <Compile Include="Scripts\AnimalSpawner.cs" />
-    <Compile Include="Scripts\BaseComponent.cs" />
+    <Compile Include="Scripts\Animals\BaseStrategy.cs" />
+    <Compile Include="Scripts\Animals\BreedStrategy.cs" />
+    <Compile Include="Scripts\Animals\EatStrategy.cs" />
+    <Compile Include="Scripts\Animals\Entity.cs" />
+    <Compile Include="Scripts\Animals\AnimalBehaviourComponent.cs" />
+    <Compile Include="Scripts\Animals\AnimalPreset.cs" />
+    <Compile Include="Scripts\Animals\AnimalSpawner.cs" />
+    <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\Interaction.cs" />
+    <Compile Include="Scripts\Animals\BaseComponent.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
@@ -70,9 +72,8 @@
     <Compile Include="Scripts\GUI\InventoryGUI.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
-    <Compile Include="Scripts\Game.cs" />
-    <Compile Include="Scripts\PhysicsComponent.cs" />
-    <Compile Include="Scripts\Pig.cs" />
+    <Compile Include="Scripts\Animals\PhysicsComponent.cs" />
+    <Compile Include="Scripts\Animals\Pig.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Blocks\Block.cs" />
@@ -82,13 +83,20 @@
     <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
-    <Compile Include="Scripts\Interaction.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\Util\TextureManager.cs" />
     <Compile Include="Scripts\World\WorldGenerator.cs" />
     <Compile Include="Scripts\Util\Noise.cs" />
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".mono\assemblies\GodotSharp.dll" />
+    <Content Include=".mono\assemblies\GodotSharp.pdb" />
+    <Content Include=".mono\assemblies\GodotSharp.xml" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.dll" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.pdb" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
