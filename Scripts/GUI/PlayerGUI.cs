@@ -35,7 +35,7 @@ public class PlayerGUI : GUI
     private Sprite thirstIcon;
     private Sprite hungerIcon;
 
-    private Label inHandLabel;
+    private Label2D inHandLabel;
 
     private GUIHorizontalBar atmosOxygen;
     private GUIHorizontalBar atmosNitrogen;
@@ -64,109 +64,98 @@ public class PlayerGUI : GUI
         }
     }
 
-    bool first = true;
-
-    public PlayerGUI(Player p) : base(p)
-    {
-        this.player = p;
-    }
-
     public override void _Ready()
     {
         this.atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
     }
 
-    public PlayerGUI(Node vdSource) : base(vdSource)
+    public PlayerGUI(Player p) : base(p)
     {
+        this.player = p;
+        Initialize();
         this.BackgroundMode = false;
     }
 
     private void ChangeToBackgroundMode()
     {
-        this.RemoveChild(crosshair);
+        crosshair.Hide();
     }
 
     private void ChangeToForegroundMode()
     {
-        this.AddChild(crosshair);
+        crosshair.Show();
         Input.SetMouseMode(Input.MouseMode.Captured);
     }
 
-    public override void HandleResize()
+    public void Initialize()
     {
-        if (!first)
-        {
-            this.RemoveChild(this.atmosOxygen);
-            this.RemoveChild(this.atmosNitrogen);
-            this.RemoveChild(this.atmosCarbonDioxide);
+        Vector2 empty = new Vector2();
 
-            this.RemoveChild(this.air);
-            this.RemoveChild(this.thirst);
-            this.RemoveChild(this.hunger);
+        this.air = new GUIVerticalBar(empty, BAR_LENGTH, AIR_COLOR);
+        this.thirst = new GUIVerticalBar(empty, BAR_LENGTH, THIRST_COLOR);
+        this.hunger = new GUIVerticalBar(empty, BAR_LENGTH, HUNGER_COLOR);
 
-            this.RemoveChild(this.airIcon);
-            this.RemoveChild(this.hungerIcon);
-            this.RemoveChild(this.thirstIcon);
-
-            this.RemoveChild(this.inHandLabel);
-        }
-
-        Vector2 baseStatusOffset = new Vector2(BAR_EDGE_OFFSET, this.GetViewportDimensions().y - BAR_LENGTH - BAR_EDGE_OFFSET);
-
-        Vector2 airPos = baseStatusOffset;
-        this.air = new GUIVerticalBar(airPos, BAR_LENGTH, AIR_COLOR);
-
-        Vector2 thirstPos = airPos + new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0.0f);
-        this.thirst = new GUIVerticalBar(thirstPos, BAR_LENGTH, THIRST_COLOR);
-
-        Vector2 hungerPos = thirstPos + new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0.0f);
-        this.hunger = new GUIVerticalBar(hungerPos, BAR_LENGTH, HUNGER_COLOR);
+        hungerIcon = ItemStorage.cake.GenerateGUISprite();
+        hungerIcon.SetScale(ICON_SCALE);
+        thirstIcon = ItemStorage.water.GenerateGUISprite();
+        thirstIcon.SetScale(ICON_SCALE);
+        airIcon = new Sprite();
+        airIcon.SetTexture(AIR_ICON_TEX);
+        airIcon.SetScale(ICON_SCALE);
+        
+        hungerIcon.Position = ICON_OFFSET;
+        thirstIcon.Position = ICON_OFFSET;
+        airIcon.Position = ICON_OFFSET;
 
         this.AddChild(this.air);
         this.AddChild(this.thirst);
         this.AddChild(this.hunger);
 
-        hungerIcon = ItemStorage.cake.GenerateGUISprite();
-        hungerIcon.SetPosition(hungerPos + ICON_OFFSET);
-        hungerIcon.SetScale(ICON_SCALE);
-        this.AddChild(hungerIcon);
+        this.air.AddChild(hungerIcon);
+        this.thirst.AddChild(thirstIcon);
+        this.hunger.AddChild(airIcon);
 
-        thirstIcon = ItemStorage.water.GenerateGUISprite();
-        thirstIcon.SetPosition(thirstPos + ICON_OFFSET);
-        thirstIcon.SetScale(ICON_SCALE);
-        this.AddChild(thirstIcon);
-
-        airIcon = new Sprite();
-        airIcon.SetTexture(AIR_ICON_TEX);
-        airIcon.SetPosition(airPos + ICON_OFFSET);
-        airIcon.SetScale(ICON_SCALE);
-        this.AddChild(airIcon);
-
-        Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 + ATM_BAR_LENGTH / 2, ATM_BAR_EDGE_OFFSET);
-
-        Vector2 atmos1Pos = baseAtmosOffset; 
-        this.atmosNitrogen = new GUIHorizontalBar(atmos1Pos, ATM_BAR_LENGTH, NITROGEN_COLOR);
-
-        Vector2 atmos0Pos = atmos1Pos - new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0.0f);
-        this.atmosOxygen = new GUIHorizontalBar(atmos0Pos, ATM_BAR_LENGTH, OXYGEN_COLOR);
-
-        Vector2 atmos2Pos = atmos1Pos + new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0.0f);
-        this.atmosCarbonDioxide = new GUIHorizontalBar(atmos2Pos, ATM_BAR_LENGTH, CARBON_DIOXIDE_COLOR);
+        this.atmosNitrogen = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, NITROGEN_COLOR);
+        this.atmosOxygen = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, OXYGEN_COLOR);
+        this.atmosCarbonDioxide = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, CARBON_DIOXIDE_COLOR);
 
         this.AddChild(this.atmosOxygen);
         this.AddChild(this.atmosNitrogen);
         this.AddChild(this.atmosCarbonDioxide);
 
-        inHandLabel = new Label();
-        inHandLabel.SetPosition(new Vector2(this.GetViewportDimensions().x / 2.0f - 80.0f, this.GetViewportDimensions().y - 15.0f));
+        inHandLabel = new Label2D();
         this.AddChild(inHandLabel);
 
         crosshair = new Sprite();
         crosshair.SetTexture(CROSSHAIR_TEX);
-        crosshair.SetPosition(this.GetViewportDimensions() / 2.0f);
         this.AddChild(crosshair);
+    }
 
-        first = false;
+    public override void HandleResize()
+    {
+        Vector2 baseStatusOffset = new Vector2(BAR_EDGE_OFFSET, this.GetViewportDimensions().y - BAR_LENGTH - BAR_EDGE_OFFSET);
+
+        Vector2 airPos = baseStatusOffset;
+        Vector2 thirstPos = airPos + new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0);
+        Vector2 hungerPos = thirstPos + new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0);
+
+        this.air.Position = airPos;
+        this.thirst.Position = thirstPos;
+        this.hunger.Position = hungerPos;
+
+        Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 + ATM_BAR_LENGTH / 2, ATM_BAR_EDGE_OFFSET);
+
+        Vector2 atmosMiddlePos = baseAtmosOffset;
+        Vector2 atmosLeftPos = atmosMiddlePos - new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0);
+        Vector2 atmosRightPos = atmosMiddlePos + new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0);
+        
+        this.atmosNitrogen.Position = atmosLeftPos;
+        this.atmosOxygen.Position = atmosMiddlePos;
+        this.atmosCarbonDioxide.Position = atmosRightPos;
+        
+        inHandLabel.Position = new Vector2(this.GetViewportDimensions().x / 2 - 80, this.GetViewportDimensions().y - 15);
+        
+        crosshair.Position = this.GetViewportDimensions() / 2;
     }
 
     public override void _Process(float delta)
@@ -192,11 +181,12 @@ public class PlayerGUI : GUI
 
         if (!BackgroundMode && player.ItemInHand != null)
         {
-            inHandLabel.SetText("Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    Quantity : " + player.ItemInHand.GetCount());
+            inHandLabel.Text = "Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    " +
+                "Quantity : " + player.ItemInHand.GetCount();
         }
         else 
         {
-            inHandLabel.SetText("");
+            inHandLabel.Text = "";
         }
     }
 }

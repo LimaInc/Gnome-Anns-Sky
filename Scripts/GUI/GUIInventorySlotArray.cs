@@ -39,7 +39,7 @@ public class GUIInventorySlotArray : GUIComplexObject
         for (int i = 0; i < slotNum; ++i)
         {
             inv.RemoveItemStack(i);
-            inv.AddItemStack(this[i].GetCurItemStack(), i);
+            inv.TryAddItemStack(this[i].GetCurItemStack(), i);
         }
         for (int i = slotNum; i < inventorySize; ++i)
         {

@@ -4,9 +4,9 @@ using Godot;
 public class GUIInventorySlot : GUIObject
 {
     public static readonly Texture TEX = ResourceLoader.Load("res://Images/inventorySlot.png") as Texture;
-    public static readonly Vector2 SIZE = new Vector2(32.0f, 32.0f);
+    public static readonly Vector2 SIZE = new Vector2(32, 32);
 
-    private static readonly Vector2 HOVER_LABEL_OFFSET = SIZE / 3.2f;
+    private static readonly Vector2 HOVER_LABEL_OFFSET = SIZE / 2;
 
     private GUIInventorySlot exchangeSlot;
     private int index;
@@ -24,7 +24,7 @@ public class GUIInventorySlot : GUIObject
     private Label2D hoverLabel;
 
     public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.Type t, int ind, Vector2 pos) 
-        : base(new Vector2(), new Rect2(new Vector2(), SIZE), TEX) 
+        : base(new Vector2(), SIZE, TEX) 
     {
         this.SetPosition(pos);
 
@@ -68,7 +68,6 @@ public class GUIInventorySlot : GUIObject
 
     public override void OnHover()
     {
-        GD.Print("Showing label " + hoverLabel.Text);
         this.hoverLabel.Show();
     }
 

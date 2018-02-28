@@ -4,13 +4,28 @@ using System.Linq;
 using System.Text;
 using Godot;
 
-public class Defossiliser
+public class Defossiliser : Node
 {
-    public const int IN_INVENTORY_SIZE = 6;
-    public const int OUT_INVENTORY_SIZE = 6;
+    public const int IN_INVENTORY_SIZE = 9;
+    public const int OUT_INVENTORY_SIZE = 9;
+
+    public readonly IList<DefossiliserAction> possibleProcesses;
+    public static readonly IList<DefossiliserAction> DEFAULT_PROCESSES = new List<DefossiliserAction>
+    {
+        new DefossiliserAction(ItemStorage.oxygenBacteriaFossil, ItemStorage.oxygenBacteriaVial),
+        new DefossiliserAction(ItemStorage.nitrogenBacteriaFossil, ItemStorage.nitrogenBacteriaVial),
+        new DefossiliserAction(ItemStorage.carbonDioxideBacteriaFossil, ItemStorage.carbonDioxideBacteriaVial)
+    };
 
     public Inventory OutInventory { get; private set; }
     public Inventory InInventory { get; private set; }
+
+    public float DefossilisingProgress { get; private set; }
+    public DefossiliserAction ActionInProgress { get; private set; }
+
+    public delegate void InventoryChangeHandler();
+
+    public InventoryChangeHandler Callback { get; set; }
 
     private static readonly IDictionary<Item, DefossiliserAction> transforms = new Dictionary<Item, DefossiliserAction>
     {
@@ -22,10 +37,13 @@ public class Defossiliser
             new DefossiliserAction(ItemStorage.carbonDioxideBacteriaFossil, ItemStorage.carbonDioxideBacteriaVial),
     };
 
-    public Defossiliser()
+    public Defossiliser(IList<DefossiliserAction> possibleProcesses = null)
     {
+        this.possibleProcesses = possibleProcesses ?? DEFAULT_PROCESSES;
+        DefossilisingProgress = 0;
+
         InInventory = new Inventory(Item.Type.ANY, IN_INVENTORY_SIZE);
-        InInventory = new Inventory(Item.Type.ANY, OUT_INVENTORY_SIZE);
+        OutInventory = new Inventory(Item.Type.ANY, OUT_INVENTORY_SIZE);
     }
 
     public void HandleInput(InputEvent e, Player p)
@@ -35,5 +53,39 @@ public class Defossiliser
             // breaks encapsulation of Inventories in player, TODO: fix
             p.OpenGUI(new DefossiliserGUI(this, p, p.Inventories, p));
         }
+    }
+
+    public override void _PhysicsProcess(float delta)
+    {
+        if (ActionInProgress == null)
+        {
+            IEnumerable<DefossiliserAction> doableActionsRightNow = 
+                possibleProcesses.Where(p => p.CanBeDoneWith(InInventory) && OutInventory.CanAdd(p.outItem, p.outItemCount));
+            if (doableActionsRightNow.Any())
+            {
+                ActionInProgress = doableActionsRightNow.OrderBy(action => action.ProcessingTime).First();
+            }
+        }
+        else
+        {
+            if (ActionInProgress.CanBeDoneWith(InInventory) && 
+                OutInventory.CanAdd(ActionInProgress.outItem, ActionInProgress.outItemCount))
+            {
+                DefossilisingProgress += delta / ActionInProgress.ProcessingTime;
+                if (DefossilisingProgress >= 1)
+                {
+                    OutInventory.TryAddItemStack(ActionInProgress.Process(InInventory));
+                    Callback?.Invoke();
+                    ActionInProgress = null;
+                    DefossilisingProgress = 0;
+                }
+            }
+            else
+            {
+                ActionInProgress = null;
+                DefossilisingProgress = 0;
+            }
+        }
+            
     }
 }

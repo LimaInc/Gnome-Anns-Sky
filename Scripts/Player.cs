@@ -81,7 +81,7 @@ public class Player : KinematicBody
 
         myCam = (Camera) this.GetChild(0);
         myCam.SetTranslation(camOffset);
-
+        
         playerGUI = new PlayerGUI(this);
         this.AddChild(playerGUI);
 
@@ -98,11 +98,9 @@ public class Player : KinematicBody
 
 
         this.AddItem(ItemStorage.redRock, 20);
-        this.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
         this.AddItem(ItemStorage.redRock, 15);
         this.AddItem(ItemStorage.redRock, 34);
-
-        this.AddItem(ItemStorage.fossil, 10);
+        
         this.AddItem(ItemStorage.grass, 10);
         this.AddItem(ItemStorage.tree, 10);
 
@@ -110,16 +108,17 @@ public class Player : KinematicBody
         this.AddItem(ItemStorage.chocolate, 10);
         this.AddItem(ItemStorage.water, 5);
 
-        this.AddItem(ItemStorage.oxygenBacteriaVial, 5);
-        this.AddItem(ItemStorage.nitrogenBacteriaVial, 5);
-        this.AddItem(ItemStorage.carbonDioxideBacteriaVial, 5);
+        this.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
+        this.AddItem(ItemStorage.oxygenBacteriaFossil, 5);
+        this.AddItem(ItemStorage.nitrogenBacteriaFossil, 15);
+        this.AddItem(ItemStorage.carbonDioxideBacteriaFossil, 15);
 
         this.atmosphere = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
     }
 
     private void AddItem(Item i, int n)
     {
-        Inventories[i.GetType()].AddItem(i, n);
+        Inventories[i.GetType()].TryAddItem(i, n);
     }
 
     public CollisionShape GetCollisionShape()
@@ -386,13 +385,11 @@ public class Player : KinematicBody
         {
             if (OpenedGUI == null)
             {
-                playerGUI.BackgroundMode = true;
                 OpenGUI(InventoryGUI);
             }
             else
             {
                 this.CloseGUI();
-                playerGUI.BackgroundMode = false;
             }
         }
 
@@ -469,6 +466,7 @@ public class Player : KinematicBody
         gui.HandleOpen(this);
         this.AddChild(gui);
         OpenedGUI = gui;
+        playerGUI.BackgroundMode = true;
     }
 
     public void CloseGUI()
@@ -478,6 +476,7 @@ public class Player : KinematicBody
             OpenedGUI.HandleClose();
             this.RemoveChild(OpenedGUI);
             OpenedGUI = null;
+            playerGUI.BackgroundMode = false;
         }
     }
 
