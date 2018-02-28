@@ -12,7 +12,10 @@ public abstract class BaseStrategy : Node
     protected AnimalBehaviourComponent component;
 
     public abstract void Ready();
-    public abstract void StartState(params object[] args);
+    public virtual void StartState(params object[] args)
+    {
+        active = true;
+    }
     public abstract void PhysicsProcess(float delta);
     public abstract void Process(float delta);
 
@@ -24,9 +27,10 @@ public abstract class BaseStrategy : Node
 
     public virtual List<Tuple<string, object[]>> GetInitialisationSignals() { return new List<Tuple<string, object[]>>(); }
 
+    private bool _active;
     public bool active
     {
-        get { return active; }
+        get { return _active; }
         set
         {
             if (value)
@@ -37,7 +41,7 @@ public abstract class BaseStrategy : Node
             {
                 component._DeactivateState(this);
             }
-            active = value;
+            _active = value;
         }
     }
 }

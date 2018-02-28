@@ -124,12 +124,13 @@ public class PhysicsComponent : BaseComponent
     public override void _Process(float delta)
     {
         // initialise connections that we use
-        SetupConnection("jump", parent, nameof(Jump));
-        SetupConnection("setDirection", parent, nameof(SetDirection));
-        SetupConnection("setSpeed", parent, nameof(SetSpeed));
-        SetupConnection("setVisionRange", parent, nameof(SetVisionRange));
-        SetupConnection("watchFor", parent, nameof(WatchFor));
+        SetupConnection("jump", parent, this, nameof(Jump));
+        SetupConnection("setDirection", parent, this, nameof(SetDirection));
+        SetupConnection("setSpeed", parent, this, nameof(SetSpeed));
+        SetupConnection("setVisionRange", parent, this, nameof(SetVisionRange));
+        SetupConnection("watchFor", parent, this, nameof(WatchFor));
 
+        //This sort of initialisation needs a refactor, but suffices for now.
         if(frameNum == 2)
         {
             // Initialise things that need to wait for emitting signals here.

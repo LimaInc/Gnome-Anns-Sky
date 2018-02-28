@@ -187,7 +187,7 @@ public class AnimalSpawner : Node
         physicsScript = (Script)ResourceLoader.Load("res://scripts/PhysicsComponent.cs");
         baseBehaviourScript = (Script)ResourceLoader.Load("res://scripts/AnimalBehaviourComponent.cs");
 
-        //BreedingDemo();
+        BreedingDemo();
         //EatingDemo();
         //HollisticDemo();
     }
@@ -220,12 +220,11 @@ public class AnimalSpawner : Node
         behaviourComponent.SetName("BehaviourComponent");
         behaviourComponent.SetScript(baseBehaviourScript);
 
-        //TODO: make this an array of auto-settable properties
-        behaviourComponent.Set("sex", (int)preset.sex);
-        behaviourComponent.Set("diet", (int)preset.diet);
-        behaviourComponent.Set("foodChainLevel", preset.foodChainLevel);
-        behaviourComponent.Set("breedability", preset.breedability);
-        behaviourComponent.Set("presetName", preset.presetName);
+        behaviourComponent.Set("_sex", (int)preset.sex);
+        behaviourComponent.Set("_diet", (int)preset.diet);
+        behaviourComponent.Set("_foodChainLevel", preset.foodChainLevel);
+        behaviourComponent.Set("_breedability", preset.breedability);
+        behaviourComponent.Set("_presetName", preset.presetName);
 
         kb.AddChild(physicsComponent);
         kb.SetTranslation(position);
@@ -235,14 +234,7 @@ public class AnimalSpawner : Node
         //TEMP: No food for frogs yet, so make sure they can breed immediately.
         if (presetName == "frog")
         {
-            behaviourComponent.Set("satiated", 100);
+            behaviourComponent.Set("_satiated", 100);
         }
     }
-
-//    public override void _Process(float delta)
-//    {
-//        // Called every frame. Delta is time since last frame.
-//        // Update game logic here.
-//        
-//    }
 }

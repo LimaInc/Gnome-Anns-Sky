@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class EatStrategy : BaseStrategy
 {
-    EatStrategy(AnimalBehaviourComponent component) : base(component)
+    public EatStrategy(AnimalBehaviourComponent component) : base(component)
     {
 
     }
@@ -17,6 +17,17 @@ public class EatStrategy : BaseStrategy
 
     private List<PhysicsBody> foodInRange;
     private PhysicsBody target;
+
+    public override void StartState(params object[] args)
+    {
+        base.StartState(args);
+        target = (PhysicsBody)args[0];
+    }
+
+    public override void Ready()
+    {
+        foodInRange = new List<PhysicsBody>();
+    }
 
     private bool IsFood(PhysicsBody n)
     {
@@ -44,8 +55,9 @@ public class EatStrategy : BaseStrategy
     {
         base.ObjectInRange(otherBody);
 
-        Node behaviourComponent = otherBody.GetNode("behaviourComponent");
-        if (IsFood(otherBody) && (int)behaviourComponent.Get("foodChainLevel") < component.foodChainLevel)
+        Node behaviourComponent = otherBody.GetNode("BehaviourComponent");
+
+        if (IsFood(otherBody) && (int)behaviourComponent.Get("_foodChainLevel") < component.foodChainLevel)
         {
             foodInRange.Add(otherBody);
         }
@@ -56,7 +68,7 @@ public class EatStrategy : BaseStrategy
         base.ObjectOutOfRange(otherBody);
 
         Node behaviourComponent = otherBody.GetNode("BehaviourComponent");
-        if (IsFood(otherBody) && (int)behaviourComponent.Get("foodChainLevel") < component.foodChainLevel)
+        if (IsFood(otherBody) && (int)behaviourComponent.Get("_foodChainLevel") < component.foodChainLevel)
         {
             //List is implemented as an array, so could get expensive. Could change to HashMap.
             foodInRange.Remove(otherBody);
@@ -71,6 +83,37 @@ public class EatStrategy : BaseStrategy
             ((Node)nom).QueueFree();
         }
         active = false;
+    }
+
+    public PhysicsBody ShouldEatState()
+    {
+        float minDistanceSquared = 1000.0f * 1000.0f;
+        PhysicsBody minTarget = null;
+        bool found = false;
+        foreach (PhysicsBody b in foodInRange) //Could randomise this?
+        {
+            if (b == null) continue;
+            // Identify whether we can see the target by raycasting
+            PhysicsDirectSpaceState spaceState = component.body.GetWorld().GetDirectSpaceState();
+            var result = spaceState.IntersectRay(component.body.GetTranslation(), b.GetTranslation(), new[] { component.body, b });
+
+            if (result.Count == 0)
+            {
+                found = true;
+                float distanceSquared = component.body.GetTranslation().DistanceSquaredTo(b.GetTranslation());
+                if (distanceSquared < minDistanceSquared)
+                {
+                    minDistanceSquared = distanceSquared;
+                    minTarget = b;
+                }
+            }
+        }
+
+        if (found)
+        {
+            return minTarget;
+        }
+        return null;
     }
 
     public override void Collided(KinematicCollision collision)
@@ -98,16 +141,16 @@ public class EatStrategy : BaseStrategy
         {
             // Check for line of sight and whether object is still in range.
             PhysicsDirectSpaceState spaceState = target.GetWorld().GetDirectSpaceState();
-            var result = spaceState.IntersectRay(target.GetTranslation(), parent.GetTranslation(), new[] { parent, target });
-            float distanceSquared = target.GetTranslation().DistanceSquaredTo(parent.GetTranslation());
+            var result = spaceState.IntersectRay(target.GetTranslation(), component.body.GetTranslation(), new[] { component.body, target });
+            float distanceSquared = target.GetTranslation().DistanceSquaredTo(component.body.GetTranslation());
             if (result.Count != 0 || distanceSquared > 60 * 60)
             {
-                state = BehaviourState.Idle;
+                active = false;
             }
             else
             {
-                Vector3 direction = target.GetTranslation() - parent.GetTranslation();
-                parent.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
+                Vector3 direction = target.GetTranslation() - component.body.GetTranslation();
+                component.body.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
             }
         }
     }
