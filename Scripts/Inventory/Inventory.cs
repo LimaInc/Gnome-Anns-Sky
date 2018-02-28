@@ -3,17 +3,15 @@ using System;
 
 public class Inventory
 {
-    private Player player;
-
-    public static int SLOT_COUNT = 40;
+    public readonly int size;
     private Item.Type type;
     private ItemStack[] stacks;
 
-    public Inventory(Player p, Item.Type type)
+    public Inventory(Item.Type type, int size)
     {
-        this.player = p;
         this.type = type;
-        this.stacks = new ItemStack[SLOT_COUNT];
+        this.size = size;
+        this.stacks = new ItemStack[this.size];
     }
 
     public void RemoveItemStack(int ind)
@@ -21,84 +19,128 @@ public class Inventory
         stacks[ind] = null;
     }
 
-    //Add item at specific index, used in GUI
-    //Please be careful when using this function in other contexts
-    //Returns true if place successful, otherwise false
-    public bool AddItemStack(ItemStack item, int ind)
+    // Add item at specific index, used in GUI
+    // Please be careful when using this function in other contexts
+    // Returns true if place successful, otherwise false
+    public bool TryAddItemStack(ItemStack item, int ind)
     {
-        if (stacks[ind] != null) //hopefully, this shouldn't happen...
+        if (stacks[ind] != null) // hopefully, this shouldn't happen...
             return false;
 
         stacks[ind] = item;
         return true;
     }
 
-    public void AddItemStack(ItemStack i)
+    public bool TryAddItemStack(ItemStack i)
     {
-        AddItem(i.GetItem(), i.GetCount());
+        return TryAddItem(i.GetItem(), i.GetCount());
     }
 
-    public void AddItem(Item item, int cnt)
+    public bool CanAdd(Item item, int cnt)
     {
-        if (item.GetType() != type)
+        if (!Item.CompatibleWith(item.GetType(), type))
         {
             GD.Print("Something just tried to add a " + item.GetName() + " to a " + this.type + " inventory!");
-            return;
+            return false;
         }
-        
 
-        //GD.Print(item.GetName() + " contains : " + Contains(item) + " stack : " + item.IsStackable());
         if (!item.IsStackable())
         {
-            for (int j = 0; j < cnt; j++)
-            {
-                for (int i = 0; i < SLOT_COUNT; i++)
-                {
-                    if (stacks[i] == null)
-                    {
-                        stacks[i] = new ItemStack(item, 1);
-                        break;
-                    }
-                }
-                // endOfLoop : {}
-            }
-            return;
-        } else
+            return CountEmptyStacks() >= cnt;
+        }
+        else
         {
-            if (Contains(item))
+            for (int i = 0; i < this.size; i++)
             {
-                for (int i = 0; i < SLOT_COUNT; i++)
+                if (stacks[i] == null || stacks[i].GetItem().GetType() == item.GetType())
                 {
-                    if (stacks[i].GetItem().GetID() == item.GetID())
-                    {
-                        stacks[i].AddToQuantity(cnt);
-                        return;
-                    }
-                }
-            } else 
-            {
-                for (int i = 0; i < SLOT_COUNT; i++)
-                {
-                    if (stacks[i] == null)
-                    {
-                        stacks[i] = new ItemStack(item, cnt);
-                        return;
-                    }
+                    return true;
                 }
             }
+            return false;
         }
     }
 
-    public bool Contains(Item item)
+    private int CountEmptyStacks()
     {
-        for (int i = 0; i < SLOT_COUNT; i++)
+        int res = 0;
+        for(int i = 0; i < this.size; i++)
         {
-            if (stacks[i] == null) continue;
-
-            if (stacks[i].GetItem().GetID() == item.GetID())
-                return true;
+            if (this.stacks[i] == null)
+            {
+                res++;
+            }
         }
-        return false;
+        return res;
+    }
+
+    public bool TryAddItem(Item item, int cnt)
+    {
+        if (!CanAdd(item, cnt))
+        {
+            return false;
+        }
+        else
+        {
+
+            if (!item.IsStackable())
+            {
+                for (int j = 0; j < cnt; j++)
+                {
+                    for (int i = 0; i < this.size; i++)
+                    {
+                        if (stacks[i] == null)
+                        {
+                            stacks[i] = new ItemStack(item, 1);
+                            break;
+                        }
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                int? index = TryGetStackIndex(item);
+                if (index.HasValue)
+                {
+                    stacks[index.Value].AddToQuantity(cnt);
+                    return true;
+                }
+                else
+                {
+                    for (int i = 0; i < this.size; i++)
+                    {
+                        if (stacks[i] == null)
+                        {
+                            stacks[i] = new ItemStack(item, cnt);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        throw new Exception("This should never have happened");
+    }
+
+    public int? TryGetStackIndex(Item item)
+    {
+        for (int i = 0; i < this.size; i++)
+        {
+            if (stacks[i]?.GetItem()?.GetID() == item.GetID())
+                return i;
+        }
+        return null;
+    }
+
+    public int ItemCount(Item item)
+    {
+        int count = 0;
+        for (int i = 0; i < this.size; i++)
+        {
+            if (stacks[i]?.GetItem()?.GetID() == item.GetID())
+                count += stacks[i].GetCount();
+        }
+        return count;
     }
 
     public ItemStack GetItemStack(int index)

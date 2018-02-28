@@ -7,7 +7,6 @@ public class Chunk : Spatial
     public static float BLOCK_SIZE = 0.5f;
 
     private byte[,,] blocks;
-    private SurfaceTool surfaceTool = new SurfaceTool();
     private MeshInstance meshInstance;
     private StaticBody body;
     private CollisionShape collider;
@@ -41,16 +40,39 @@ public class Chunk : Spatial
             blocks[x,y,z] = block;
     }
 
+    public override void _Process(float delta)
+    {
+        if(generationFinished)
+        {
+            generationFinished = false;
+
+            ArrayMesh mesh = new ArrayMesh();
+
+            mesh = surfaceTool.Commit();
+
+            collider.Shape = mesh.CreateTrimeshShape();
+
+            meshInstance.SetMesh(mesh);
+        }
+    }
+
+    bool generationFinished = false;
+    SurfaceTool surfaceTool = new SurfaceTool();
+    SpatialMaterial material = new SpatialMaterial();
+
     public void UpdateMesh()
     {
-        ArrayMesh mesh = new ArrayMesh();
-        SpatialMaterial material = new SpatialMaterial();
-        material.AlbedoTexture = Game.TextureAtlas;
-        material.SetDiffuseMode(SpatialMaterial.DiffuseMode.Lambert);
-        material.SetSpecularMode(SpatialMaterial.SpecularMode.Disabled);
-        material.SetMetallic(0);
-        material.SetRoughness(1);
+        System.Threading.Thread thread = new System.Threading.Thread(() => 
+        {
+            GenerateSurface();
+            generationFinished = true;
+        });
+        thread.Priority = System.Threading.ThreadPriority.Lowest;
+        thread.Start();
+    }
 
+    private void GenerateSurface()
+    {        
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);        
 
         for(int x = 0; x < CHUNK_SIZE.x; x++)
@@ -94,23 +116,16 @@ public class Chunk : Spatial
         surfaceTool.SetMaterial(material);
 
         surfaceTool.Index();
-
-        mesh = surfaceTool.Commit();
-
-        collider.Shape = mesh.CreateTrimeshShape();
-
-        meshInstance.SetMesh(mesh);
     }
 
-    //Just generate terrain data
-    public void SoftLoad()
+    public Chunk(Terrain terrain, IntVector2 coords, byte[,,] blocks)
     {
-        blocks = terrain.WorldGenerator.GetChunk(chunkCoords.x, chunkCoords.y, CHUNK_SIZE.x, CHUNK_SIZE.y, CHUNK_SIZE.z);
-    }
+        this.terrain = terrain;
+        this.Translate(new IntVector3((int) (coords.x * CHUNK_SIZE.x * BLOCK_SIZE), 0, (int) (coords.y * CHUNK_SIZE.z * BLOCK_SIZE)));
+        this.blocks = blocks;
 
-    //Generate graphical data aswell
-    public void HardLoad()
-    {
+        this.chunkCoords = coords;
+
         meshInstance = new MeshInstance();
         this.AddChild(meshInstance);
 
@@ -118,15 +133,12 @@ public class Chunk : Spatial
         this.AddChild(body);
         collider = new CollisionShape();
         body.AddChild(collider);
-        
-        UpdateMesh();
-    }
 
-    public Chunk(Terrain terrain, IntVector2 coords)
-    {
-        this.terrain = terrain;
-        this.Translate(new IntVector3((int) (coords.x * CHUNK_SIZE.x * BLOCK_SIZE), 0, (int) (coords.y * CHUNK_SIZE.z * BLOCK_SIZE)));
+        material.AlbedoTexture = Game.TextureAtlas;
+        material.SetDiffuseMode(SpatialMaterial.DiffuseMode.Lambert);
+        material.SetSpecularMode(SpatialMaterial.SpecularMode.Disabled);
+        material.SetMetallic(0);
+        material.SetRoughness(1);
 
-        this.chunkCoords = coords;
     }
 }

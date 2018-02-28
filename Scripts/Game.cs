@@ -5,14 +5,50 @@ using System.Linq;
 
 public class Game : Node
 {
+    public const string GAME_PATH = "/root/Game";
+    public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
+    public const string PLAYER_PATH = GAME_PATH + "/Player";
+    public const string CAMERA_PATH = PLAYER_PATH+"/Camera";
+    public const string WORLD_ENVIRO_PATH = GAME_PATH + "/WorldEnvironment";
+    public const string PLANTS_PATH = WORLD_ENVIRO_PATH + "/Plants";
+    public const string ATMOSPHERE_PATH = WORLD_ENVIRO_PATH + "/Atmosphere";
+    public const string BACTERIAL_STATE_PATH = WORLD_ENVIRO_PATH + "/BacterialState";
+
+    public const string GUI_TEXTURE_PATH = "res://Images/GUI/";
+    public const string BLOCK_TEXTURE_PATH = "res://Images/Blocks/";
+    public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
+
+    // multiplicative factor for processes in the world (not directly affecting the player)
+    public const int SPEED = 20;
+    public const int PLANT_MAX_SPEED = 1; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
+
+    public PlanetEnvironment World {get; private set;}
+
     public Game()
     {
         //Register blocks
         Game.RegisterBlock(new Stone());
         Game.RegisterBlock(new RedRock());
 
+        Game.RegisterBlock(new OxygenBacteriaFossilBlock());
+        Game.RegisterBlock(new NitrogenBacteriaFossilBlock());
+        Game.RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
+        Game.RegisterBlock(new GrassFossilBlock());
+        Game.RegisterBlock(new TreeFossilBlock());
+        Game.RegisterBlock(new AnimalFossilBlock());
+
+        Game.RegisterBlock(new GrassBlock());
+        Game.RegisterBlock(new TreeBlock());
+        Game.RegisterBlock(new LeafBlock());
+
+        Game.RegisterBlock(new HabitationBlock());
+        Game.RegisterBlock(new DefossiliserBlock());
+
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
+
+        World = new PlanetEnvironment();
+        AddChild(World);
     }
 
     public static Texture TextureAtlas { get; private set; }
@@ -58,8 +94,7 @@ public class Game : Node
             }
         }
 
-        Rect2[] uvs;
-        TextureAtlas = TextureManager.PackTextures(textures.ToArray(), out uvs);
+        TextureAtlas = TextureManager.PackTextures(textures.ToArray(), out Rect2[] uvs);
 
         int index = 0;
 

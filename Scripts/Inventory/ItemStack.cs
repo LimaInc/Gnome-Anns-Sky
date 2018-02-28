@@ -26,4 +26,14 @@ public class ItemStack
     {
         return count;
     }
+
+    public void SubtractCount(int n)
+    {
+        this.count -= n;
+    }
+
+    public override string ToString()
+    {
+        return "ItemStack(" + item + ", " + count + ")";
+    }
 }
