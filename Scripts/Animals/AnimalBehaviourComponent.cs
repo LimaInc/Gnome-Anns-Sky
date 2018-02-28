@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class AnimalBehaviourComponent : BaseComponent
 {
     public AnimalBehaviourComponent(Entity parent, Sex sex, Diet diet, int foodChainLevel,
-        int breedability, string presetName) : base(parent)
+        int breedability, string presetName, float oxygenConsumption, float co2Production) : base(parent)
     {
         this.sex = sex;
         this.diet = diet;
@@ -13,6 +13,8 @@ public class AnimalBehaviourComponent : BaseComponent
         this.presetName = presetName;
         this.breedability = breedability;
         this.satiated = 80.0f;
+        this.oxygenConsumption = oxygenConsumption;
+        this.co2Production = co2Production;
     }
 
     public enum Sex
@@ -35,6 +37,17 @@ public class AnimalBehaviourComponent : BaseComponent
         Breeding = 2,
     }
 
+    public void Kill()
+    {
+        body.RemoveFromGroup("alive");
+        body.QueueFree();
+    }
+
+    public bool IsAlive()
+    {
+        return body.IsInGroup("alive");
+    }
+
     private float jumpMagnitude = 5.0f;
 
     private const float directionThreshold = 2.0f;
@@ -54,14 +67,15 @@ public class AnimalBehaviourComponent : BaseComponent
 
     public KinematicBody body { get; private set; }
 
-    private Dictionary<string, Action> registeredMethods;
-
     public Sex sex { get; private set; }
     public Diet diet { get; private set; }
     public int foodChainLevel { get; private set; }
     public float satiated { get; set; }
     public int breedability { get; private set; }
     public string presetName { get; private set; }
+
+    private float oxygenConsumption; //per sec
+    private float co2Production; //per sec 
 
     const float timeToDeath = 50.0f;
 
@@ -99,8 +113,7 @@ public class AnimalBehaviourComponent : BaseComponent
         parent.RegisterListener("terrainInterference", OnTerrainInterference);
 
         body.AddToGroup("animals");
-
-        GD.Print("Animal sex: ", ((Sex)sex).ToString());
+        body.AddToGroup("alive");
 
         foreach(BaseStrategy strategy in strategies)
         {
@@ -123,23 +136,34 @@ public class AnimalBehaviourComponent : BaseComponent
         }
     }
 
-    protected void hungry(float delta)
+    protected void Hungry(float delta)
     {
         satiated -= delta * (100.0f/timeToDeath);
 
         if(satiated <= 0.0f)
         {
-            GD.Print("Starved to death!");
-            body.QueueFree();
+            Kill();
         }
     }
 
     private void SetRandomDirection()
     {
-        Random r = new Random();
-        Vector2 d = new Vector2((float)(r.NextDouble() * 2.0 - 1.0), (float)(r.NextDouble() * 2.0 - 1.0));
-        //GD.Print("Direction set sent: ", d.x, " ", d.y);
+        Vector2 d = new Vector2((float)(random.NextDouble() * 2.0 - 1.0), (float)(random.NextDouble() * 2.0 - 1.0));
         parent.SendMessage("setDirection", d);
+    }
+
+    private void DoAtmosphereEffects(float delta)
+    {
+        Atmosphere atmosphere = (Atmosphere)(body.GetTree().GetRoot().GetNode(Game.ATMOSPHERE_PATH));
+        if(!(atmosphere.GetGasProgress(Gas.OXYGEN) > 0.0f && atmosphere.GetGasProgress(Gas.NITROGEN) > 0.0f)) //TODO: Discuss these values. No idea what they should be currently.
+        {
+            Kill(); 
+        }
+        else
+        {
+            atmosphere.SetGasAmt(Gas.CARBON_DIOXIDE, atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE) + co2Production * delta);
+            atmosphere.SetGasAmt(Gas.OXYGEN, atmosphere.GetGasAmt(Gas.OXYGEN) +- oxygenConsumption * delta);
+        }
     }
 
     public override void Process(float delta)
@@ -162,7 +186,8 @@ public class AnimalBehaviourComponent : BaseComponent
             state.Process(delta);
         }
 
-        hungry(delta);
+        Hungry(delta);
+        DoAtmosphereEffects(delta);
 
         if (state == null)
         {
@@ -184,19 +209,20 @@ public class AnimalBehaviourComponent : BaseComponent
         }
 
         if(state == null)
-        {;
-            if(breedingTimer > breedingThreshold && satiated > satiatedBreedThreshold)
+        {
+            if (breedingTimer > breedingThreshold && satiated > satiatedBreedThreshold)
             {
                 PhysicsBody breedTarget = breedStrategy.ShouldBreedState();
                 if(breedTarget != null)
                 {
-                    GD.Print(body.GetName(), " Starting breed state!"); 
                     breedStrategy.StartState(breedTarget);
                 }
-            }else if (satiated < 80.0f)
+            }
+            else if (satiated < 80.0f)
             {
                 PhysicsBody eatTarget = eatStrategy.ShouldEatState();
-                if(eatTarget != null){
+                if (eatTarget != null)
+                {
                     eatStrategy.StartState(eatTarget);
                 }
             }

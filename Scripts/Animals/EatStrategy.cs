@@ -79,11 +79,12 @@ public class EatStrategy : BaseStrategy
     }
     private void eat(Godot.Object nom)
     {
-        GD.Print("Nom!");
         component.satiated = Math.Max(100.0f, component.satiated + 20.0f);
-        if (nom is Node)
+        if (nom is PhysicsBody)
         {
-            ((Node)nom).QueueFree();
+            PhysicsBody otherBody = (PhysicsBody)nom;
+            AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+            behaviourComponent.Kill();
         }
         active = false;
     }
@@ -139,7 +140,7 @@ public class EatStrategy : BaseStrategy
 
     public override void PhysicsProcess(float delta)
     {
-        if(target == null)
+        if (target == null || !target.IsInGroup("alive"))
         {
             active = false;
         }

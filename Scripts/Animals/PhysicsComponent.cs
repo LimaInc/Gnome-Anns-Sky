@@ -45,13 +45,11 @@ public class PhysicsComponent : BaseComponent
         {
             body.LookAt(body.GetTranslation() + new Vector3(direction.x, 0, direction.y) * 100.0f, new Vector3(0, 1, 0));
         }
-        //GD.Print("Direction set: ", direction);
     }
 
     private void SetSpeed(object[] args)
     {
         speed = (float)args[0];
-        GD.Print("Speed set: ", speed);
     }
 
     private bool IsWatching(PhysicsBody body)
@@ -98,7 +96,6 @@ public class PhysicsComponent : BaseComponent
     {
         watchList = new List<String>();
 
-        GD.Print("Physics component readying... ");
         body = (KinematicBody)parent.GetParent();
 
         parent.RegisterListener("jump", Jump);
@@ -158,9 +155,7 @@ public class PhysicsComponent : BaseComponent
             velocity.y = -terminal;
         }
 
-     //   GD.Print("Attempted velocity: ", velocity.x, " ", velocity.y, " ", velocity.z);
         Vector3 newVelocity = body.MoveAndSlide(velocity, new Vector3(0.0f, 1.0f, 0.0f));
-     //   GD.Print("New velocity: ", newVelocity.x, " ", newVelocity.y, " ", newVelocity.z);
 
         float xDif = Math.Abs(velocity.x - newVelocity.x);
         float zDif = Math.Abs(velocity.z - newVelocity.z);
