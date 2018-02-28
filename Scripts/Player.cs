@@ -346,7 +346,7 @@ public class Player : KinematicBody
 
     //These numbers control how the player's needs change as they move around the world
     
-    private static float DEGRED_BALANCE_AIR = 1.0f;
+    private static float DEGRED_BALANCE_AIR = 2.0f;
     private static float DEGRED_BALANCE_THIRST = 1.4f;
     private static float DEGRED_BALANCE_HUNGER = 1.8f;
 
@@ -355,10 +355,10 @@ public class Player : KinematicBody
     //single frame
     private static float JUMP_DEGRED = 0.05f;
     
-    private static float BASE_AIR_REGEN = 0.015f;
+    private static float BASE_AIR_REGEN = 0.025f;
     private static float SPRINT_DEGRED_MULT = 4.0f;
 
-    private static float ATMOSPHERE_AIR_REGEN = 0.010f;
+    private static float ATMOSPHERE_AIR_REGEN = 0.020f;
 
     private void ProcessAlive(float delta)
     {

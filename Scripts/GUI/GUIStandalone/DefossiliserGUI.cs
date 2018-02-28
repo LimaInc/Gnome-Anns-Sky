@@ -186,7 +186,7 @@ public class DefossiliserGUI : GUI
             floatingSlot.SetPosition(iemm.GetPosition());
         }
 
-        if (e is InputEventMouseMotion iemb)
+        if (e is InputEventMouseButton iemb)
         {
             SaveDefossiliserSlotState();
         }
