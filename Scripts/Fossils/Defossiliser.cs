@@ -59,6 +59,7 @@ public class Defossiliser : Node
 
     public override void _PhysicsProcess(float delta)
     {
+        delta *= Game.SPEED;
         if (ActionInProgress == null)
         {
             IEnumerable<DefossiliserAction> doableActionsRightNow = 

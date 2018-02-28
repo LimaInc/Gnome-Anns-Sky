@@ -6,6 +6,7 @@ class AsymptoticGrowthBSC : BacterialStateComponent
 {
     public override void _PhysicsProcess(float delta)
     {
+        delta *= Game.SPEED;
         bs.GetBacteriaList().ForEach(b =>
         {
             if (b.Amount > 0)

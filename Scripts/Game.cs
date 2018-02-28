@@ -18,6 +18,9 @@ public class Game : Node
     public const string BLOCK_TEXTURE_PATH = "res://Images/Blocks/";
     public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
 
+    // multiplicative factor for processes in the world (not directly affecting the player)
+    public const int SPEED = 10;
+
     public PlanetEnvironment World {get; private set;}
 
     public Game()

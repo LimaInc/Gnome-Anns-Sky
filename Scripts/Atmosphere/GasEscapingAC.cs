@@ -10,6 +10,7 @@ public class GasEscapingAC : AtmosphericComponent
 
     public override void _PhysicsProcess(float delta)
     {
+        delta *= Game.SPEED;
         atm.GetGases().ForEach(g =>
         {
             float x = GasMolecule.gasData[g].Mass * EscapeVelocity / atm.Temperature; // on the order of 1
