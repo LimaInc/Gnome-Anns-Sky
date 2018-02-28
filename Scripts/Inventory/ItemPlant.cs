@@ -3,11 +3,11 @@ using Godot;
 
 public class ItemPlant : Item
 {
-    public PlantType plantType { get; }
+    public PlantType PlantType { get; }
 
     public ItemPlant(byte id, String name, Texture tex, PlantType plantType, byte blockFrom, Item itemTo) : base(id, name, tex, Item.Type.FOSSIL)
     {
-        this.plantType = plantType;
+        this.PlantType = plantType;
 
         ItemStorage.RegisterBlockItem(blockFrom, itemTo);
     }

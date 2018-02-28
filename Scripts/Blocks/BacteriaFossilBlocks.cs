@@ -1,23 +1,14 @@
 ﻿public class OxygenBacteriaFossilBlock : FossilBlock
 {
-    private static readonly string[] texturePaths =
-        new[] { "res://Images/bacteriaFossilBlock.png" };
-
-    public override string[] TexturePaths { get => texturePaths; }
+    public OxygenBacteriaFossilBlock() : base("bacteriaFossilBlock.png") { }
 }
 
 public class NitrogenBacteriaFossilBlock : FossilBlock
 {
-    private static readonly string[] texturePaths =
-        new[] { "res://Images/bacteriaFossilBlock.png" };
-
-    public override string[] TexturePaths { get => texturePaths; }
+    public NitrogenBacteriaFossilBlock() : base("bacteriaFossilBlock.png") { }
 }
 
 public class CarbonDioxideBacteriaFossilBlock : FossilBlock
 {
-    private static readonly string[] texturePaths =
-        new[] { "res://Images/bacteriaFossilBlock.png" };
-
-    public override string[] TexturePaths { get => texturePaths; }
+    public CarbonDioxideBacteriaFossilBlock() : base("bacteriaFossilBlock.png") { }
 }

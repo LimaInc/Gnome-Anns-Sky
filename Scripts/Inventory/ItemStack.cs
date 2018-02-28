@@ -31,4 +31,9 @@ public class ItemStack
     {
         this.count -= n;
     }
+
+    public override string ToString()
+    {
+        return "ItemStack(" + item + ", " + count + ")";
+    }
 }

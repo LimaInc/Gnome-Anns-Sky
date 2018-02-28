@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Atmosphere : Node
 {
-    private static readonly float DEFAULT_TEMPERATURE = 300;
+    private const float DEFAULT_TEMPERATURE = 300;
 
     private static readonly IDictionary<Gas, float> gasGoals = new Dictionary<Gas, float>
     {

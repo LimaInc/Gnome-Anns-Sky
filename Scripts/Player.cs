@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class Player : KinematicBody
 {
@@ -22,18 +23,14 @@ public class Player : KinematicBody
     private CollisionShape collisionShape;
     private Camera myCam;
 
-    private bool inventoryOpen = false;
+    public GUI OpenedGUI { get; set; }
 
-    private InventoryGUI inventoryGUI;
+    public InventoryGUI InventoryGUI { get; private set; }
     private PlayerGUI playerGUI;
-
-    private Inventory consumableInventory;
-    private Inventory fossilInventory;
-    private Inventory blockInventory;
 
     public ItemStack ItemInHand { get; set; }
 
-    public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
+    public static Texture CURSOR = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "cursor.png") as Texture;
 
     //Original implementation was written in integers, hence why the max constants exist
     public static float MAX_AIR = 1.0f;
@@ -51,7 +48,11 @@ public class Player : KinematicBody
 
     private bool dead;
 
+    public const int PLAYER_INVENTORY_COUNT = 40;
+
+    public IDictionary<Item.Type, Inventory> Inventories { get; private set; }
     private Plants plants;
+    private Atmosphere atmosphere;
 
     public override void _Ready()
     {
@@ -79,32 +80,45 @@ public class Player : KinematicBody
         this.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
 
         myCam = (Camera) this.GetChild(0);
-
         myCam.SetTranslation(camOffset);
-
+        
         playerGUI = new PlayerGUI(this);
         this.AddChild(playerGUI);
 
         plants = GetNode(Game.PLANTS_PATH) as Plants;
 
-        consumableInventory = new Inventory(this, Item.Type.CONSUMABLE);
-        fossilInventory = new Inventory(this, Item.Type.FOSSIL);
-        blockInventory = new Inventory(this, Item.Type.BLOCK);
-        blockInventory.AddItem(ItemStorage.redRock, 20);
-        blockInventory.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
-        fossilInventory.AddItem(ItemStorage.fossil, 10);
-        fossilInventory.AddItem(ItemStorage.grass, 10);
-        fossilInventory.AddItem(ItemStorage.tree, 10);
-        consumableInventory.AddItem(ItemStorage.chocolate, 10);
-        blockInventory.AddItem(ItemStorage.redRock, 15);
-        blockInventory.AddItem(ItemStorage.redRock, 34);
+        Inventories = new Dictionary<Item.Type, Inventory>
+        {
+            [Item.Type.CONSUMABLE] = new Inventory(Item.Type.CONSUMABLE, PLAYER_INVENTORY_COUNT),
+            [Item.Type.FOSSIL] = new Inventory(Item.Type.FOSSIL, PLAYER_INVENTORY_COUNT),
+            [Item.Type.BLOCK] = new Inventory(Item.Type.BLOCK, PLAYER_INVENTORY_COUNT)
+        };
 
-        consumableInventory.AddItem(ItemStorage.cake, 3);
+        InventoryGUI = new InventoryGUI(this, Inventories, this);
 
-        consumableInventory.AddItem(ItemStorage.water, 5);
-        fossilInventory.AddItem(ItemStorage.oxygenBacteriaVial, 5);
-        fossilInventory.AddItem(ItemStorage.nitrogenBacteriaVial, 5);
-        fossilInventory.AddItem(ItemStorage.carbonDioxideBacteriaVial, 5);
+
+        this.AddItem(ItemStorage.redRock, 20);
+        this.AddItem(ItemStorage.redRock, 15);
+        this.AddItem(ItemStorage.redRock, 34);
+
+        this.AddItem(ItemStorage.cake, 3);
+        this.AddItem(ItemStorage.chocolate, 10);
+        this.AddItem(ItemStorage.water, 5);
+
+        this.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
+        this.AddItem(ItemStorage.oxygenBacteriaFossil, 5);
+        this.AddItem(ItemStorage.nitrogenBacteriaFossil, 15);
+        this.AddItem(ItemStorage.carbonDioxideBacteriaFossil, 15);
+
+        this.AddItem(ItemStorage.grassFossil, 10);
+        this.AddItem(ItemStorage.treeFossil, 10);
+
+        this.atmosphere = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
+    }
+
+    private void AddItem(Item i, int n)
+    {
+        Inventories[i.GetType()].TryAddItem(i, n);
     }
 
     public CollisionShape GetCollisionShape()
@@ -114,72 +128,78 @@ public class Player : KinematicBody
 
     public bool IsInventoryOpen()
     {
-        return inventoryOpen;
+        return OpenedGUI == InventoryGUI;
     }
 
     public override void _Input(InputEvent e)
     {
         if (dead) return;
 
-        if (e is InputEventMouseMotion && !inventoryOpen)
+        if(OpenedGUI == null)
         {
-            Vector3 rot = this.GetRotation();
-
-            InputEventMouseMotion emm = (InputEventMouseMotion) e;
-
-            Vector2 rel = emm.GetRelative();
-
-            Vector3 rotd = new Vector3(-rel.y * camRotateSpeed, -rel.x * camRotateSpeed, 0.0f);
-
-            Vector3 targetRotation = myCam.GetRotation() + rotd;
-
-            //Clamp x rotation between -180 and 180 degrees
-            float xRot = targetRotation.x;
-            xRot = Mathf.Clamp(xRot, -Mathf.PI / 2, Mathf.PI / 2);
-            targetRotation = new Vector3(xRot, targetRotation.y, targetRotation.z);
-
-            myCam.SetRotation(targetRotation);
-        }
-
-        if (e is InputEventMouseButton iemb)
-        {
-            if (iemb.ButtonIndex == 2 && iemb.Pressed && !inventoryOpen)
+            if (e is InputEventMouseMotion)
             {
-                if(this.ItemInHand == null)
-                {
-                    byte b = interaction.GetBlock();
-                    Block block = Game.GetBlock(b);
-                    if (block is DefossiliserBlock db)
-                    {
-                        db.HandleInput(e);
-                    }
-                }
-                this.HandleUseItem();
+                Vector3 rot = this.GetRotation();
+
+                InputEventMouseMotion emm = (InputEventMouseMotion)e;
+
+                Vector2 rel = emm.GetRelative();
+
+                Vector3 rotd = new Vector3(-rel.y * camRotateSpeed, -rel.x * camRotateSpeed, 0.0f);
+
+                Vector3 targetRotation = myCam.GetRotation() + rotd;
+
+                //Clamp x rotation between -180 and 180 degrees
+                float xRot = targetRotation.x;
+                xRot = Mathf.Clamp(xRot, -Mathf.PI / 2, Mathf.PI / 2);
+                targetRotation = new Vector3(xRot, targetRotation.y, targetRotation.z);
+
+                myCam.SetRotation(targetRotation);
             }
-
-            if (iemb.ButtonIndex == 1 && iemb.Pressed && !inventoryOpen)
+            else if (e is InputEventMouseButton iemb)
             {
-                byte b = interaction.RemoveBlock();
-                Item ib = ItemStorage.GetItemFromBlock(b);
-
-                if (ib != null)
+                if (InputUtil.IsRighPress(iemb))
                 {
-                    bool addedToHand = false;
-
-                    if (this.ItemInHand != null)
+                    if (this.ItemInHand == null)
                     {
-                        Item i = this.ItemInHand.GetItem();
-                        if (i is ItemBlock curBlock)
+                        byte b = interaction.GetBlock();
+                        Block block = Game.GetBlock(b);
+                        if (block is DefossiliserBlock db)
                         {
-                            if (curBlock.Block == b)
-                            {
-                                this.ItemInHand.AddToQuantity(1);
-                                addedToHand = true;
-                            }
+                            db.HandleInput(e, this);
                         }
                     }
-                    if (!addedToHand)
-                        this.blockInventory.AddItem(ib, 1);
+                    else
+                    {
+                        this.HandleUseItem();
+                    }
+                }
+                else if (InputUtil.IsLeftPress(iemb))
+                {
+                    byte b = interaction.RemoveBlock();
+                    Item ib = ItemStorage.GetItemFromBlock(b);
+
+                    if (ib != null)
+                    {
+                        bool addedToHand = false;
+
+                        if (this.ItemInHand != null)
+                        {
+                            Item i = this.ItemInHand.GetItem();
+                            if (i is ItemBlock curBlock)
+                            {
+                                if (curBlock.Block == b)
+                                {
+                                    this.ItemInHand.AddToQuantity(1);
+                                    addedToHand = true;
+                                }
+                            }
+                        }
+                        if (!addedToHand)
+                        {
+                            this.AddItem(ib, 1);
+                        }
+                    }
                 }
             }
         }
@@ -195,6 +215,9 @@ public class Player : KinematicBody
 
     public void ReplenishAir(float v)
     {
+        if (Single.IsNaN(v))
+            return;
+
         this.CurrentAir += v;
 
         if (this.CurrentAir > MAX_AIR)
@@ -257,9 +280,9 @@ public class Player : KinematicBody
 
         this.dead = true;
 
-        if (inventoryOpen)
-            this.RemoveChild(inventoryGUI);
-        else 
+        if (OpenedGUI != null)
+            this.CloseGUI();
+        else
             this.RemoveChild(playerGUI);
 
         DeadGUI dg = new DeadGUI(this);
@@ -301,23 +324,21 @@ public class Player : KinematicBody
             if (blockPos.HasValue)
                 success = plants.Plant(p, blockPos.Value);
         }
-
-        if (success)
-        {
-            if (this.ItemInHand.GetCount() == 1)
-                this.ItemInHand = null;
-            else
-                this.ItemInHand.SubtractCount(1);
-        }
-        else if(i is ItemBacteriaVial vial)
+        else if (i is ItemBacteriaVial vial)
         {
             game.World.Bacteria.TryGetBacteria(vial.BacteriaType(), out Bacteria bacteria);
             bacteria.AddAmt(vial.Amount);
+            success = true;
+        }
 
-            if (this.ItemInHand.GetCount() == 1)
+        if (success)
+        {
+            this.ItemInHand.SubtractCount(1);
+            if (this.ItemInHand.GetCount() == 0)
+            {
                 this.ItemInHand = null;
-            else
-                this.ItemInHand.SubtractCount(1);
+            }
+            this.InventoryGUI.UpdateHandSlot();
         }
     }
 
@@ -325,7 +346,7 @@ public class Player : KinematicBody
 
     //These numbers control how the player's needs change as they move around the world
     
-    private static float DEGRED_BALANCE_AIR = 1.0f;
+    private static float DEGRED_BALANCE_AIR = 2.0f;
     private static float DEGRED_BALANCE_THIRST = 1.4f;
     private static float DEGRED_BALANCE_HUNGER = 1.8f;
 
@@ -334,8 +355,10 @@ public class Player : KinematicBody
     //single frame
     private static float JUMP_DEGRED = 0.05f;
     
-    private static float BASE_AIR_REGEN = 0.005f;
+    private static float BASE_AIR_REGEN = 0.025f;
     private static float SPRINT_DEGRED_MULT = 4.0f;
+
+    private static float ATMOSPHERE_AIR_REGEN = 0.020f;
 
     private void ProcessAlive(float delta)
     {
@@ -348,8 +371,10 @@ public class Player : KinematicBody
 
         if (position.x * position.x + position.z * position.z < WorldGenerator.BASE_RADIUS_SQRD)
         {
-            this.ReplenishAir(BASE_AIR_REGEN);
+            this.ReplenishAir(BASE_AIR_REGEN * delta);
         }
+
+        this.ReplenishAir(ATMOSPHERE_AIR_REGEN * delta * Mathf.Pow(atmosphere.GetGasProgress(Gas.OXYGEN),2));
 
         //Basic degredation
         this.DepleteAir(BASIC_DEGRED * delta * DEGRED_BALANCE_AIR);
@@ -358,25 +383,17 @@ public class Player : KinematicBody
 
         if (Input.IsActionJustPressed("inventory"))
         {
-            if (!inventoryOpen)
+            if (OpenedGUI == null)
             {
-                inventoryGUI = new InventoryGUI(this, consumableInventory, fossilInventory, blockInventory, this);
-                inventoryOpen = true;
-                this.AddChild(inventoryGUI);
-                this.RemoveChild(playerGUI);
-                Input.SetMouseMode(Input.MouseMode.Visible);
-            } else 
+                OpenGUI(InventoryGUI);
+            }
+            else
             {
-                playerGUI = new PlayerGUI(this);
-                this.AddChild(playerGUI);
-                inventoryOpen = false;
-                inventoryGUI.HandleClose();
-                this.RemoveChild(inventoryGUI);
-                Input.SetMouseMode(Input.MouseMode.Captured);
+                this.CloseGUI();
             }
         }
 
-        if (!inventoryOpen)
+        if (OpenedGUI == null)
         {
             if (Input.IsActionJustPressed("jump") && onFloor)
             {
@@ -395,7 +412,7 @@ public class Player : KinematicBody
         float sin = (float) Math.Sin(rot.y);
         float cos = (float) Math.Cos(rot.y);
 
-        if (!inventoryOpen)
+        if (OpenedGUI == null)
         {
             Vector3 movDir = new Vector3();
             if (Input.IsActionPressed("forward"))
@@ -442,7 +459,27 @@ public class Player : KinematicBody
 
         onFloor = this.IsOnFloor();
     }
-    
+
+    public void OpenGUI(GUI gui)
+    {
+        this.CloseGUI();
+        gui.HandleOpen(this);
+        this.AddChild(gui);
+        OpenedGUI = gui;
+        playerGUI.BackgroundMode = true;
+    }
+
+    public void CloseGUI()
+    {
+        if (OpenedGUI != null)
+        {
+            OpenedGUI.HandleClose();
+            this.RemoveChild(OpenedGUI);
+            OpenedGUI = null;
+            playerGUI.BackgroundMode = false;
+        }
+    }
+
     public void ProcessDead(float delta)
     {
 

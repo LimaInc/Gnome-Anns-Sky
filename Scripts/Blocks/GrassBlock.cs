@@ -1,6 +1,13 @@
 public class GrassBlock : CubeBlock
 {
-    public override string[] TexturePaths { get { return new[] { "res://Images/grassTop.png", "res://Images/grassSide.png", "res://Images/brown_rock_side.png" }; } }
+    public override string[] TexturePaths { get {
+            return new[] {
+                Game.BLOCK_TEXTURE_PATH + "grassTop.png",
+                Game.BLOCK_TEXTURE_PATH + "grassSide.png",
+                Game.BLOCK_TEXTURE_PATH + "brown_rock_side.png"
+            };
+        }
+    }
 
     public override int GetTextureIndex(BlockFace face)
     {
