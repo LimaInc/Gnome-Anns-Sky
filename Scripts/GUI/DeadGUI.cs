@@ -8,7 +8,7 @@ public class DeadGUI : GUI
     private float textScale = 0.8f;
     private Sprite youAreDead;
 
-    private static Texture DEAD_TEX = ResourceLoader.Load("res://Images/youAreDead.png") as Texture;
+    private static Texture DEAD_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "youAreDead.png") as Texture;
 
     public DeadGUI(Node vs) : base(vs) { }
 

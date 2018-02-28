@@ -3,7 +3,7 @@ using Godot;
 
 public class GUIBox : GUIObject
 {
-    public static Texture GUI_SHEET = ResourceLoader.Load("res://Images/guiSheet.png") as Texture;
+    public static Texture GUI_SHEET = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "guiSheet.png") as Texture;
 
     public const int REGION_SIZE = 16;
 

@@ -14,6 +14,10 @@ public class Game : Node
     public const string ATMOSPHERE_PATH = WORLD_ENVIRO_PATH + "/Atmosphere";
     public const string BACTERIAL_STATE_PATH = WORLD_ENVIRO_PATH + "/BacterialState";
 
+    public const string GUI_TEXTURE_PATH = "res://Images/GUI/";
+    public const string BLOCK_TEXTURE_PATH = "res://Images/Blocks/";
+    public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
+
     public PlanetEnvironment World {get; private set;}
 
     public Game()

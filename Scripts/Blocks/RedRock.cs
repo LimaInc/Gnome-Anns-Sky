@@ -1,6 +1,12 @@
 public class RedRock : CubeBlock
 {
-    public override string[] TexturePaths { get { return new[] { "res://Images/brown_rock_top.png", "res://Images/brown_rock_side.png" }; } }
+    public override string[] TexturePaths { get {
+            return new[] {
+                Game.BLOCK_TEXTURE_PATH + "brown_rock_top.png",
+                Game.BLOCK_TEXTURE_PATH + "brown_rock_side.png"
+            };
+        }
+    }
 
     public override int GetTextureIndex(BlockFace face)
     {

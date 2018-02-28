@@ -30,7 +30,7 @@ public class Player : KinematicBody
 
     public ItemStack ItemInHand { get; set; }
 
-    public static Texture CURSOR = ResourceLoader.Load("res://Images/cursor.png") as Texture;
+    public static Texture CURSOR = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "cursor.png") as Texture;
 
     //Original implementation was written in integers, hence why the max constants exist
     public static float MAX_AIR = 1.0f;

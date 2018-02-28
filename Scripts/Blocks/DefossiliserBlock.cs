@@ -7,9 +7,9 @@ class DefossiliserBlock : CubeBlock
     public Defossiliser Machine { private set; get; }
 
     private static readonly string[] texturePaths = 
-        new[] { "res://Images/defossiliser_front.png",
-                "res://Images/defossiliser_top.png",
-                "res://Images/defossiliser_side.png" };
+        new[] { Game.BLOCK_TEXTURE_PATH + "defossiliser_front.png",
+                Game.BLOCK_TEXTURE_PATH + "defossiliser_top.png",
+                Game.BLOCK_TEXTURE_PATH + "defossiliser_side.png" };
 
     public override string[] TexturePaths { get => texturePaths; }
 

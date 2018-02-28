@@ -3,7 +3,7 @@ using Godot;
 
 public class GUIInventorySlot : GUIObject
 {
-    public static readonly Texture TEX = ResourceLoader.Load("res://Images/inventorySlot.png") as Texture;
+    public static readonly Texture TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "inventorySlot.png") as Texture;
     public static readonly Vector2 SIZE = new Vector2(32, 32);
 
     private static readonly Vector2 HOVER_LABEL_OFFSET = SIZE / 2;

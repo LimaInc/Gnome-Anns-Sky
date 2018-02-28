@@ -3,9 +3,9 @@ using Godot;
 
 public class PlayerGUI : GUI
 {
-    private static Texture AIR_ICON_TEX = ResourceLoader.Load("res://Images/airIcon.png") as Texture;
+    private static Texture AIR_ICON_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "airIcon.png") as Texture;
     
-    public static Texture CROSSHAIR_TEX = ResourceLoader.Load("res://Images/crosshairWhite.png") as Texture;
+    public static Texture CROSSHAIR_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "crosshairWhite.png") as Texture;
 
     private readonly static Color OXYGEN_COLOR = Colors.MAGENTA;
     private readonly static Color NITROGEN_COLOR = Colors.CYAN;
@@ -111,9 +111,9 @@ public class PlayerGUI : GUI
         this.AddChild(this.thirst);
         this.AddChild(this.hunger);
 
-        this.air.AddChild(hungerIcon);
+        this.air.AddChild(airIcon);
         this.thirst.AddChild(thirstIcon);
-        this.hunger.AddChild(airIcon);
+        this.hunger.AddChild(hungerIcon);
 
         this.atmosNitrogen = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, NITROGEN_COLOR);
         this.atmosOxygen = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, OXYGEN_COLOR);
