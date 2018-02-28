@@ -58,6 +58,9 @@ public class AnimalBehaviourComponent : BaseComponent
 
     private const float satiatedBreedThreshold = 50.0f;
 
+    private const float co2Threshold = 0.5f;
+    private const float oxygenThreshold = 0.5f;
+
     private int frameCount = 0;
 
     private List<BaseStrategy> strategies;
@@ -155,7 +158,7 @@ public class AnimalBehaviourComponent : BaseComponent
     private void DoAtmosphereEffects(float delta)
     {
         Atmosphere atmosphere = (Atmosphere)(body.GetTree().GetRoot().GetNode(Game.ATMOSPHERE_PATH));
-        if(!(atmosphere.GetGasProgress(Gas.OXYGEN) > 0.0f && atmosphere.GetGasProgress(Gas.NITROGEN) > 0.0f)) //TODO: Discuss these values. No idea what they should be currently.
+        if(!(atmosphere.GetGasProgress(Gas.OXYGEN) > oxygenThreshold && atmosphere.GetGasProgress(Gas.CARBON_DIOXIDE) > co2Threshold))
         {
             Kill(); 
         }
