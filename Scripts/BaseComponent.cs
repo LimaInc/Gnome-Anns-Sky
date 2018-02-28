@@ -1,16 +1,17 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
-public class BaseComponent : Node
+public abstract class BaseComponent : Godot.Object
 {
-    // Sets up a Connection if one does not already exist. Should be used in children classes in a
-    // Process method to ensure custom connections are set up *after* relevant AddUserSignal has been called.
-    // This whole system should probably be changed to not use Godot's signals. It's not really what it's for.
-    protected void SetupConnection(string eventName, Node parent, Node obj, string methodName)
+    public Entity parent { get; private set; }
+
+    public BaseComponent(Entity parent)
     {
-        if(!parent.IsConnected(eventName, obj, methodName))
-        {
-            parent.Connect(eventName, obj, methodName);
-        }
+        this.parent = parent;
     }
+
+    public abstract void Ready();
+    public abstract void Process(float delta);
+    public abstract void PhysicsProcess(float delta);
 }

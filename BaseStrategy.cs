@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public abstract class BaseStrategy : Node
+public abstract class BaseStrategy
 {
     public BaseStrategy(AnimalBehaviourComponent component)
     {
@@ -18,12 +18,6 @@ public abstract class BaseStrategy : Node
     }
     public abstract void PhysicsProcess(float delta);
     public abstract void Process(float delta);
-
-    public virtual void Collided(KinematicCollision collision) { }
-    public virtual void ObjectInRange(PhysicsBody body) { }
-    public virtual void ObjectOutOfRange(PhysicsBody body) { }
-
-    public virtual List<Tuple<string, Node, string>> GetConnections() { return new List<Tuple<string, Node, string>>(); }
 
     public virtual List<Tuple<string, object[]>> GetInitialisationSignals() { return new List<Tuple<string, object[]>>(); }
 

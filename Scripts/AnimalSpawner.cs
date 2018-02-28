@@ -5,8 +5,7 @@ using System.Collections.Generic;
 public class AnimalSpawner : Node
 {
     private List<AnimalPreset> presets;
-    private Script physicsScript;
-    private Script baseBehaviourScript;
+    Script entityScript = (Script)ResourceLoader.Load("res://Entity.cs");
 
     private void HollisticDemo()
     {
@@ -56,11 +55,11 @@ public class AnimalSpawner : Node
         SpawnAnimal("animal0BD", AnimalBehaviourComponent.Sex.Male, new Vector3(5.0f, 50.0f, 0.0f));
         SpawnAnimal("animal0BD", AnimalBehaviourComponent.Sex.Female, new Vector3(-5.0f, 50.0f, 0.0f));
 
-        SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Male, new Vector3(0.0f, 60.0f, 0.0f));
-        SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Female, new Vector3(2.0f, 50.0f, 0.0f));
+       // SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Male, new Vector3(0.0f, 60.0f, 0.0f));
+       // SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Female, new Vector3(2.0f, 50.0f, 0.0f));
 
-        SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Female, new Vector3(-2.0f, 50.0f, -2.0f));
-        SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Male, new Vector3(2.0f, 50.0f, -2.0f));
+      //  SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Female, new Vector3(-2.0f, 50.0f, -2.0f));
+        //SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Male, new Vector3(2.0f, 50.0f, -2.0f));
     }
 
     private void EatingDemo()
@@ -182,20 +181,17 @@ public class AnimalSpawner : Node
         presets.Add(maleFrogBD);
         presets.Add(femaleFrogBD);
 
-        
+   
 
-        physicsScript = (Script)ResourceLoader.Load("res://scripts/PhysicsComponent.cs");
-        baseBehaviourScript = (Script)ResourceLoader.Load("res://scripts/AnimalBehaviourComponent.cs");
-
-        BreedingDemo();
+        //BreedingDemo();
         //EatingDemo();
-        //HollisticDemo();
+        HollisticDemo();
     }
 
     public void SpawnAnimal(string presetName,AnimalBehaviourComponent.Sex sex,Vector3 position)
     {
         // Choose preset
-        //for now, choose base preset
+        // for now, choose base preset
         AnimalPreset preset = null;
         foreach(AnimalPreset p in presets)
         {
@@ -211,30 +207,25 @@ public class AnimalSpawner : Node
 
         KinematicBody kb = (KinematicBody)chosenScene.Instance();
 
-        var physicsComponent = new Node();
-        physicsComponent.SetScript(physicsScript);
+        Entity entity = new Entity();
+        kb.AddChild(entity);
 
-        var behaviourComponent = new Node();
-        kb.AddChild(behaviourComponent);
+        entity.SetName("Entity");
 
-        behaviourComponent.SetName("BehaviourComponent");
-        behaviourComponent.SetScript(baseBehaviourScript);
+        AnimalBehaviourComponent behaviourComponent = new AnimalBehaviourComponent(entity, preset.sex, preset.diet, preset.foodChainLevel, preset.breedability, preset.presetName);
+        PhysicsComponent physicsComponent = new PhysicsComponent(entity);
+        entity.AddComponent(behaviourComponent);
+        entity.AddComponent(physicsComponent);
 
-        behaviourComponent.Set("_sex", (int)preset.sex);
-        behaviourComponent.Set("_diet", (int)preset.diet);
-        behaviourComponent.Set("_foodChainLevel", preset.foodChainLevel);
-        behaviourComponent.Set("_breedability", preset.breedability);
-        behaviourComponent.Set("_presetName", preset.presetName);
-
-        kb.AddChild(physicsComponent);
         kb.SetTranslation(position);
 
+        GD.Print("Adding object!");
         AddChild(kb);
 
         //TEMP: No food for frogs yet, so make sure they can breed immediately.
         if (presetName == "frog")
         {
-            behaviourComponent.Set("_satiated", 100);
+            behaviourComponent.satiated = 100;
         }
     }
 }

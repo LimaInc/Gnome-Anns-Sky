@@ -27,6 +27,10 @@ public class EatStrategy : BaseStrategy
     public override void Ready()
     {
         foodInRange = new List<PhysicsBody>();
+
+        component.parent.RegisterListener("collided", Collided);
+        component.parent.RegisterListener("objectInRange", ObjectInRange);
+        component.parent.RegisterListener("objectOutOfRange", ObjectOutOfRange);
     }
 
     private bool IsFood(PhysicsBody n)
@@ -51,24 +55,23 @@ public class EatStrategy : BaseStrategy
         return false;
     }
 
-    public override void ObjectInRange(PhysicsBody otherBody)
+    public void ObjectInRange(object[] args)
     {
-        base.ObjectInRange(otherBody);
+        PhysicsBody otherBody = (PhysicsBody)args[0];
+        AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
 
-        Node behaviourComponent = otherBody.GetNode("BehaviourComponent");
-
-        if (IsFood(otherBody) && (int)behaviourComponent.Get("_foodChainLevel") < component.foodChainLevel)
+        if (IsFood(otherBody) && behaviourComponent.foodChainLevel < component.foodChainLevel)
         {
             foodInRange.Add(otherBody);
         }
     }
 
-    public override void ObjectOutOfRange(PhysicsBody otherBody)
+    public void ObjectOutOfRange(object[] args)
     {
-        base.ObjectOutOfRange(otherBody);
+        PhysicsBody otherBody = (PhysicsBody)args[0];
+        AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
 
-        Node behaviourComponent = otherBody.GetNode("BehaviourComponent");
-        if (IsFood(otherBody) && (int)behaviourComponent.Get("_foodChainLevel") < component.foodChainLevel)
+        if (IsFood(otherBody) && behaviourComponent.foodChainLevel < component.foodChainLevel)
         {
             //List is implemented as an array, so could get expensive. Could change to HashMap.
             foodInRange.Remove(otherBody);
@@ -116,13 +119,16 @@ public class EatStrategy : BaseStrategy
         return null;
     }
 
-    public override void Collided(KinematicCollision collision)
+    public void Collided(object[] args)
     {
-        base.Collided(collision);
-
-        if(target != null && collision.Collider.Equals(target))
+        if (active)
         {
-            eat(collision.Collider);
+            KinematicCollision collision = (KinematicCollision)args[0];
+
+            if (target != null && collision.Collider.Equals(target))
+            {
+                eat(collision.Collider);
+            }
         }
     }
 
@@ -150,7 +156,7 @@ public class EatStrategy : BaseStrategy
             else
             {
                 Vector3 direction = target.GetTranslation() - component.body.GetTranslation();
-                component.body.EmitSignal("setDirection", new Vector2(direction.x, direction.z));
+                component.parent.SendMessage("setDirection", new Vector2(direction.x, direction.z));
             }
         }
     }
