@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://Scripts/Animals/Game.cs" type="Script" id=1]
+[ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/World/Terrain.cs" type="Script" id=2]
 [ext_resource path="res://Scripts/Player.cs" type="Script" id=3]
 [ext_resource path="res://Scripts/Interaction.cs" type="Script" id=4]
@@ -112,9 +112,6 @@ _sections_unfolded = [ "Background" ]
 
 [node name="Game" type="Node" index="0"]
 
-
-[node name="Game" type="Node"]
-
 script = ExtResource( 1 )
 _sections_unfolded = [ "Pause" ]
 
@@ -200,5 +197,4 @@ script = ExtResource( 7 )
 [node name="Plants" type="Node" parent="WorldEnvironment" index="2"]
 
 script = ExtResource( 8 )
-
 
