@@ -52,8 +52,8 @@ public class AnimalSpawner : Node
 
     private void BreedingDemo()
     {
-        SpawnAnimal("animal0BD", AnimalBehaviourComponent.Sex.Male, new Vector3(5.0f, 50.0f, 0.0f));
-        SpawnAnimal("animal0BD", AnimalBehaviourComponent.Sex.Female, new Vector3(-5.0f, 50.0f, 0.0f));
+        SpawnAnimal("animal0BD", AnimalBehaviourComponent.Sex.Male, new Vector3(5.0f, 50.0f, 15.0f));
+        SpawnAnimal("animal0BD", AnimalBehaviourComponent.Sex.Female, new Vector3(-5.0f, 50.0f, 15.0f));
 
        // SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Male, new Vector3(0.0f, 60.0f, 0.0f));
        // SpawnAnimal("frogBD", AnimalBehaviourComponent.Sex.Female, new Vector3(2.0f, 50.0f, 0.0f));
@@ -181,17 +181,17 @@ public class AnimalSpawner : Node
         presets.Add(maleFrogBD);
         presets.Add(femaleFrogBD);
 
-   
-
-        //BreedingDemo();
-        //EatingDemo();
+        //Code for demos.
+        /*
+        BreedingDemo();
+        EatingDemo();
         HollisticDemo();
+        */
     }
 
     public void SpawnAnimal(string presetName,AnimalBehaviourComponent.Sex sex,Vector3 position)
     {
         // Choose preset
-        // for now, choose base preset
         AnimalPreset preset = null;
         foreach(AnimalPreset p in presets)
         {
@@ -212,14 +212,13 @@ public class AnimalSpawner : Node
 
         entity.SetName("Entity");
 
-        AnimalBehaviourComponent behaviourComponent = new AnimalBehaviourComponent(entity, preset.sex, preset.diet, preset.foodChainLevel, preset.breedability, preset.presetName);
+        AnimalBehaviourComponent behaviourComponent = new AnimalBehaviourComponent(entity, preset.sex, preset.diet, preset.foodChainLevel, preset.breedability, preset.presetName, preset.oxygenConsumption, preset.co2Production);
         PhysicsComponent physicsComponent = new PhysicsComponent(entity);
         entity.AddComponent(behaviourComponent);
         entity.AddComponent(physicsComponent);
 
         kb.SetTranslation(position);
 
-        GD.Print("Adding object!");
         AddChild(kb);
 
         //TEMP: No food for frogs yet, so make sure they can breed immediately.

@@ -6,6 +6,7 @@ public abstract class BaseComponent : Godot.Object
 {
     public Entity parent { get; private set; }
 
+    public static Random random = new Random();
     public BaseComponent(Entity parent)
     {
         this.parent = parent;
