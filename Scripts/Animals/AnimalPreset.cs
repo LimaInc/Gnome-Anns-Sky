@@ -13,7 +13,7 @@ public class AnimalPreset
     public float co2Production;
 
     public AnimalPreset(AnimalBehaviourComponent.Sex sex, PackedScene scene, AnimalBehaviourComponent.Diet diet, int foodChainLevel, int breedability, string presetName,
-        float oxygenConsumption = 1.0f, float co2Production = 1.0f)
+        float oxygenConsumption = 0.1f, float co2Production = 0.1f)
     {
         this.sex = sex;
         this.scene = scene;
