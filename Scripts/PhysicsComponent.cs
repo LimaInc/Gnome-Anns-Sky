@@ -7,7 +7,7 @@ public class PhysicsComponent : BaseComponent
     private const float gravity = 20.0f;
     private const float terminal = 200.0f;
 
-    private KinematicBody parent;
+    private KinematicBody body;
     private Vector3 velocity;
 
     private float speed = 0.0f;
@@ -24,38 +24,34 @@ public class PhysicsComponent : BaseComponent
 
     private int frameNum = 0;
 
-    private void Jump(float magnitude)
+    public PhysicsComponent(Entity parent) : base(parent) { }
+
+    private void Jump(object[] args)
     {
-        if (parent.IsOnFloor())
+        float magnitude = (float)args[0];
+        if (body.IsOnFloor())
         {
             tojump = true;
             jumpMagnitude = magnitude;
         }
     }
 
-    private void SetDirection(Vector2 d)
+    private void SetDirection(object[] args)
     {
-        //GD.Print("Direction set received: ", d.x, " ", d.y);
+        Vector2 d = (Vector2)args[0];
         
         direction = d.Normalized();
         if (d.x != 0.0f || d.y != 0.0f)
         {
-            parent.LookAt(parent.GetTranslation() + new Vector3(direction.x, 0, direction.y) * 100.0f, new Vector3(0, 1, 0));
+            body.LookAt(body.GetTranslation() + new Vector3(direction.x, 0, direction.y) * 100.0f, new Vector3(0, 1, 0));
         }
         //GD.Print("Direction set: ", direction);
     }
 
-    private void SetSpeed(float s)
+    private void SetSpeed(object[] args)
     {
-        speed = s;
+        speed = (float)args[0];
         GD.Print("Speed set: ", speed);
-    }
-
-    private void SetVisionRange(float r)
-    {
-        GD.Printerr("SetVisionRange is not implemented yet.");
-        //visionRange = r;
-        //areaShape.SetExtents(new Vector3(visionRange, visionRange, visionRange));
     }
 
     private bool IsWatching(PhysicsBody body)
@@ -76,7 +72,7 @@ public class PhysicsComponent : BaseComponent
         {
             PhysicsBody pobj = (PhysicsBody)obj;
             if (IsWatching(pobj)){
-                parent.EmitSignal("objectInRange", pobj);
+                parent.SendMessage("objectInRange", pobj);
             }
         }    
     }
@@ -87,48 +83,41 @@ public class PhysicsComponent : BaseComponent
         {
             PhysicsBody pobj = (PhysicsBody)obj;
             if (IsWatching(pobj)) { 
-                parent.EmitSignal("objectOutOfRange", pobj);
+                parent.SendMessage("objectOutOfRange", pobj);
                 return;
             }
         }
     }
 
-    private void WatchFor(string groupName)
+    private void WatchFor(object[] args)
     {
-        watchList.Add(groupName);
+        watchList.Add((string)args[0]);
     }
 
-    public override void _Ready()
+    public override void Ready()
     {
         watchList = new List<String>();
 
         GD.Print("Physics component readying... ");
-        parent = (KinematicBody)GetParent(); //downcast!
+        body = (KinematicBody)parent.GetParent();
 
-        //set up the signals we want to broadcast
-        parent.AddUserSignal("terrainInterference");
-        parent.AddUserSignal("collided");
-        parent.AddUserSignal("objectInRange");
-        parent.AddUserSignal("objectOutOfRange");
+        parent.RegisterListener("jump", Jump);
+        parent.RegisterListener("setDirection", SetDirection);
+        parent.RegisterListener("setSpeed", SetSpeed);
+        parent.RegisterListener("watchFor", WatchFor);
 
         //for detection objects in a range
 
         //TODO: Generate this area in code. Could not figure out how to generate areas in code or get the shapes from existing areas,
         //but it is possible. As a result, currently the area must be set in the animal scene file, and the range cannot be changed through code.
-        area = (Area)parent.GetNode("Area");
+        area = (Area)body.GetNode("Area");
 
         area.Connect("body_entered", this, nameof(ObjectInRange));
         area.Connect("body_exited", this, nameof(ObjectOutOfRange));        
     }
 
-    public override void _Process(float delta)
+    public override void Process(float delta)
     {
-        // initialise connections that we use
-        SetupConnection("jump", parent, this, nameof(Jump));
-        SetupConnection("setDirection", parent, this, nameof(SetDirection));
-        SetupConnection("setSpeed", parent, this, nameof(SetSpeed));
-        SetupConnection("setVisionRange", parent, this, nameof(SetVisionRange));
-        SetupConnection("watchFor", parent, this, nameof(WatchFor));
 
         //This sort of initialisation needs a refactor, but suffices for now.
         if(frameNum == 2)
@@ -143,7 +132,7 @@ public class PhysicsComponent : BaseComponent
             {
                 if (IsWatching(body))
                 {
-                    parent.EmitSignal("objectInRange", body);
+                    parent.SendMessage("objectInRange", body);
                 }
             }
 
@@ -170,7 +159,7 @@ public class PhysicsComponent : BaseComponent
         }
 
      //   GD.Print("Attempted velocity: ", velocity.x, " ", velocity.y, " ", velocity.z);
-        Vector3 newVelocity = parent.MoveAndSlide(velocity, new Vector3(0.0f, 1.0f, 0.0f));
+        Vector3 newVelocity = body.MoveAndSlide(velocity, new Vector3(0.0f, 1.0f, 0.0f));
      //   GD.Print("New velocity: ", newVelocity.x, " ", newVelocity.y, " ", newVelocity.z);
 
         float xDif = Math.Abs(velocity.x - newVelocity.x);
@@ -178,13 +167,13 @@ public class PhysicsComponent : BaseComponent
 
         if(xDif > terrainInterferenceEpsilon || zDif > terrainInterferenceEpsilon)
         {
-            parent.EmitSignal("terrainInterference");
+            parent.SendMessage("terrainInterference");
         }
 
-        int numCollisions = parent.GetSlideCount();
+        int numCollisions = body.GetSlideCount();
         for(int i = 0; i < numCollisions; i++)
         {
-            parent.EmitSignal("collided", parent.GetSlideCollision(i));
+            parent.SendMessage("collided", body.GetSlideCollision(i));
         }
 
         if (tojump)
@@ -196,5 +185,10 @@ public class PhysicsComponent : BaseComponent
         {
             velocity.y = newVelocity.y;
         }
+    }
+
+    public override void PhysicsProcess(float delta)
+    {
+
     }
 }

@@ -54,6 +54,7 @@
     <Compile Include="BaseStrategy.cs" />
     <Compile Include="BreedStrategy.cs" />
     <Compile Include="EatStrategy.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\AnimalBehaviourComponent.cs" />
     <Compile Include="Scripts\AnimalPreset.cs" />
