@@ -25,11 +25,10 @@ public class Plants : Node
         return false;
     }
 
-    public override void _Process(float delta)
+    public override void _PhysicsProcess(float delta)
     {
+        delta *= Game.SPEED;
         foreach (PlantManager plantManager in plantManagers.Values)
             plantManager.Spread(delta);
-        // Called every frame. Delta is time since last frame.
-        // Update game logic here.
     }
 }
