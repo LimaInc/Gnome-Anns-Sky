@@ -1,0 +1,6 @@
+C:\Users\pighe\Documents\Cambridge-offline\SustainableCraft\.mono\temp\bin\Tools\SustainableCraft.dll
+C:\Users\pighe\Documents\Cambridge-offline\SustainableCraft\.mono\temp\bin\Tools\SustainableCraft.pdb
+C:\Users\pighe\Documents\Cambridge-offline\SustainableCraft\.mono\temp\obj\Tools\SustainableCraft.csprojResolveAssemblyReference.cache
+C:\Users\pighe\Documents\Cambridge-offline\SustainableCraft\.mono\temp\obj\Tools\SustainableCraft.csproj.CoreCompileInputs.cache
+C:\Users\pighe\Documents\Cambridge-offline\SustainableCraft\.mono\temp\obj\Tools\SustainableCraft.dll
+C:\Users\pighe\Documents\Cambridge-offline\SustainableCraft\.mono\temp\obj\Tools\SustainableCraft.pdb
