@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/World/Terrain.cs" type="Script" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://Scripts/Atmosphere/Atmosphere.cs" type="Script" id=6]
 [ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=7]
 [ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=8]
+[ext_resource path="res://Scripts/World/Base.cs" type="Script" id=9]
 
 [sub_resource type="ProceduralSky" id=1]
 
@@ -161,7 +162,7 @@ axis_lock_angular_y = false
 axis_lock_angular_z = false
 collision/safe_margin = 0.001
 script = ExtResource( 3 )
-_sections_unfolded = [ "Transform" ]
+_sections_unfolded = [ "Axis Lock", "Collision", "Transform", "Visibility", "collision" ]
 
 [node name="Camera" type="Camera" parent="Player" index="0"]
 
@@ -181,21 +182,25 @@ far = 100.0
 script = ExtResource( 4 )
 _sections_unfolded = [ "Transform" ]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." index="3"]
+[node name="PlanetEnvironment" type="WorldEnvironment" parent="." index="3"]
 
 environment = SubResource( 2 )
 script = ExtResource( 5 )
 
-[node name="Atmosphere" type="Node" parent="WorldEnvironment" index="0"]
+[node name="Atmosphere" type="Node" parent="PlanetEnvironment" index="0"]
 
 script = ExtResource( 6 )
 
-[node name="BacterialState" type="Node" parent="WorldEnvironment" index="1"]
+[node name="BacterialState" type="Node" parent="PlanetEnvironment" index="1"]
 
 script = ExtResource( 7 )
 
-[node name="Plants" type="Node" parent="WorldEnvironment" index="2"]
+[node name="Plants" type="Node" parent="PlanetEnvironment" index="2"]
 
 script = ExtResource( 8 )
+
+[node name="Base" type="Node" parent="." index="4"]
+
+script = ExtResource( 9 )
 
 

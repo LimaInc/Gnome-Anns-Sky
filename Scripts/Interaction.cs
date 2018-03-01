@@ -23,6 +23,7 @@ public class Interaction : Camera
     }
 
     float rayLength = 5;
+
     public bool PlaceBlock(byte b)
     {
         Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
