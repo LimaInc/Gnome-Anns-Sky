@@ -14,7 +14,7 @@ public class OctaveNoise
             noises[i] = new Noise();
     }
 
-    public float sample(float x, float y)
+    public float Sample(float x, float y)
     {
         float amp = 1;
         int freq = 1;
@@ -26,15 +26,15 @@ public class OctaveNoise
             float xs = x * freq;
             float ys = y * freq;
 
-            float sample = noises[i].sample(xs,ys) * amp;
+            float sample = noises[i].Sample(xs,ys) * amp;
 
             totalSample += sample;
             
-            amp /= 2.0f;
+            amp /= 2;
             freq *= 2;
         }
 
-        float ret = totalSample / 2.0f;
+        float ret = totalSample / 2;
 
         return ret;
     }

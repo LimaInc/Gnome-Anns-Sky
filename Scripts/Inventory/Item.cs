@@ -3,9 +3,20 @@ using Godot;
 
 public class Item
 {
+    [Flags]
     public enum Type
     {
-        CONSUMABLE,FOSSIL,BLOCK
+        CONSUMABLE = 0x1,
+        FOSSIL = 0x2,
+        BLOCK = 0x4,
+        // should be an OR of all other values
+        ANY = CONSUMABLE | FOSSIL | BLOCK
+    }
+
+    // checks whether t2 is a superset of types in t1
+    public static bool CompatibleWith(Type t1, Type t2)
+    {
+        return ((~t1 | t2) & Type.ANY) == Type.ANY;
     }
 
     public static Item[] items = new Item[256];
@@ -58,5 +69,10 @@ public class Item
     public String GetName()
     {
         return name;
+    }
+
+    public override string ToString()
+    {
+        return GetName();
     }
 }

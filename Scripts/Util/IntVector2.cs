@@ -40,6 +40,16 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
         return left;
     }
 
+    public static Vector2 operator *(IntVector2 left, Vector2 right)
+    {
+        return new Vector2(left.x * right.x, left.y * right.y);
+    }
+
+    public static Vector2 operator *(Vector2 left, IntVector2 right)
+    {
+        return new Vector2(left.x * right.x, left.y * right.y);
+    }
+
     public static bool operator ==(IntVector2 left, IntVector2 right)
     {
         return left.Equals(right);
@@ -67,7 +77,7 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
 
     public override int GetHashCode()
     {
-        return y.GetHashCode() ^ x.GetHashCode();
+        return 31 * y.GetHashCode() + x.GetHashCode();
     }
 
     public override string ToString()
@@ -78,5 +88,20 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
     public string ToString(string format)
     {
         return String.Format("({0}, {1})", this.x.ToString(format), this.y.ToString(format));
+    }
+
+    public static explicit operator Vector2(IntVector2 v)
+    {
+        return new Vector2(v.x, v.y);
+    }
+
+    public float Length()
+    {
+        return Mathf.Sqrt(this.LengthSquared());
+    }
+
+    public float LengthSquared()
+    {
+        return x * x + y * y;
     }
 }

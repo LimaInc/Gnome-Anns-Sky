@@ -1,26 +1,52 @@
 ﻿public class DefossiliserAction
 {
-    private Item inItem;
-    private int inItemCount;
-    private ItemStack outStack;
+    public readonly Item inItem;
+    public readonly int inItemCount;
 
-    public DefossiliserAction(Item inItem, Item outItem, int inItemCount=1, int outItemCount=1)
+    public readonly Item outItem;
+    public readonly int outItemCount;
+
+    public float ProcessingTime { get; private set; }
+
+    public DefossiliserAction(Item inItem, Item outItem, float processingTime = 10, int inItemCount=1, int outItemCount=1)
     {
         this.inItem = inItem;
         this.inItemCount = inItemCount;
-        this.outStack = new ItemStack(outItem, outItemCount);
+        this.ProcessingTime = processingTime;
+        this.outItem = outItem;
+        this.outItemCount = outItemCount;
     }
 
-    public ItemStack Process(ItemStack stack)
+    public ItemStack Process(Inventory inv)
     {
-        if (stack.GetItem() == inItem && stack.GetCount() >= inItemCount)
+        if (CanBeDoneWith(inv))
         {
-            stack.SubtractCount(inItemCount);
-            return new ItemStack(stack.item, stack.count);
+            int remaining = inItemCount;
+            while (remaining > 0)
+            {
+                int i = inv.TryGetStackIndex(inItem).Value;
+                int count = inv.GetItemStack(i).GetCount();
+                if (remaining >= count)
+                {
+                    inv.RemoveItemStack(i);
+                    remaining -= count;
+                }
+                else
+                {
+                    inv.GetItemStack(i).AddToQuantity(-remaining);
+                    remaining -= remaining;
+                }
+            }
+            return new ItemStack(outItem, outItemCount);
         }
         else
         {
             return null;
         }
+    }
+
+    public bool CanBeDoneWith(Inventory inv)
+    {
+        return inv.ItemCount(inItem) >= inItemCount;
     }
 }

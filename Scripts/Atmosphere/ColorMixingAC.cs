@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class ColorMixingAtmosphereComponent : AtmosphericComponent
+public class ColorMixingAC : AtmosphericComponent
 {
     private static readonly Tuple<Color, Color> DEFAULT_COLORS = new Tuple<Color, Color>(Colors.BLACK, Colors.DARK_GRAY);
     private static readonly float DEFAULT_COLOR_WEIGHT = WeightFromAmt(0.01f);
@@ -11,8 +11,6 @@ public class ColorMixingAtmosphereComponent : AtmosphericComponent
             [Gas.NITROGEN] = new Tuple<Color, Color>(Colors.CYAN, Colors.GRAY),
             [Gas.CARBON_DIOXIDE] = new Tuple<Color, Color>(Colors.YELLOW, Colors.GRAY)
     };
-
-    private bool init = true;
 
     protected static ProceduralSky sky;
 
