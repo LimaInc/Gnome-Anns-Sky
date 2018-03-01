@@ -3,16 +3,16 @@ using System;
 
 public class AnimalPreset
 {
-    public AnimalBehaviourComponent.Sex sex;
+    public AnimalBehaviourComponent.AnimalSex sex;
     public PackedScene scene;
-    public AnimalBehaviourComponent.Diet diet;
+    public AnimalBehaviourComponent.AnimalDiet diet;
     public int foodChainLevel;
     public int breedability; //0 to 100
     public string presetName;
     public float oxygenConsumption;
     public float co2Production;
 
-    public AnimalPreset(AnimalBehaviourComponent.Sex sex, PackedScene scene, AnimalBehaviourComponent.Diet diet, int foodChainLevel, int breedability, string presetName,
+    public AnimalPreset(AnimalBehaviourComponent.AnimalSex sex, PackedScene scene, AnimalBehaviourComponent.AnimalDiet diet, int foodChainLevel, int breedability, string presetName,
         float oxygenConsumption = 0.1f, float co2Production = 0.1f)
     {
         this.sex = sex;

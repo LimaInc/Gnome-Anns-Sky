@@ -4,26 +4,26 @@ using System.Collections.Generic;
 
 public class AnimalBehaviourComponent : BaseComponent
 {
-    public AnimalBehaviourComponent(Entity parent, Sex sex, Diet diet, int foodChainLevel,
+    public AnimalBehaviourComponent(Entity parent, AnimalSex sex, AnimalDiet diet, int foodChainLevel,
         int breedability, string presetName, float oxygenConsumption, float co2Production) : base(parent)
     {
-        this.sex = sex;
-        this.diet = diet;
-        this.foodChainLevel = foodChainLevel;
-        this.presetName = presetName;
-        this.breedability = breedability;
-        this.satiated = 80.0f;
+        this.Sex = sex;
+        this.Diet = diet;
+        this.FoodChainLevel = foodChainLevel;
+        this.PresetName = presetName;
+        this.Breedability = breedability;
+        this.Satiated = 80.0f;
         this.oxygenConsumption = oxygenConsumption;
         this.co2Production = co2Production;
     }
 
-    public enum Sex
+    public enum AnimalSex
     {
         Male = 0,
         Female = 1,
     }
 
-    public enum Diet
+    public enum AnimalDiet
     {
         Herbivore = 0,
         Carnivore = 1,
@@ -39,13 +39,13 @@ public class AnimalBehaviourComponent : BaseComponent
 
     public void Kill()
     {
-        body.RemoveFromGroup("alive");
-        body.QueueFree();
+        Body.RemoveFromGroup("alive");
+        Body.QueueFree();
     }
 
     public bool IsAlive()
     {
-        return body.IsInGroup("alive");
+        return Body.IsInGroup("alive");
     }
 
     private float jumpMagnitude = 5.0f;
@@ -68,14 +68,14 @@ public class AnimalBehaviourComponent : BaseComponent
     private BreedStrategy breedStrategy;
     private BaseStrategy state;
 
-    public KinematicBody body { get; private set; }
+    public KinematicBody Body { get; private set; }
 
-    public Sex sex { get; private set; }
-    public Diet diet { get; private set; }
-    public int foodChainLevel { get; private set; }
-    public float satiated { get; set; }
-    public int breedability { get; private set; }
-    public string presetName { get; private set; }
+    public AnimalSex Sex { get; private set; }
+    public AnimalDiet Diet { get; private set; }
+    public int FoodChainLevel { get; private set; }
+    public float Satiated { get; set; }
+    public int Breedability { get; private set; }
+    public string PresetName { get; private set; }
 
     private float oxygenConsumption; //per sec
     private float co2Production; //per sec 
@@ -103,7 +103,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
     public override void Ready()
     {
-        body = (KinematicBody)parent.GetParent();
+        Body = (KinematicBody)parent.GetParent();
 
         strategies = new List<BaseStrategy>();
         eatStrategy = new EatStrategy(this);
@@ -115,8 +115,8 @@ public class AnimalBehaviourComponent : BaseComponent
 
         parent.RegisterListener("terrainInterference", OnTerrainInterference);
 
-        body.AddToGroup("animals");
-        body.AddToGroup("alive");
+        Body.AddToGroup("animals");
+        Body.AddToGroup("alive");
 
         foreach(BaseStrategy strategy in strategies)
         {
@@ -141,9 +141,9 @@ public class AnimalBehaviourComponent : BaseComponent
 
     protected void Hungry(float delta)
     {
-        satiated -= delta * (100.0f/timeToDeath);
+        Satiated -= delta * (100.0f/timeToDeath);
 
-        if(satiated <= 0.0f)
+        if(Satiated <= 0.0f)
         {
             Kill();
         }
@@ -157,7 +157,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
     private void DoAtmosphereEffects(float delta)
     {
-        Atmosphere atmosphere = (Atmosphere)(body.GetTree().GetRoot().GetNode(Game.ATMOSPHERE_PATH));
+        Atmosphere atmosphere = (Atmosphere)(Body.GetTree().GetRoot().GetNode(Game.ATMOSPHERE_PATH));
         if(!(atmosphere.GetGasProgress(Gas.OXYGEN) > oxygenThreshold && atmosphere.GetGasProgress(Gas.CARBON_DIOXIDE) > co2Threshold))
         {
             Kill(); 
@@ -213,7 +213,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
         if(state == null)
         {
-            if (breedingTimer > breedingThreshold && satiated > satiatedBreedThreshold)
+            if (breedingTimer > breedingThreshold && Satiated > satiatedBreedThreshold)
             {
                 PhysicsBody breedTarget = breedStrategy.ShouldBreedState();
                 if(breedTarget != null)
@@ -221,7 +221,7 @@ public class AnimalBehaviourComponent : BaseComponent
                     breedStrategy.StartState(breedTarget);
                 }
             }
-            else if (satiated < 80.0f)
+            else if (Satiated < 80.0f)
             {
                 PhysicsBody eatTarget = eatStrategy.ShouldEatState();
                 if (eatTarget != null)
