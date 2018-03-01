@@ -25,6 +25,7 @@ public class Game : Node
 
     public Game()
     {
+        breakables.Add(false);
         //Register blocks
         Game.RegisterBlock(new Stone(), true);
         Game.RegisterBlock(new RedRock(), true);
