@@ -26,39 +26,6 @@ public class Terrain : Spatial
 
     public WorldGenerator worldGenerator;
 
-    public const float ANIMAL_CHUNK_RANGE = 16.0f;
-
-    private int chunkNo = 0;
-
-    private Dictionary<string,int> CountAnimalsInChunk(IntVector2 chunkIndex)
-    {
-        Vector3 playerPos = player.GetTranslation();
-
-        Vector3 chunkCentre = (new Vector3(chunkIndex.x * Chunk.CHUNK_SIZE.x, Chunk.CHUNK_SIZE.y / 2.0f, chunkIndex.y * Chunk.CHUNK_SIZE.z) * Chunk.BLOCK_SIZE) + (new Vector3((Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE), 0, (Chunk.CHUNK_SIZE.y * Chunk.BLOCK_SIZE)) / 2.0f);      
-
-        Array bodies = ((Area)player.GetNode("AnimalArea")).GetOverlappingBodies();
-
-        Dictionary<string, int> count = new Dictionary<string, int>();
-
-        foreach (PhysicsBody body in bodies)
-        {
-            if (body.IsInGroup("animals"))
-            {
-                AnimalBehaviourComponent behaviour = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
-                if (!count.ContainsKey(behaviour.PresetName))
-                {
-                    count.Add(behaviour.PresetName,1);
-                }
-                else
-                {
-                    count[behaviour.PresetName]++;
-                }
-            }
-        }
-
-        return count;
-    } 
-
     public override void _Ready()
     {
         player = GetNode(Game.PLAYER_PATH) as Player;
@@ -106,43 +73,6 @@ public class Terrain : Spatial
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
             if (buildMesh)
                 chunksToUpdate.Enqueue(chunkIndex);
-        }
-
-        chunkNo++;
-
-        if(chunkNo == (int)ANIMAL_CHUNK_RANGE * 4) //4 is magic number to prevent overload
-        {
-            chunkNo = 0;
-            // Spawn animals
-            Vector3 playerPos = player.GetTranslation();
-            IntVector2 playerChunk = new IntVector2((int)(playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int)(playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
-            Dictionary<string, int> animalCount = CountAnimalsInChunk(playerChunk);
-
-            Random rand = new Random(); //reuse this if you are generating many
-
-
-
-            foreach (KeyValuePair<string, int> pair in animalCount)
-            {
-                //number to spawn
-                double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
-                double u2 = 1.0 - rand.NextDouble();
-                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
-                             Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-                double randNormal = (pair.Value + (pair.Value / 4.0f) * randStdNormal);
-
-                int number = (int)(Math.Max(0, Math.Round(randNormal / ANIMAL_CHUNK_RANGE)));
-
-                for (int i = 0; i < number; i++)
-                {
-                    double sexNum = rand.NextDouble();
-                    AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
-                    Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.CHUNK_SIZE.x, Chunk.CHUNK_SIZE.y / 2.0f, chunkIndex.y * Chunk.CHUNK_SIZE.z) * Chunk.BLOCK_SIZE);
-                    Vector3 chunkSize = Chunk.CHUNK_SIZE * Chunk.BLOCK_SIZE;
-                    Vector3 randomPosition = new Vector3(rand.Next(0, (int)chunkSize.x), 100.0f, rand.Next(0, (int)chunkSize.z));
-                    GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner").Call("SpawnAnimal", pair.Key, sex, chunkOrigin+randomPosition);
-                }
-            }
         }
     }
 
