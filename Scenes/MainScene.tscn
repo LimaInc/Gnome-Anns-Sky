@@ -200,9 +200,13 @@ script = ExtResource( 7 )
 
 script = ExtResource( 8 )
 
+<<<<<<< master
 [node name="Base" type="Node" parent="." index="4"]
 
 script = ExtResource( 9 )
+=======
+[node name="AnimalSpawner" parent="." index="4" instance=ExtResource( 9 )]
+>>>>>>> Add main scene and fix enum in spawner
 
 [node name="AnimalSpawner" parent="." index="5"]
 

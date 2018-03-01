@@ -56,11 +56,11 @@ public class AnimalSpawner : Node
         SpawnAnimal("animal0BD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(5.0f, 50.0f, 15.0f));
         SpawnAnimal("animal0BD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-5.0f, 50.0f, 15.0f));
 
-       // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 60.0f, 0.0f));
-       // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(2.0f, 50.0f, 0.0f));
+        // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 60.0f, 0.0f));
+        // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(2.0f, 50.0f, 0.0f));
 
-      //  SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-2.0f, 50.0f, -2.0f));
-        //SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(2.0f, 50.0f, -2.0f));
+        // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-2.0f, 50.0f, -2.0f));
+        // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(2.0f, 50.0f, -2.0f));
     }
 
     private void EatingDemo()
@@ -71,7 +71,6 @@ public class AnimalSpawner : Node
         SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 50.0f, 10.0f));
     }
 
-    
 
     public override void _Ready()
     {
@@ -169,7 +168,6 @@ public class AnimalSpawner : Node
         );
 
 
-
         presets.Add(male0);
         presets.Add(female0);
         presets.Add(maleFrog);
@@ -187,7 +185,6 @@ public class AnimalSpawner : Node
         BreedingDemo();
         EatingDemo(); */
         //HollisticDemo();
-        
     }
 
     private float time;
@@ -201,20 +198,20 @@ public class AnimalSpawner : Node
 
         if(time > 3.0f && !spawnedDemo)
         {
-            //HollisticDemo();
+            HollisticDemo();
             spawnedDemo = true;
         }
     }
 
-    public void SpawnAnimal(string presetName,AnimalBehaviourComponent.AnimalSex sex,Vector3 position)
+    public void SpawnAnimal(string presetName, AnimalBehaviourComponent.AnimalSex sex, Vector3 position)
     {
         //GD.Print("Spawning ", presetName);
 
         // Choose preset
         AnimalPreset preset = null;
-        foreach(AnimalPreset p in presets)
+        foreach (AnimalPreset p in presets)
         {
-            if(p.presetName.Equals(presetName) && p.sex == sex)
+            if (p.presetName.Equals(presetName) && p.sex == sex)
             {
                 preset = p;
                 break;
