@@ -98,7 +98,7 @@ public class BreedStrategy : BaseStrategy
                 {
                     if (breedingTimer > breedingThreshold)
                     {
-                        if (component.Sex == AnimalBehaviourComponent.Sex.Female)
+                        if (component.Sex == AnimalBehaviourComponent.AnimalSex.Female)
                         {
                             Node spawnNode = component.parent.GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner");
                             int nextSex = BaseComponent.random.Next(0, 2);
