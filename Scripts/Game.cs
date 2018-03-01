@@ -9,7 +9,8 @@ public class Game : Node
     public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
     public const string PLAYER_PATH = GAME_PATH + "/Player";
     public const string CAMERA_PATH = PLAYER_PATH+"/Camera";
-    public const string WORLD_ENVIRO_PATH = GAME_PATH + "/WorldEnvironment";
+    public const string PLANET_BASE_PATH = GAME_PATH + "/Base";
+    public const string WORLD_ENVIRO_PATH = GAME_PATH + "/PlanetEnvironment";
     public const string PLANTS_PATH = WORLD_ENVIRO_PATH + "/Plants";
     public const string ATMOSPHERE_PATH = WORLD_ENVIRO_PATH + "/Atmosphere";
     public const string BACTERIAL_STATE_PATH = WORLD_ENVIRO_PATH + "/BacterialState";
@@ -21,8 +22,6 @@ public class Game : Node
     // multiplicative factor for processes in the world (not directly affecting the player)
     public const int SPEED = 20;
     public const int PLANT_MAX_SPEED = 1; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
-
-    public PlanetEnvironment World {get; private set;}
 
     public Game()
     {
@@ -40,15 +39,13 @@ public class Game : Node
         Game.RegisterBlock(new GrassBlock(), false);
         Game.RegisterBlock(new TreeBlock(), false);
         Game.RegisterBlock(new LeafBlock(), false);
+        Game.RegisterBlock(new IceBlock(), true);
 
         Game.RegisterBlock(new HabitationBlock(), false);
         Game.RegisterBlock(new DefossiliserBlock(), false);
 
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
-
-        World = new PlanetEnvironment();
-        AddChild(World);
     }
 
     public static Texture TextureAtlas { get; private set; }

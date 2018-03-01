@@ -9,6 +9,6 @@ public class ItemPlant : Item
     {
         this.PlantType = plantType;
 
-        ItemStorage.RegisterBlockItem(blockFrom, itemTo);
+        ItemStorage.RegisterBlockItem(blockFrom, itemTo != null ? itemTo : this);
     }
 }

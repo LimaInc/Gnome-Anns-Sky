@@ -16,7 +16,8 @@ public class Defossiliser : Node
         new DefossiliserAction(ItemStorage.nitrogenBacteriaFossil, ItemStorage.nitrogenBacteriaVial, processingTime: 10),
         new DefossiliserAction(ItemStorage.carbonDioxideBacteriaFossil, ItemStorage.carbonDioxideBacteriaVial, processingTime: 7),
         new DefossiliserAction(ItemStorage.grassFossil, ItemStorage.grass, processingTime: 15),
-        new DefossiliserAction(ItemStorage.treeFossil, ItemStorage.tree, processingTime: 30)
+        new DefossiliserAction(ItemStorage.treeFossil, ItemStorage.tree, processingTime: 30),
+        new DefossiliserAction(ItemStorage.ice, ItemStorage.water, processingTime: 5, outItemCount: 2),
     };
 
     public Inventory OutInventory { get; private set; }
