@@ -145,6 +145,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
         if(Satiated <= 0.0f)
         {
+            
             Kill();
         }
     }
@@ -160,7 +161,7 @@ public class AnimalBehaviourComponent : BaseComponent
         Atmosphere atmosphere = (Atmosphere)(Body.GetTree().GetRoot().GetNode(Game.ATMOSPHERE_PATH));
         if(!(atmosphere.GetGasProgress(Gas.OXYGEN) > oxygenThreshold && atmosphere.GetGasProgress(Gas.CARBON_DIOXIDE) > co2Threshold))
         {
-            Kill(); 
+            //Kill(); 
         }
         else
         {
