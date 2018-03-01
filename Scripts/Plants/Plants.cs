@@ -4,17 +4,19 @@ using Godot;
 
 public class Plants : Node
 {
-    private Terrain terrain;
+    public Atmosphere atmosphere;
+    public Terrain terrain;
 
     private Dictionary<PlantType, PlantManager> plantManagers;
 
     public override void _Ready()
     {
+        atmosphere = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
         terrain = GetNode(Game.TERRAIN_PATH) as Terrain;
 
         plantManagers = new Dictionary<PlantType, PlantManager> {
-            [PlantType.GRASS] = new GrassManager(terrain),
-            [PlantType.TREE] = new TreeManager(terrain)
+            [PlantType.GRASS] = new GrassManager(this),
+            [PlantType.TREE] = new TreeManager(this)
         };
     }
 
@@ -30,6 +32,9 @@ public class Plants : Node
         // TODO: fix plants so that there is no reasonable limit to speedup
         delta *= Math.Min(Game.SPEED, Game.PLANT_MAX_SPEED);
         foreach (PlantManager plantManager in plantManagers.Values)
-            plantManager.Spread(delta);
+        {
+            plantManager.LifeCycle(delta);
+            plantManager.AdjustGases(delta);
+        }
     }
 }

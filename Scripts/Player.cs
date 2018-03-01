@@ -308,7 +308,7 @@ public class Player : KinematicBody
         }
         else if (i is ItemPlant p)
         {
-            IntVector3? blockPos = this.interaction.GetBlockUnderCursor();
+            IntVector3? blockPos = this.interaction.GetBlockPositionUnderCursor();
             if (blockPos.HasValue)
                 success = plants.Plant(p, blockPos.Value);
         }
