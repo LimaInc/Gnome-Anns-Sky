@@ -6,7 +6,7 @@ using System.Linq;
 public class Terrain : Spatial
 {
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
-    private Dictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>();
+    private Dictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>(); 
 
     public WorldGenerator worldGenerator = new WorldGenerator();
 
