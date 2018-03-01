@@ -26,23 +26,23 @@ public class Game : Node
     public Game()
     {
         //Register blocks
-        Game.RegisterBlock(new Stone());
-        Game.RegisterBlock(new RedRock());
+        Game.RegisterBlock(new Stone(), true);
+        Game.RegisterBlock(new RedRock(), true);
 
-        Game.RegisterBlock(new OxygenBacteriaFossilBlock());
-        Game.RegisterBlock(new NitrogenBacteriaFossilBlock());
-        Game.RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
-        Game.RegisterBlock(new GrassFossilBlock());
-        Game.RegisterBlock(new TreeFossilBlock());
-        Game.RegisterBlock(new AnimalFossilBlock());
+        Game.RegisterBlock(new OxygenBacteriaFossilBlock(), true);
+        Game.RegisterBlock(new NitrogenBacteriaFossilBlock(), true);
+        Game.RegisterBlock(new CarbonDioxideBacteriaFossilBlock(), true);
+        Game.RegisterBlock(new GrassFossilBlock(), true);
+        Game.RegisterBlock(new TreeFossilBlock(), true);
+        Game.RegisterBlock(new AnimalFossilBlock(), true);
 
-        Game.RegisterBlock(new GrassBlock());
-        Game.RegisterBlock(new TreeBlock());
-        Game.RegisterBlock(new LeafBlock());
-        Game.RegisterBlock(new IceBlock());
+        Game.RegisterBlock(new GrassBlock(), false);
+        Game.RegisterBlock(new TreeBlock(), false);
+        Game.RegisterBlock(new LeafBlock(), false);
+        Game.RegisterBlock(new IceBlock(), true);
 
-        Game.RegisterBlock(new HabitationBlock());
-        Game.RegisterBlock(new DefossiliserBlock());
+        Game.RegisterBlock(new HabitationBlock(), false);
+        Game.RegisterBlock(new DefossiliserBlock(), false);
 
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
@@ -54,6 +54,8 @@ public class Game : Node
     {
         { 0, null } //Air block (probably should be something more sensible than null)
     };
+
+    private static List<bool> breakables = new List<bool>();
 
     //UVs for all blocks
     private static Dictionary<byte, Rect2[]> blockUVs = new Dictionary<byte, Rect2[]>();
@@ -106,14 +108,20 @@ public class Game : Node
         }
     }
 
-    public static void RegisterBlock(Block block)
+    public static void RegisterBlock(Block block, bool breakable)
     {
+        breakables.Add(breakable);
         blocks[nextId++] = block;
     }
 
     public static Block GetBlock(byte id)
     {
         return blocks[id];
+    }
+
+    public static bool isBreakable(byte id)
+    {
+        return breakables[id];
     }
 
     public static byte GetBlockId<T>() where T : Block
