@@ -35,7 +35,7 @@ public class EatStrategy : BaseStrategy
 
     private bool IsFood(PhysicsBody n)
     {
-        switch ((Diet)component.diet)
+        switch ((Diet)component.Diet)
         {
             case Diet.Carnivore:
                 if (n.IsInGroup("animals"))
@@ -60,7 +60,7 @@ public class EatStrategy : BaseStrategy
         PhysicsBody otherBody = (PhysicsBody)args[0];
         AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
 
-        if (IsFood(otherBody) && behaviourComponent.foodChainLevel < component.foodChainLevel)
+        if (IsFood(otherBody) && behaviourComponent.FoodChainLevel < component.FoodChainLevel)
         {
             foodInRange.Add(otherBody);
         }
@@ -71,7 +71,7 @@ public class EatStrategy : BaseStrategy
         PhysicsBody otherBody = (PhysicsBody)args[0];
         AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
 
-        if (IsFood(otherBody) && behaviourComponent.foodChainLevel < component.foodChainLevel)
+        if (IsFood(otherBody) && behaviourComponent.FoodChainLevel < component.FoodChainLevel)
         {
             //List is implemented as an array, so could get expensive. Could change to HashMap.
             foodInRange.Remove(otherBody);
@@ -79,7 +79,7 @@ public class EatStrategy : BaseStrategy
     }
     private void eat(Godot.Object nom)
     {
-        component.satiated = Math.Max(100.0f, component.satiated + 20.0f);
+        component.Satiated = Math.Max(100.0f, component.Satiated + 20.0f);
         if (nom is PhysicsBody)
         {
             PhysicsBody otherBody = (PhysicsBody)nom;
@@ -98,13 +98,13 @@ public class EatStrategy : BaseStrategy
         {
             if (b == null) continue;
             // Identify whether we can see the target by raycasting
-            PhysicsDirectSpaceState spaceState = component.body.GetWorld().GetDirectSpaceState();
-            var result = spaceState.IntersectRay(component.body.GetTranslation(), b.GetTranslation(), new[] { component.body, b });
+            PhysicsDirectSpaceState spaceState = component.Body.GetWorld().GetDirectSpaceState();
+            var result = spaceState.IntersectRay(component.Body.GetTranslation(), b.GetTranslation(), new[] { component.Body, b });
 
             if (result.Count == 0)
             {
                 found = true;
-                float distanceSquared = component.body.GetTranslation().DistanceSquaredTo(b.GetTranslation());
+                float distanceSquared = component.Body.GetTranslation().DistanceSquaredTo(b.GetTranslation());
                 if (distanceSquared < minDistanceSquared)
                 {
                     minDistanceSquared = distanceSquared;
@@ -148,15 +148,15 @@ public class EatStrategy : BaseStrategy
         {
             // Check for line of sight and whether object is still in range.
             PhysicsDirectSpaceState spaceState = target.GetWorld().GetDirectSpaceState();
-            var result = spaceState.IntersectRay(target.GetTranslation(), component.body.GetTranslation(), new[] { component.body, target });
-            float distanceSquared = target.GetTranslation().DistanceSquaredTo(component.body.GetTranslation());
+            var result = spaceState.IntersectRay(target.GetTranslation(), component.Body.GetTranslation(), new[] { component.Body, target });
+            float distanceSquared = target.GetTranslation().DistanceSquaredTo(component.Body.GetTranslation());
             if (result.Count != 0 || distanceSquared > 60 * 60)
             {
                 active = false;
             }
             else
             {
-                Vector3 direction = target.GetTranslation() - component.body.GetTranslation();
+                Vector3 direction = target.GetTranslation() - component.Body.GetTranslation();
                 component.parent.SendMessage("setDirection", new Vector2(direction.x, direction.z));
             }
         }

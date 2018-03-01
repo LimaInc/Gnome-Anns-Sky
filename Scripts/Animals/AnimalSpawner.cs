@@ -189,7 +189,7 @@ public class AnimalSpawner : Node
         */
     }
 
-    public void SpawnAnimal(string presetName,AnimalBehaviourComponent.Sex sex,Vector3 position)
+    public void SpawnAnimal(string presetName,AnimalBehaviourComponent.AnimalSex sex,Vector3 position)
     {
         // Choose preset
         AnimalPreset preset = null;
@@ -224,7 +224,7 @@ public class AnimalSpawner : Node
         //TEMP: No food for frogs yet, so make sure they can breed immediately.
         if (presetName == "frog")
         {
-            behaviourComponent.satiated = 100;
+            behaviourComponent.Satiated = 100;
         }
     }
 }

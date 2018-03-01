@@ -66,7 +66,7 @@ public class BreedStrategy : BaseStrategy
     {
         PhysicsBody body = (PhysicsBody)args[0];
         AnimalBehaviourComponent behaviourComponent = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
-        if (behaviourComponent.presetName.Equals(component.presetName) && behaviourComponent.sex != component.sex)
+        if (behaviourComponent.PresetName.Equals(component.PresetName) && behaviourComponent.Sex != component.Sex)
         {
             breedableTargets.Add(body);
         }
@@ -76,7 +76,7 @@ public class BreedStrategy : BaseStrategy
     {
         PhysicsBody body = (PhysicsBody)args[0];
         AnimalBehaviourComponent behaviourComponent = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
-        if(behaviourComponent.presetName.Equals(component.presetName) && behaviourComponent.sex != component.sex)
+        if(behaviourComponent.PresetName.Equals(component.PresetName) && behaviourComponent.Sex != component.Sex)
         {
             breedableTargets.Remove(body);
         }
@@ -98,12 +98,12 @@ public class BreedStrategy : BaseStrategy
                 {
                     if (breedingTimer > breedingThreshold)
                     {
-                        if (component.sex == AnimalBehaviourComponent.Sex.Female)
+                        if (component.Sex == AnimalBehaviourComponent.Sex.Female)
                         {
                             Node spawnNode = component.parent.GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner");
                             int nextSex = BaseComponent.random.Next(0, 2);
-                            spawnNode.Call("SpawnAnimal", component.presetName, (AnimalBehaviourComponent.Sex)nextSex, component.body.GetTranslation() + new Vector3(0.0f, 20.0f, 0.0f));
-                            component.satiated -= 20.0f;
+                            spawnNode.Call("SpawnAnimal", component.PresetName, (AnimalBehaviourComponent.AnimalSex)nextSex, component.Body.GetTranslation() + new Vector3(0.0f, 20.0f, 0.0f));
+                            component.Satiated -= 20.0f;
                         }
                         active = false;
                     }
@@ -132,9 +132,9 @@ public class BreedStrategy : BaseStrategy
         {
             if (!active || state == BreedState.ApproachingTarget)
             {
-                if (component.satiated < satiatedThreshold) return;
+                if (component.Satiated < satiatedThreshold) return;
                 int n = BaseComponent.random.Next(0, 100);
-                if (n < component.breedability)
+                if (n < component.Breedability)
                 {
                     ((Entity)otherBody.GetNode("Entity")).SendMessage("acceptBreed");
                     target = otherBody;
@@ -159,7 +159,7 @@ public class BreedStrategy : BaseStrategy
 
     public PhysicsBody ShouldBreedState()
     {
-        if(component.satiated > satiatedThreshold)
+        if(component.Satiated > satiatedThreshold)
         {
             //only attempt breed if there is a breedable target in sight
             PhysicsBody found = null;
@@ -169,7 +169,7 @@ public class BreedStrategy : BaseStrategy
                 if (body == null) continue;
                 // Identify whether we can see the target by raycasting
                 PhysicsDirectSpaceState spaceState = body.GetWorld().GetDirectSpaceState();
-                var result = spaceState.IntersectRay(component.body.GetTranslation(), body.GetTranslation(), new[] { component.body, body });
+                var result = spaceState.IntersectRay(component.Body.GetTranslation(), body.GetTranslation(), new[] { component.Body, body });
 
                 if (result.Count == 0)
                 {
@@ -182,7 +182,7 @@ public class BreedStrategy : BaseStrategy
 
             int n = BaseComponent.random.Next(0, 100);
 
-            if (n < component.breedability)
+            if (n < component.Breedability)
             {
                 return found;
             }
@@ -201,14 +201,14 @@ public class BreedStrategy : BaseStrategy
 
         if (state == BreedState.ApproachingTarget)
         {
-            Vector3 direction = target.GetTranslation() - component.body.GetTranslation();
+            Vector3 direction = target.GetTranslation() - component.Body.GetTranslation();
             component.parent.SendMessage("setDirection", new Vector2(direction.x, direction.z));
 
             float distanceSquared = direction.LengthSquared();
             if (distanceSquared <= 30 * 30)
             {
                 SetState(BreedState.WaitingForResponse);
-                ((Entity)target.GetNode("Entity")).SendMessage("breedingRequest", component.body);                
+                ((Entity)target.GetNode("Entity")).SendMessage("breedingRequest", component.Body);                
             }
         }
         else if (state == BreedState.WaitingForResponse)
@@ -223,12 +223,12 @@ public class BreedStrategy : BaseStrategy
         }
         else if (state == BreedState.GoingForBreed)
         {
-            Vector3 direction = target.GetTranslation() - component.body.GetTranslation();
+            Vector3 direction = target.GetTranslation() - component.Body.GetTranslation();
             component.parent.SendMessage("setDirection", new Vector2(direction.x, direction.z));
         }
         else if (state == BreedState.Breeding)
         {
-            Vector3 direction = target.GetTranslation() - component.body.GetTranslation();
+            Vector3 direction = target.GetTranslation() - component.Body.GetTranslation();
             component.parent.SendMessage("setDirection", new Vector2(direction.x, direction.z));
             breedingTimer += delta;
 
