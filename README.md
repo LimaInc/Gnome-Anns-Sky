@@ -17,7 +17,7 @@
     git clone https://github.com/LimaInc/SustainableCraft.git
     ````
     * Note this will clone the project into your current working directory, so put it somewhere sensible.
-    * If you are using a GitHub Desktop, the clone button on the repository page should open your client a clone the repository.
+    * If you are using a GitHub Desktop, the clone button on the repository page should open your client and clone the repository.
 * Start up Godot
     * Run the Godot_v3.0-stable_mono_etc file which you downloaded
 * Open the project in Godot
