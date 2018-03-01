@@ -57,7 +57,7 @@ public class Terrain : Spatial
         }
 
         return count;
-    } 
+    }
 
     public override void _Ready()
     {
@@ -110,7 +110,9 @@ public class Terrain : Spatial
 
         chunkNo++;
 
-        if(chunkNo == (int)ANIMAL_CHUNK_RANGE * 4) //4 is magic number to prevent overload
+        //We take data from ANIMAL_CHUNK_RANGE closest chunks to player, throw it in a normal distribution, and generate animals from the dist.
+        //We can't handle so many animals, though, so currently only generate animals in one in every ANIMAL_CHUNK_RANGE * 4 chunks (so 1/4 the expected amount).
+        if(chunkNo == (int)ANIMAL_CHUNK_RANGE * 4)
         {
             chunkNo = 0;
             // Spawn animals
@@ -118,9 +120,7 @@ public class Terrain : Spatial
             IntVector2 playerChunk = new IntVector2((int)(playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int)(playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
             Dictionary<string, int> animalCount = CountAnimalsInChunk(playerChunk);
 
-            Random rand = new Random(); //reuse this if you are generating many
-
-
+            Random rand = new Random();
 
             foreach (KeyValuePair<string, int> pair in animalCount)
             {

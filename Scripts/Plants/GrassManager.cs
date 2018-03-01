@@ -68,13 +68,15 @@ public class GrassManager : PlantManager
         {
             blocksToChange[idx++] = Tuple.Create(blockPos, grassBlock);
 
-            PhysicsBody physicsBody = new KinematicBody();
-            physicsBody.SetTranslation(blockPos);
-
             CollisionShape collisionShape = new CollisionShape();
             BoxShape b = new BoxShape();
-            b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f));
-            collisionShape.SetShape(b);
+            b.SetExtents(new Vector3(Chunk.BLOCK_SIZE, 0.2f, Chunk.BLOCK_SIZE) / 2.0f);
+            collisionShape.SetShape(b); 
+
+            PhysicsBody physicsBody = new StaticBody();
+            physicsBody.AddToGroup("plants");
+            physicsBody.AddToGroup("alive");
+            physicsBody.SetTranslation(blockPos * Chunk.BLOCK_SIZE + new Vector3(Chunk.BLOCK_SIZE, Chunk.BLOCK_SIZE, Chunk.BLOCK_SIZE) / 2.0f);
 
             physicsBody.AddChild(collisionShape);
 

@@ -22,6 +22,7 @@ public class EatStrategy : BaseStrategy
     {
         base.StartState(args);
         target = (PhysicsBody)args[0];
+        GD.Print("Food state started! Target: ", target.GetName());
     }
 
     public override void Ready()
@@ -58,23 +59,41 @@ public class EatStrategy : BaseStrategy
     public void ObjectInRange(object[] args)
     {
         PhysicsBody otherBody = (PhysicsBody)args[0];
-        AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
 
-        if (IsFood(otherBody) && behaviourComponent.FoodChainLevel < component.FoodChainLevel)
+        if (otherBody.IsInGroup("animals"))
         {
-            foodInRange.Add(otherBody);
+            AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+            if (IsFood(otherBody) && behaviourComponent.FoodChainLevel < component.FoodChainLevel)
+            {
+                foodInRange.Add(otherBody);
+            }
+        }
+        else
+        {
+            if (IsFood(otherBody))
+            {
+                foodInRange.Add(otherBody);
+            }
         }
     }
 
     public void ObjectOutOfRange(object[] args)
     {
         PhysicsBody otherBody = (PhysicsBody)args[0];
-        AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
-
-        if (IsFood(otherBody) && behaviourComponent.FoodChainLevel < component.FoodChainLevel)
+        if (otherBody.IsInGroup("animals"))
         {
-            //List is implemented as an array, so could get expensive. Could change to HashMap.
-            foodInRange.Remove(otherBody);
+            AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+            if (IsFood(otherBody) && behaviourComponent.FoodChainLevel < component.FoodChainLevel)
+            {
+                foodInRange.Remove(otherBody);
+            }
+        }
+        else
+        {
+            if (IsFood(otherBody))
+            {
+                foodInRange.Remove(otherBody);
+            }
         }
     }
     private void eat(Godot.Object nom)
@@ -83,8 +102,16 @@ public class EatStrategy : BaseStrategy
         if (nom is PhysicsBody)
         {
             PhysicsBody otherBody = (PhysicsBody)nom;
-            AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
-            behaviourComponent.Kill();
+            if (otherBody.IsInGroup("animals"))
+            {
+                AnimalBehaviourComponent behaviourComponent = ((Entity)otherBody.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+                behaviourComponent.Kill();
+            }
+            else if (otherBody.IsInGroup("plants"))
+            {
+                otherBody.QueueFree();
+                otherBody.RemoveFromGroup("alive");
+            }
         }
         active = false;
     }
@@ -128,6 +155,7 @@ public class EatStrategy : BaseStrategy
 
             if (target != null && collision.Collider.Equals(target))
             {
+                GD.Print("Collided with food!");
                 eat(collision.Collider);
             }
         }

@@ -112,7 +112,7 @@ public class Interaction : Camera
 
     public byte GetBlock()
     {
-        IntVector3? blockPossible = this.GetBlockUnderCursor();
+        IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
         if (blockPossible.HasValue)
         {
             IntVector3 blockPos = blockPossible.Value;
