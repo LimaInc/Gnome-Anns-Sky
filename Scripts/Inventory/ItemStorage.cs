@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class ItemStorage
 {
     public enum ItemID : byte {
-        RED_ROCK, STONE_BLOCK,
+        RED_ROCK, STONE_BLOCK, ICE,
         OXYGEN_BACTERIA_FOSSIL, NITROGEN_BACTERIA_FOSSIL, CARBON_DIOXIDE_BACTERIA_FOSSIL,
         GRASS_FOSSIL, TREE_FOSSIL, ANIMAL_FOSSIL,
         OXYGEN_BACTERIA_VIAL, NITROGEN_BACTERIA_VIAL, CARBON_DIOXIDE_BACTERIA_VIAL,
@@ -17,6 +17,8 @@ public class ItemStorage
 
     private static Texture RED_ROCK_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemRedRock.png") as Texture;
     public static Item redRock = new ItemBlock((byte)ItemID.RED_ROCK, "Red Rock", RED_ROCK_TEX, Game.GetBlockId<RedRock>()).SetStackable(true);
+    private static Texture ICE_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemIce.png") as Texture;
+    public static Item ice = new ItemBlock((byte)ItemID.ICE, "Ice", ICE_TEX, Game.GetBlockId<IceBlock>()).SetStackable(true);
 
     private static Texture CHOCOLATE_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemChocolate.png") as Texture;
     public static Item chocolate = new ItemFood((byte)ItemID.CHOCOLATE, "Chocolate", CHOCOLATE_TEX, 0.2f);
