@@ -99,22 +99,9 @@ public class Player : KinematicBody
 
         InventoryGUI = new InventoryGUI(this, Inventories, this);
 
-
-        this.AddItem(ItemStorage.redRock, 20);
-        this.AddItem(ItemStorage.redRock, 15);
-        this.AddItem(ItemStorage.redRock, 34);
-
         this.AddItem(ItemStorage.cake, 3);
         this.AddItem(ItemStorage.chocolate, 10);
         this.AddItem(ItemStorage.water, 5);
-
-        this.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
-        this.AddItem(ItemStorage.oxygenBacteriaFossil, 5);
-        this.AddItem(ItemStorage.nitrogenBacteriaFossil, 15);
-        this.AddItem(ItemStorage.carbonDioxideBacteriaFossil, 15);
-
-        this.AddItem(ItemStorage.grassFossil, 10);
-        this.AddItem(ItemStorage.treeFossil, 10);
     }
 
     private void AddItem(Item i, int n)

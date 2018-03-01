@@ -8,6 +8,17 @@ public class Terrain : Spatial
     public const int AVERAGE_HEIGHT = 55;
     public const int HEIGHT_SPREAD = 128;
     public const int RED_ROCK_LAYER_NUM = 3;
+    public const int FOSSIL_DEPTH = RED_ROCK_LAYER_NUM;
+
+    public readonly IList<UniformFossilGenerator> fossilGenerators = new List<UniformFossilGenerator>()
+    {
+        new UniformFossilGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.001f),
+        new UniformFossilGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.0005f),
+        new UniformFossilGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.004f),
+        new UniformFossilGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
+        new UniformFossilGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
+        new UniformFossilGenerator(Game.GetBlockId<AnimalFossilBlock>(), FOSSIL_DEPTH, 0.0015f)
+    };
 
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
     private IDictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>();
@@ -28,6 +39,10 @@ public class Terrain : Spatial
         b.InitGeneration();
         worldGenerator.terrainModifiers.Add(b.Smoothing);
         worldGenerator.generators.Add(b.Generator);
+        foreach(UniformFossilGenerator g in fossilGenerators)
+        {
+            worldGenerator.generators.Add(g);
+        }
     }
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
