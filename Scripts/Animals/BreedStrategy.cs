@@ -65,20 +65,26 @@ public class BreedStrategy : BaseStrategy
     public void ObjectInRange(object[] args)
     {
         PhysicsBody body = (PhysicsBody)args[0];
-        AnimalBehaviourComponent behaviourComponent = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
-        if (behaviourComponent.PresetName.Equals(component.PresetName) && behaviourComponent.Sex != component.Sex)
+        if (body.IsInGroup("animals"))
         {
-            breedableTargets.Add(body);
+            AnimalBehaviourComponent behaviourComponent = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+            if (behaviourComponent.PresetName.Equals(component.PresetName) && behaviourComponent.Sex != component.Sex)
+            {
+                breedableTargets.Add(body);
+            }
         }
     }
 
     public void ObjectOutOfRange(object[] args)
     {
         PhysicsBody body = (PhysicsBody)args[0];
-        AnimalBehaviourComponent behaviourComponent = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
-        if(behaviourComponent.PresetName.Equals(component.PresetName) && behaviourComponent.Sex != component.Sex)
+        if (body.IsInGroup("animals"))
         {
-            breedableTargets.Remove(body);
+            AnimalBehaviourComponent behaviourComponent = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+            if (behaviourComponent.PresetName.Equals(component.PresetName) && behaviourComponent.Sex != component.Sex)
+            {
+                breedableTargets.Remove(body);
+            }
         }
     }
 

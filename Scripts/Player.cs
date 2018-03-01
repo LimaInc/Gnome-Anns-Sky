@@ -113,6 +113,10 @@ public class Player : KinematicBody
         this.AddItem(ItemStorage.cake, 3);
         this.AddItem(ItemStorage.chocolate, 10);
         this.AddItem(ItemStorage.water, 5);
+        this.AddItem(ItemStorage.grass, 10); //TEMP
+        this.AddItem(ItemStorage.nitrogenBacteriaVial, 3); //TEMP
+        this.AddItem(ItemStorage.carbonDioxideBacteriaVial, 3); //TEMP
+
     }
 
     private void AddItem(Item i, int n)

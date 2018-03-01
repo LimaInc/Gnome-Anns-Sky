@@ -9,13 +9,13 @@ public class AnimalSpawner : Node
 
     private void HollisticDemo()
     {
-        SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 50.0f, 4.0f));
-        SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(0.0f, 50.0f, 20.0f));
+       // SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 50.0f, 4.0f));
+        //SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(0.0f, 50.0f, 20.0f));
 
-        SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(10.0f, 50.0f, 0.0f));
-        SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-10.0f, 50.0f, 0.0f));
+     //   SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(10.0f, 50.0f, 0.0f));
+       // SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-10.0f, 50.0f, 0.0f));
 
-        SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 60.0f, 20.0f));
+        /*SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 60.0f, 20.0f));
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(0.0f, 50.0f, 4.0f));
 
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-5.0f, 50.0f, 20.0f));
@@ -35,7 +35,7 @@ public class AnimalSpawner : Node
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(0.0f, 55.0f, 4.0f));
 
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-5.0f, 55.0f, 20.0f));
-        SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(5.0f, 55.0f, 20.0f));
+        SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(5.0f, 55.0f, 20.0f));*/
 
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(0.0f, 55.0f, 25.0f));
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 65.0f, 15.0f));
@@ -46,8 +46,8 @@ public class AnimalSpawner : Node
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(0.0f, 55.0f, 25.0f));
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 65.0f, 4.0f));
 
-        SpawnAnimal("big", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 50.0f, 40.0f));
-        SpawnAnimal("big", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(40.0f, 50.0f, 0.0f));
+    //    SpawnAnimal("big", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 50.0f, 40.0f));
+      //  SpawnAnimal("big", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(40.0f, 50.0f, 0.0f));
 
     }
 
@@ -236,11 +236,5 @@ public class AnimalSpawner : Node
         kb.SetTranslation(position);
 
         AddChild(kb);
-
-        //TEMP: No food for frogs yet, so make sure they can breed immediately.
-        if (presetName == "frog")
-        {
-            behaviourComponent.Satiated = 100;
-        }
     }
 }
