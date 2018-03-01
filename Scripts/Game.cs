@@ -40,6 +40,7 @@ public class Game : Node
         Game.RegisterBlock(new GrassBlock());
         Game.RegisterBlock(new TreeBlock());
         Game.RegisterBlock(new LeafBlock());
+        Game.RegisterBlock(new IceBlock());
 
         Game.RegisterBlock(new HabitationBlock());
         Game.RegisterBlock(new DefossiliserBlock());
