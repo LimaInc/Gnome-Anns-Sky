@@ -7,6 +7,7 @@ public class Terrain : Spatial
 {
     public const int AVERAGE_HEIGHT = 55;
     public const int HEIGHT_SPREAD = 128;
+    public const int SEA_LEVEL = 30;
     public const int RED_ROCK_LAYER_NUM = 3;
     public const int FOSSIL_DEPTH = RED_ROCK_LAYER_NUM;
 
@@ -33,16 +34,19 @@ public class Terrain : Spatial
         worldGenerator.terrainModifiers.Add(new HillLandscapeTM(AVERAGE_HEIGHT, HEIGHT_SPREAD));
         worldGenerator.generators.Add(new RockGenerator(RED_ROCK_LAYER_NUM));
 
+        foreach(UniformFossilGenerator g in fossilGenerators)
+        {
+            worldGenerator.generators.Add(g);
+        }
+
         Base b = GetNode(Game.PLANET_BASE_PATH) as Base;
         Vector2 horizontalBasePos = new Vector2(b.position.x, b.position.z);
         b.position = new IntVector3(b.position.x, worldGenerator.GetHeightAt(horizontalBasePos) - 1, b.position.z);
         b.InitGeneration();
         worldGenerator.terrainModifiers.Add(b.Smoothing);
         worldGenerator.generators.Add(b.Generator);
-        foreach(UniformFossilGenerator g in fossilGenerators)
-        {
-            worldGenerator.generators.Add(g);
-        }
+
+        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
     }
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize

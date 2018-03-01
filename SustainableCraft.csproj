@@ -78,6 +78,7 @@
     <Compile Include="Scripts\Blocks\RedRock.cs" />
     <Compile Include="Scripts\Blocks\TreeBlock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
+    <Compile Include="Scripts\Blocks\IceBlock.cs" />
     <Compile Include="Scripts\Fossils\Defossiliser.cs" />
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\Game.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="Scripts\World\WorldGeneration\BaseGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\ITerrainModifier.cs" />
     <Compile Include="Scripts\World\WorldGeneration\HillLandscapeTM.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\IceGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\UniformFossilGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\SmoothingTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\RockGenerator.cs" />
