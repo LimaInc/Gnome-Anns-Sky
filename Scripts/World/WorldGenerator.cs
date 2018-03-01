@@ -7,6 +7,7 @@ public class WorldGenerator
 
     private readonly byte stoneId = Game.GetBlockId<Stone>();
     private readonly byte grassId = Game.GetBlockId<RedRock>();
+    private readonly byte iceId = Game.GetBlockId<IceBlock>();
     private readonly byte habId = Game.GetBlockId<HabitationBlock>();
     private readonly byte defossiliserId = Game.GetBlockId<DefossiliserBlock>();
     private readonly byte airId = 0;
@@ -15,6 +16,8 @@ public class WorldGenerator
     private static float SIGMOID_PARAM_B = 4.9f;
 
     private static float STARTING_HEIGHT = 55.0f;
+
+    private static int SEA_LEVEL = 30;
 
     public static float BASE_RADIUS = 8.0f;
     public static float BASE_RADIUS_SQRD = BASE_RADIUS * BASE_RADIUS;
@@ -44,7 +47,9 @@ public class WorldGenerator
 
                 for(int j = 0; j < sY; j++)
                 {
-                    if(j < weighted)
+                    if(j < SEA_LEVEL)
+                        chunk[i,j,k] = iceId;
+                    else if(j < weighted)
                         chunk[i,j,k] = stoneId;
                     else if(j < weighted + GRASS_HEIGHT) //3 layers of grass on top of stone
                         chunk[i,j,k] = grassId;
