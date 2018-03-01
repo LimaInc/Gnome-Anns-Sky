@@ -1,5 +1,6 @@
 public class GrassBlock : CubeBlock
 {
+    public override bool Breakable { get { return true; } }
     public override string[] TexturePaths { get {
             return new[] {
                 Game.BLOCK_TEXTURE_PATH + "grassTop.png",
