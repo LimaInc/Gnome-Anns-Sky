@@ -46,6 +46,8 @@ public class Player : KinematicBody
 
     private Game game;
 
+    private Base planetBase;
+
     private bool dead;
 
     public const int PLAYER_INVENTORY_COUNT = 40;
@@ -56,7 +58,11 @@ public class Player : KinematicBody
 
     public override void _Ready()
     {
+        GD.Print("In _Ready() of Player");
+
         game = GetNode(Game.GAME_PATH) as Game;
+
+        planetBase = GetNode(Game.PLANET_BASE_PATH) as Base;
 
         Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
@@ -369,7 +375,7 @@ public class Player : KinematicBody
         
         Vector3 position = this.GetTranslation();
 
-        if (position.x * position.x + position.z * position.z < WorldGenerator.BASE_RADIUS_SQRD)
+        if (planetBase.IsGlobalPositionInside(position))
         {
             this.ReplenishAir(BASE_AIR_REGEN * delta);
         }

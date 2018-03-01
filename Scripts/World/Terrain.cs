@@ -6,9 +6,17 @@ using System.Linq;
 public class Terrain : Spatial
 {
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
-    private Dictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>();
+    private IDictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>();
 
-    public WorldGenerator worldGenerator = new WorldGenerator();
+    public WorldGenerator worldGenerator;
+
+    public override void _Ready()
+    {
+        GD.Print("In _Ready() of Terrain");
+        player = GetNode(Game.PLAYER_PATH) as Player;
+        Base b = GetNode(Game.PLANET_BASE_PATH) as Base;
+        worldGenerator = new WorldGenerator(b.SmoothingGenerator, new RockGenerator(), b.Generator);
+    }
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
     private void CreateChunk(IntVector2 chunkIndex, bool buildMesh)
@@ -67,18 +75,16 @@ public class Terrain : Spatial
         }
     }
 
-    public override void _Ready()
-    {
-        player = GetNode(Game.PLAYER_PATH) as Player;
-    }
-
     Player player;
     int chunkLoadRadius = 8;
 
     Vector3 playerPosLastUpdate = new Vector3(-50, -50, -50); //Forces update on first frame
     float updateDistance = 10;
+
     public override void _Process(float delta)
-    {  
+    {
+        GD.Print("In _Process() of Terrain");
+
         //Update visible chunks only when the player has moved a certain distance
         Vector3 playerPos = player.GetTranslation();
         if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))

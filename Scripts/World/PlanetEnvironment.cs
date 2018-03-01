@@ -13,9 +13,15 @@ public class PlanetEnvironment : WorldEnvironment
     // animals
     // plantlife
     // terrain
+    
+    public PlanetEnvironment()
+    {
+        GD.Print("In constructor of PlanetEnvironment");
+    }
 
     public override void _Ready()
     {
+        GD.Print("In _Ready() of PlanetEnvironment");
         Atmosphere = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
         Bacteria = GetNode(Game.BACTERIAL_STATE_PATH) as BacterialState;
         this.Atmosphere.Init(new GasEscapingAC(), new ColorMixingAC());

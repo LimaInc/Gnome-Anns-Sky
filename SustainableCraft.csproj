@@ -115,6 +115,7 @@
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\Util\InputUtil.cs" />
     <Compile Include="Scripts\Util\MathUtil.cs" />
+    <Compile Include="Scripts\World\Base.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Util\CMYKColor.cs" />
     <Compile Include="Scripts\Util\Colors.cs" />
@@ -123,9 +124,13 @@
     <Compile Include="Scripts\Util\Noise.cs" />
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
     <Compile Include="Scripts\Util\TextureManager.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\IGenerator.cs" />
     <Compile Include="Scripts\World\PlanetEnvironment.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
-    <Compile Include="Scripts\World\WorldGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\BaseGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\SmoothingGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\RockGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\WorldGenerator.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -9,6 +9,7 @@ public class Game : Node
     public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
     public const string PLAYER_PATH = GAME_PATH + "/Player";
     public const string CAMERA_PATH = PLAYER_PATH+"/Camera";
+    public const string PLANET_BASE_PATH = GAME_PATH + "/Base";
     public const string WORLD_ENVIRO_PATH = GAME_PATH + "/WorldEnvironment";
     public const string PLANTS_PATH = WORLD_ENVIRO_PATH + "/Plants";
     public const string ATMOSPHERE_PATH = WORLD_ENVIRO_PATH + "/Atmosphere";
@@ -26,6 +27,9 @@ public class Game : Node
 
     public Game()
     {
+        GD.Print("In constructor of Game");
+
+
         //Register blocks
         Game.RegisterBlock(new Stone());
         Game.RegisterBlock(new RedRock());
@@ -44,11 +48,15 @@ public class Game : Node
         Game.RegisterBlock(new HabitationBlock());
         Game.RegisterBlock(new DefossiliserBlock());
 
+        GD.Print("Blocks registered");
+
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
 
         World = new PlanetEnvironment();
         AddChild(World);
+
+        GD.Print("planet environment created and added");
     }
 
     public static Texture TextureAtlas { get; private set; }
