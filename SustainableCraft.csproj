@@ -114,6 +114,7 @@
     <Compile Include="Scripts\Plants\PlantType.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\Util\InputUtil.cs" />
+    <Compile Include="Scripts\Util\MathUtil.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Util\CMYKColor.cs" />
     <Compile Include="Scripts\Util\Colors.cs" />

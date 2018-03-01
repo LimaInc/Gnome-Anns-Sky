@@ -94,4 +94,14 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
     {
         return new Vector2(v.x, v.y);
     }
+
+    public float Length()
+    {
+        return Mathf.Sqrt(this.LengthSquared());
+    }
+
+    public float LengthSquared()
+    {
+        return x * x + y * y;
+    }
 }

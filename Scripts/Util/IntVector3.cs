@@ -95,6 +95,17 @@ public struct IntVector3 : IEquatable<IntVector3> //Used for chunk/block positio
         return y.GetHashCode() ^ x.GetHashCode() ^ z.GetHashCode();
     }
 
+    public float Length()
+    {
+        return Mathf.Sqrt(this.LengthSquared());
+    }
+
+    public float LengthSquared()
+    {
+        return x*x + y*y + z*z;
+    }
+
+
     public override string ToString()
     {
         return String.Format("({0}, {1}, {2})", this.x.ToString(), this.y.ToString(), this.z.ToString());

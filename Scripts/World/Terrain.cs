@@ -13,28 +13,26 @@ public class Terrain : Spatial
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
     private void CreateChunk(IntVector2 chunkIndex, bool buildMesh)
     {
-        Tuple<Chunk, bool, bool> tuple;
-
-        if(loadedChunks.TryGetValue(chunkIndex, out tuple)) //Chunk already created
+        if (loadedChunks.TryGetValue(chunkIndex, out Tuple<Chunk, bool, bool> tuple)) //Chunk already created
         {
-            if(buildMesh && !tuple.Item2) //But maybe we need to build a mesh for it?
+            if (buildMesh && !tuple.Item2) //But maybe we need to build a mesh for it?
             {
                 loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(tuple.Item1, true, tuple.Item3);
                 chunksToUpdate.Enqueue(chunkIndex);
             }
 
-            if(!tuple.Item3) // If node not created, but it is in memory
+            if (!tuple.Item3) // If node not created, but it is in memory
             {
                 tuple.Item1.Visible = true;
             }
         }
         else
         {
-            byte[,,] blocks = worldGenerator.GetChunk(chunkIndex.x, chunkIndex.y, Chunk.CHUNK_SIZE.x, Chunk.CHUNK_SIZE.y, Chunk.CHUNK_SIZE.z);
+            byte[,,] blocks = worldGenerator.GetChunk(chunkIndex, Chunk.CHUNK_SIZE);
             Chunk chunk = new Chunk(this, chunkIndex, blocks);
             this.AddChild(chunk);
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
-            if(buildMesh)
+            if (buildMesh)
                 chunksToUpdate.Enqueue(chunkIndex);
         }
     }
@@ -61,8 +59,7 @@ public class Terrain : Spatial
 
         IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.CHUNK_SIZE);
 
-        Tuple<Chunk, bool, bool> tuple;
-        if(loadedChunks.TryGetValue(chunkIndex, out tuple))
+        if (loadedChunks.TryGetValue(chunkIndex, out Tuple<Chunk, bool, bool> tuple))
             return tuple.Item1.GetBlockInChunk(positionInChunk);
         else //Should only happen when outside chunks are checking for adjacent blocks
         {

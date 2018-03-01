@@ -20,7 +20,8 @@ public class BacterialState : Node
         bacteriaTypes = new Dictionary<BacteriumType, Bacteria>();
         foreach(BacteriumType bt in Enum.GetValues(typeof(BacteriumType)))
         {
-            bacteriaTypes[bt] = new Bacteria(bt, bInits[bt].Item1, bInits[bt].Item2, bInits[bt].Item3, bInits[bt].Item4);
+            bacteriaTypes[bt] = new Bacteria(bt, amt: bInits[bt].Item1, optimal: bInits[bt].Item2, 
+                growthRate: bInits[bt].Item3, productionRate: bInits[bt].Item4);
         }
         foreach (BacterialStateComponent cmp in components)
         {

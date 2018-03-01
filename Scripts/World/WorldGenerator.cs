@@ -5,84 +5,125 @@ public class WorldGenerator
 {
     OctaveNoise noise = new OctaveNoise(16);
 
-    private readonly byte stoneId = Game.GetBlockId<Stone>();
-    private readonly byte grassId = Game.GetBlockId<RedRock>();
-    private readonly byte habId = Game.GetBlockId<HabitationBlock>();
-    private readonly byte defossiliserId = Game.GetBlockId<DefossiliserBlock>();
-    private readonly byte airId = 0;
+    private readonly byte STONE_ID = Game.GetBlockId<Stone>();
+    private readonly byte RED_ROCK_ID = Game.GetBlockId<RedRock>();
+    private readonly byte HAB_ID = Game.GetBlockId<HabitationBlock>();
+    private readonly byte DEFOSSILISER_ID = Game.GetBlockId<DefossiliserBlock>();
+    private const byte AIR_ID = 0;
 
-    private static float SIGMOID_PARAM_A = -40.0f;
-    private static float SIGMOID_PARAM_B = 4.9f;
+    private const float SMOOTHING_AT_BASE_CENTER = 0.999f;
+    private const float SMOOTHING_AT_BASE_RADIUS = 0.99f;
 
-    private static float STARTING_HEIGHT = 55.0f;
+    private static readonly float SIGMOID_PARAM_B = 
+        Mathf.Log(SMOOTHING_AT_BASE_CENTER / (1 - SMOOTHING_AT_BASE_CENTER));
+    private static readonly float SIGMOID_PARAM_A = 
+        (Mathf.Log(SMOOTHING_AT_BASE_RADIUS / (1 - SMOOTHING_AT_BASE_RADIUS)) - SIGMOID_PARAM_B) / BASE_RADIUS;
 
-    public static float BASE_RADIUS = 8.0f;
-    public static float BASE_RADIUS_SQRD = BASE_RADIUS * BASE_RADIUS;
+    public const int RED_ROCK_HEIGHT = 3;
 
-    public static int GRASS_HEIGHT = 3;
+    public const float BASE_RADIUS = 8;
+    public const int BASE_ENTRANCE_DEPTH = 2;
+    public const int BASE_FLOOR_HEIGHT = RED_ROCK_HEIGHT - 1;
+    public const float BASE_RADIUS_SQRD = BASE_RADIUS * BASE_RADIUS;
 
-    public byte[,,] GetChunk(int x, int z, int sX, int sY, int sZ)
+    public static readonly IntVector2 BASE_XZ_POSITION = new IntVector2(-(int)BASE_RADIUS, 0);
+    private const int BASE_Y_POSITION = 55;
+
+    // with respect to the base
+    public static readonly IntVector3 DEFOSSILISER_LOCAL_POSITION = new IntVector3(0, BASE_FLOOR_HEIGHT + 1, 2 - (int) BASE_RADIUS);
+
+    public byte[,,] GetChunk(IntVector2 chunkIndex, IntVector3 chunkSize)
     {
-        byte[,,] chunk = new byte[sX, sY, sZ];
+        byte[,,] chunk = new byte[chunkSize.x, chunkSize.y, chunkSize.z];
 
-        for(int i = 0; i < sX; i++)
+        // TODO: might be useful to somehow persistently associate this with chunk
+        int[,] chunkTerrainHeight = GetChunkTerrainHeight(chunkIndex, chunkSize);
+
+        GenerateRocks(chunk, chunkTerrainHeight, chunkIndex, chunkSize);
+        GenerateBase(chunk, chunkTerrainHeight, chunkIndex, chunkSize);
+
+        return chunk;
+    }
+
+    private int[,] GetChunkTerrainHeight(IntVector2 chunkIndex, IntVector3 chunkSize)
+    {
+        int[,] chunkHeight = new int[chunkSize.x, chunkSize.z];
+
+        for (int i = 0; i < chunkSize.x; i++)
         {
-            for(int k = 0; k < sZ; k++)
+            for (int k = 0; k < chunkSize.z; k++)
             {
-                int wx = x * sX + i;
-                int wz = z * sZ + k;
+                IntVector2 worldCoords = new IntVector2(chunkIndex.x * chunkSize.x + i, chunkIndex.y * chunkSize.z + k);
 
-                float xs = wx / 256.0f;
-                float zs = wz / 256.0f;
-                float height = noise.sample(xs, zs) * 128.0f + STARTING_HEIGHT;
+                Vector2 fractionalCoords = (Vector2)worldCoords / 256;
 
-                float centreDist = (float) Math.Sqrt(xs * xs + zs * zs);
+                float height = noise.Sample(fractionalCoords.x, fractionalCoords.y) * 128 + BASE_Y_POSITION;
 
-                float sigmoidSample = Sigmoid(centreDist, SIGMOID_PARAM_A, SIGMOID_PARAM_B);
+                // by letting sigmoidSample ~= 0 for small centreDist and 1 otherwise
+                // creates a plateau where the base is
+                float baseDist = (worldCoords - BASE_XZ_POSITION).Length();
+                float sigmoidSample = MathUtil.Sigmoid(baseDist, SIGMOID_PARAM_A, SIGMOID_PARAM_B);
+                float weighted = sigmoidSample * BASE_Y_POSITION + (1 - sigmoidSample) * height;
 
-                float weighted = sigmoidSample * STARTING_HEIGHT + (1 - sigmoidSample) * height;
+                chunkHeight[i, k] = (int)weighted;
+            }
+        }
 
-                for(int j = 0; j < sY; j++)
+        return chunkHeight;
+    }
+
+    private void GenerateRocks(byte[,,] chunk, int[,] chunkTerrainHeight, IntVector2 chunkIndex, IntVector3 chunkSize)
+    {
+        for (int i = 0; i < chunkSize.x; i++)
+        {
+            for (int k = 0; k < chunkSize.z; k++)
+            {
+                for (int j = 0; j < chunkSize.y; j++)
                 {
-                    if(j < weighted)
-                        chunk[i,j,k] = stoneId;
-                    else if(j < weighted + GRASS_HEIGHT) //3 layers of grass on top of stone
-                        chunk[i,j,k] = grassId;
+                    if (j <= chunkTerrainHeight[i,k])
+                        chunk[i, j, k] = STONE_ID;
+                    else if (j <= chunkTerrainHeight[i, k] + RED_ROCK_HEIGHT)
+                        chunk[i, j, k] = RED_ROCK_ID;
+                }
+            }
+        }
+    }
 
-                    float startAdjustedY = j - STARTING_HEIGHT;
-                    if ((Math.Abs(wx) < BASE_RADIUS || 
-                        Math.Abs(startAdjustedY) < BASE_RADIUS || 
-                        Math.Abs(wz) < BASE_RADIUS) && 
-                        wx < BASE_RADIUS - GRASS_HEIGHT)
+    private void GenerateBase(byte[,,] chunk, int[,] chunkTerrainHeight, IntVector2 chunkIndex, IntVector3 chunkSize)
+    {
+        for (int i = 0; i < chunkSize.x; i++)
+        {
+            for (int k = 0; k < chunkSize.z; k++)
+            {
+                IntVector2 worldCoords = new IntVector2(chunkIndex.x * chunkSize.x + i, chunkIndex.y * chunkSize.z + k);
+                IntVector2 localCoords = worldCoords - BASE_XZ_POSITION;
+
+                for (int baseY = BASE_FLOOR_HEIGHT; baseY <= BASE_RADIUS; baseY++)
+                {
+                    int j = baseY + BASE_Y_POSITION;
+
+                    if (localCoords.LengthSquared() < BASE_RADIUS_SQRD && localCoords.x < BASE_RADIUS - BASE_ENTRANCE_DEPTH)
                     {
-                        float blockSphereDist = (float) Math.Sqrt(wx * wx + startAdjustedY * startAdjustedY + wz * wz);
-                        if (blockSphereDist < BASE_RADIUS && startAdjustedY > GRASS_HEIGHT - 1)
+                        IntVector3 local3DCoords = new IntVector3(localCoords.x, baseY, localCoords.y);
+                        float blockSphereDist = local3DCoords.Length();
+                        // prepare space for base
+                        if (blockSphereDist < BASE_RADIUS)
                         {
-                            chunk[i, j, k] = airId;
+                            chunk[i, j, k] = AIR_ID;
                         }
-                        if (Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5f && startAdjustedY > GRASS_HEIGHT - 1)
+                        // generate base walls (floor and dome) 
+                        if (baseY == BASE_FLOOR_HEIGHT || Math.Abs(blockSphereDist - BASE_RADIUS) < 0.5)
                         {
-                            chunk[i,j,k] = habId;
+                            chunk[i, j, k] = HAB_ID;
                         }
-                        if (wx * wx + wz * wz < BASE_RADIUS_SQRD)
+                        // generate defossiliser
+                        if (local3DCoords == DEFOSSILISER_LOCAL_POSITION)
                         {
-                            if (Math.Abs(j - (weighted + GRASS_HEIGHT - 1)) < 0.5f)
-                            {
-                                chunk[i,j,k] = habId;
-                            }
+                            chunk[i, j, k] = DEFOSSILISER_ID;
                         }
                     }
                 }
             }
         }
-        if(x==0 && z==-1)
-            chunk[0, (int)STARTING_HEIGHT + GRASS_HEIGHT, sZ - (int)BASE_RADIUS + 2] = defossiliserId;
-
-        return chunk;
-    }
-
-    public float Sigmoid(float x, float a, float b)
-    {
-        return (float) Math.Exp(a * x + b) / (1.0f + (float) Math.Exp(a * x + b));
     }
 }
