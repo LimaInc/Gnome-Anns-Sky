@@ -56,10 +56,10 @@ public class AnimalSpawner : Node
         SpawnAnimal("animal0BD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(5.0f, 50.0f, 15.0f));
         SpawnAnimal("animal0BD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-5.0f, 50.0f, 15.0f));
 
-        // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 60.0f, 0.0f));
-        // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(2.0f, 50.0f, 0.0f));
+       // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 60.0f, 0.0f));
+       // SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(2.0f, 50.0f, 0.0f));
 
-        //  SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-2.0f, 50.0f, -2.0f));
+      //  SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(-2.0f, 50.0f, -2.0f));
         //SpawnAnimal("frogBD", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(2.0f, 50.0f, -2.0f));
     }
 
@@ -71,7 +71,7 @@ public class AnimalSpawner : Node
         SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 50.0f, 10.0f));
     }
 
-
+    
 
     public override void _Ready()
     {
@@ -80,7 +80,7 @@ public class AnimalSpawner : Node
         // For now, hardcode presets
         AnimalPreset male0 = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://scenes/MaleAnimal0.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/MaleAnimal0.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             10,
             90,
@@ -89,7 +89,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset female0 = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://scenes/FemaleAnimal0.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleAnimal0.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             10,
             90,
@@ -98,7 +98,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset maleFrog = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://scenes/MaleFrog.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/MaleFrog.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             90,
@@ -107,7 +107,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset femaleFrog = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://scenes/FemaleFrog.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleFrog.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             90,
@@ -116,7 +116,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset maleBig = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://scenes/MaleBig.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/MaleBig.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Omnivore,
             100,
             20,
@@ -125,7 +125,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset femaleBig = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://scenes/FemaleBig.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleBig.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Omnivore,
             100,
             20,
@@ -134,7 +134,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset maleFrogBD = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://scenes/MaleFrog.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/MaleFrog.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             80,
@@ -143,7 +143,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset femaleFrogBD = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://scenes/FemaleFrog.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleFrog.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             80,
@@ -152,7 +152,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset male0BD = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://scenes/MaleAnimal0.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/MaleAnimal0.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             1,
             80,
@@ -161,7 +161,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset female0BD = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://scenes/FemaleAnimal0.tscn"),
+            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleAnimal0.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             1,
             80,
@@ -169,7 +169,7 @@ public class AnimalSpawner : Node
         );
 
 
-            
+
         presets.Add(male0);
         presets.Add(female0);
         presets.Add(maleFrog);
@@ -182,6 +182,12 @@ public class AnimalSpawner : Node
         presets.Add(maleFrogBD);
         presets.Add(femaleFrogBD);
 
+        //Code for demos.
+        /*
+        BreedingDemo();
+        EatingDemo(); */
+        //HollisticDemo();
+        
     }
 
     private float time;
@@ -193,22 +199,22 @@ public class AnimalSpawner : Node
 
         time += delta;
 
-        if (time > 3.0f && !spawnedDemo)
+        if(time > 3.0f && !spawnedDemo)
         {
-            HollisticDemo();
+            //HollisticDemo();
             spawnedDemo = true;
         }
     }
 
-    public void SpawnAnimal(string presetName, AnimalBehaviourComponent.AnimalSex sex, Vector3 position)
+    public void SpawnAnimal(string presetName,AnimalBehaviourComponent.AnimalSex sex,Vector3 position)
     {
         //GD.Print("Spawning ", presetName);
 
         // Choose preset
         AnimalPreset preset = null;
-        foreach (AnimalPreset p in presets)
+        foreach(AnimalPreset p in presets)
         {
-            if (p.presetName.Equals(presetName) && p.sex == sex)
+            if(p.presetName.Equals(presetName) && p.sex == sex)
             {
                 preset = p;
                 break;
