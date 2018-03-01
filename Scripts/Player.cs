@@ -273,7 +273,6 @@ public class Player : KinematicBody
     {
         if (!DEBUG_DEATH_ENABLED) 
         {
-            GD.Print("Tried to kill player, but death is disabled");
             return;
         }
 
