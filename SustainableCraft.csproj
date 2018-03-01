@@ -61,7 +61,6 @@
     <Compile Include="Scripts\Animals\EatStrategy.cs" />
     <Compile Include="Scripts\Animals\Entity.cs" />
     <Compile Include="Scripts\Animals\PhysicsComponent.cs" />
-    <Compile Include="Scripts\Animals\Pig.cs" />
     <Compile Include="Scripts\Atmosphere\Atmosphere.cs" />
     <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
     <Compile Include="Scripts\Atmosphere\ColorMixingAC.cs" />
@@ -92,11 +91,6 @@
     <Compile Include="Scripts\Blocks\TreeBlock.cs" />
     <Compile Include="Scripts\Fossils\Defossiliser.cs" />
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
-    <Compile Include="Scripts\GUI\GUI.cs" />
-    <Compile Include="Scripts\GUI\GUIBox.cs" />
-    <Compile Include="Scripts\GUI\GUIHorizontalBar.cs" />
-    <Compile Include="Scripts\GUI\GUIInventorySlot.cs" />
-    <Compile Include="Scripts\GUI\GUIObject.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIBox.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIComplexObject.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIFloatingSlot.cs" />
@@ -112,9 +106,6 @@
     <Compile Include="Scripts\GUI\GUIStandalone\GUI.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\InventoryGUI.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\PlayerGUI.cs" />
-    <Compile Include="Scripts\GUI\GUIVerticalBar.cs" />
-    <Compile Include="Scripts\GUI\InventoryGUI.cs" />
-    <Compile Include="Scripts\GUI\PlayerGUI.cs" />
     <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\Interaction.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
@@ -155,7 +146,6 @@
     <Compile Include="Scripts\World\WorldGeneration\SmoothingTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\UniformFossilGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\WorldGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".mono\assemblies\GodotSharp.dll" />
