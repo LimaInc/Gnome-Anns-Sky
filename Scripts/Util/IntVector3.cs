@@ -92,8 +92,19 @@ public struct IntVector3 : IEquatable<IntVector3> //Used for chunk/block positio
 
     public override int GetHashCode()
     {
-        return y.GetHashCode() ^ x.GetHashCode() ^ z.GetHashCode();
+        return 31 * (31 * y.GetHashCode() + x.GetHashCode()) + z.GetHashCode();
     }
+
+    public float Length()
+    {
+        return Mathf.Sqrt(this.LengthSquared());
+    }
+
+    public float LengthSquared()
+    {
+        return x*x + y*y + z*z;
+    }
+
 
     public override string ToString()
     {

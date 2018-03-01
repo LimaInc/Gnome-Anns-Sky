@@ -77,7 +77,7 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
 
     public override int GetHashCode()
     {
-        return y.GetHashCode() ^ x.GetHashCode();
+        return 31 * y.GetHashCode() + x.GetHashCode();
     }
 
     public override string ToString()
@@ -93,5 +93,15 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
     public static explicit operator Vector2(IntVector2 v)
     {
         return new Vector2(v.x, v.y);
+    }
+
+    public float Length()
+    {
+        return Mathf.Sqrt(this.LengthSquared());
+    }
+
+    public float LengthSquared()
+    {
+        return x * x + y * y;
     }
 }

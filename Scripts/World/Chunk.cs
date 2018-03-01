@@ -62,12 +62,14 @@ public class Chunk : Spatial
 
     public void UpdateMesh()
     {
-        System.Threading.Thread thread = new System.Threading.Thread(() => 
+        System.Threading.Thread thread = new System.Threading.Thread(() =>
         {
             GenerateSurface();
             generationFinished = true;
-        });
-        thread.Priority = System.Threading.ThreadPriority.Lowest;
+        })
+        {
+            Priority = System.Threading.ThreadPriority.Lowest
+        };
         thread.Start();
     }
 

@@ -5,10 +5,26 @@ using System.Linq;
 
 public class Terrain : Spatial
 {
-    //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
-    private Dictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>(); 
+    public const int AVERAGE_HEIGHT = 55;
+    public const int HEIGHT_SPREAD = 128;
+    public const int SEA_LEVEL = 30;
+    public const int RED_ROCK_LAYER_NUM = 3;
+    public const int FOSSIL_DEPTH = RED_ROCK_LAYER_NUM;
 
-    public WorldGenerator worldGenerator = new WorldGenerator();
+    public readonly IList<UniformFossilGenerator> fossilGenerators = new List<UniformFossilGenerator>()
+    {
+        new UniformFossilGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.001f),
+        new UniformFossilGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.0005f),
+        new UniformFossilGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.004f),
+        new UniformFossilGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
+        new UniformFossilGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
+        new UniformFossilGenerator(Game.GetBlockId<AnimalFossilBlock>(), FOSSIL_DEPTH, 0.0015f)
+    };
+
+    //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
+    private IDictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>();
+
+    public WorldGenerator worldGenerator;
 
     public const float ANIMAL_CHUNK_RANGE = 16.0f;
 
@@ -43,31 +59,52 @@ public class Terrain : Spatial
         return count;
     } 
 
+    public override void _Ready()
+    {
+        player = GetNode(Game.PLAYER_PATH) as Player;
+
+        worldGenerator = new WorldGenerator();
+        worldGenerator.terrainModifiers.Add(new HillLandscapeTM(AVERAGE_HEIGHT, HEIGHT_SPREAD));
+        worldGenerator.generators.Add(new RockGenerator(RED_ROCK_LAYER_NUM));
+
+        foreach(UniformFossilGenerator g in fossilGenerators)
+        {
+            worldGenerator.generators.Add(g);
+        }
+
+        Base b = GetNode(Game.PLANET_BASE_PATH) as Base;
+        Vector2 horizontalBasePos = new Vector2(b.position.x, b.position.z);
+        b.position = new IntVector3(b.position.x, worldGenerator.GetHeightAt(horizontalBasePos) - 1, b.position.z);
+        b.InitGeneration();
+        worldGenerator.terrainModifiers.Add(b.Smoothing);
+        worldGenerator.generators.Add(b.Generator);
+
+        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
+    }
+
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
     private void CreateChunk(IntVector2 chunkIndex, bool buildMesh)
     {
-        Tuple<Chunk, bool, bool> tuple;
-
-        if(loadedChunks.TryGetValue(chunkIndex, out tuple)) //Chunk already created
+        if (loadedChunks.TryGetValue(chunkIndex, out Tuple<Chunk, bool, bool> tuple)) //Chunk already created
         {
-            if(buildMesh && !tuple.Item2) //But maybe we need to build a mesh for it?
+            if (buildMesh && !tuple.Item2) //But maybe we need to build a mesh for it?
             {
                 loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(tuple.Item1, true, tuple.Item3);
                 chunksToUpdate.Enqueue(chunkIndex);
             }
 
-            if(!tuple.Item3) // If node not created, but it is in memory
+            if (!tuple.Item3) // If node not created, but it is in memory
             {
                 tuple.Item1.Visible = true;
             }
         }
         else
         {
-            byte[,,] blocks = worldGenerator.GetChunk(chunkIndex.x, chunkIndex.y, Chunk.CHUNK_SIZE.x, Chunk.CHUNK_SIZE.y, Chunk.CHUNK_SIZE.z);
+            byte[,,] blocks = worldGenerator.GetChunk(chunkIndex, Chunk.CHUNK_SIZE);
             Chunk chunk = new Chunk(this, chunkIndex, blocks);
             this.AddChild(chunk);
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
-            if(buildMesh)
+            if (buildMesh)
                 chunksToUpdate.Enqueue(chunkIndex);
         }
 
@@ -131,8 +168,7 @@ public class Terrain : Spatial
 
         IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.CHUNK_SIZE);
 
-        Tuple<Chunk, bool, bool> tuple;
-        if(loadedChunks.TryGetValue(chunkIndex, out tuple))
+        if (loadedChunks.TryGetValue(chunkIndex, out Tuple<Chunk, bool, bool> tuple))
             return tuple.Item1.GetBlockInChunk(positionInChunk);
         else //Should only happen when outside chunks are checking for adjacent blocks
         {
@@ -140,18 +176,14 @@ public class Terrain : Spatial
         }
     }
 
-    public override void _Ready()
-    {
-        player = GetNode(Game.PLAYER_PATH) as Player;
-    }
-
     Player player;
     int chunkLoadRadius = 8;
 
     Vector3 playerPosLastUpdate = new Vector3(-50, -50, -50); //Forces update on first frame
     float updateDistance = 10;
+
     public override void _Process(float delta)
-    {  
+    {
         //Update visible chunks only when the player has moved a certain distance
         Vector3 playerPos = player.GetTranslation();
         if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))
@@ -262,8 +294,6 @@ public class Terrain : Spatial
         new IntVector2[] { new IntVector2(0, 10), new IntVector2(-1, 9), new IntVector2(1, 9), new IntVector2(-2, 8), new IntVector2(2, 8), new IntVector2(-3, 7), new IntVector2(3, 7), new IntVector2(-4, 6), new IntVector2(4, 6), new IntVector2(-5, 5), new IntVector2(5, 5), new IntVector2(-6, 4), new IntVector2(6, 4), new IntVector2(-7, 3), new IntVector2(7, 3), new IntVector2(-8, 2), new IntVector2(8, 2), new IntVector2(-9, 1), new IntVector2(9, 1), new IntVector2(-10, 0), new IntVector2(-9, -1), new IntVector2(-8, -2), new IntVector2(-7, -3), new IntVector2(-6, -4), new IntVector2(-5, -5), new IntVector2(-4, -6), new IntVector2(-3, -7), new IntVector2(-2, -8), new IntVector2(-1, -9), new IntVector2(10, 0), new IntVector2(9, -1), new IntVector2(8, -2), new IntVector2(7, -3), new IntVector2(6, -4), new IntVector2(5, -5), new IntVector2(4, -6), new IntVector2(3, -7), new IntVector2(2, -8), new IntVector2(1, -9), new IntVector2(0, -10), },
         new IntVector2[] { new IntVector2(0, 11), new IntVector2(-1, 10), new IntVector2(1, 10), new IntVector2(-2, 9), new IntVector2(2, 9), new IntVector2(-3, 8), new IntVector2(3, 8), new IntVector2(-4, 7), new IntVector2(4, 7), new IntVector2(-5, 6), new IntVector2(5, 6), new IntVector2(-6, 5), new IntVector2(6, 5), new IntVector2(-7, 4), new IntVector2(7, 4), new IntVector2(-8, 3), new IntVector2(8, 3), new IntVector2(-9, 2), new IntVector2(9, 2), new IntVector2(-10, 1), new IntVector2(10, 1), new IntVector2(-11, 0), new IntVector2(-10, -1), new IntVector2(-9, -2), new IntVector2(-8, -3), new IntVector2(-7, -4), new IntVector2(-6, -5), new IntVector2(-5, -6), new IntVector2(-4, -7), new IntVector2(-3, -8), new IntVector2(-2, -9), new IntVector2(-1, -10), new IntVector2(11, 0), new IntVector2(10, -1), new IntVector2(9, -2), new IntVector2(8, -3), new IntVector2(7, -4), new IntVector2(6, -5), new IntVector2(5, -6), new IntVector2(4, -7), new IntVector2(3, -8), new IntVector2(2, -9), new IntVector2(1, -10), new IntVector2(0, -11), },
    };
-
-
     
     private void UpdateVisibleChunks()
     {

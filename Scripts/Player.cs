@@ -41,22 +41,29 @@ public class Player : KinematicBody
 
     public static float MAX_HUNGER = 1.0f;
     public float CurrentHunger { get; set; } = MAX_HUNGER;
-
-    private Interaction interaction;
-
-    private Game game;
-
+    
     private bool dead;
 
     public const int PLAYER_INVENTORY_COUNT = 40;
 
     public IDictionary<Item.Type, Inventory> Inventories { get; private set; }
-    private Plants plants;
+
+    private Interaction interaction;
+    private Base planetBase;
     private Atmosphere atmosphere;
+    private Plants plants;
+    private BacterialState bacteria;
+
+
+    private static readonly Vector3 PLAYER_INITIAL_POSITION = new Vector3(0, 60, 0);
 
     public override void _Ready()
     {
-        game = GetNode(Game.GAME_PATH) as Game;
+        interaction = GetNode(Game.CAMERA_PATH) as Interaction;
+        planetBase = GetNode(Game.PLANET_BASE_PATH) as Base;
+        atmosphere = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
+        plants = GetNode(Game.PLANTS_PATH) as Plants;
+        bacteria = GetNode(Game.BACTERIAL_STATE_PATH) as BacterialState;
 
         Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
@@ -74,14 +81,10 @@ public class Player : KinematicBody
 
         collisionShape = new CollisionShape();
 
-
-
-        //OLD BoxShape collision 
+        // OLD BoxShape collision 
         BoxShape b = new BoxShape();
         b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
         collisionShape.SetShape(b);
-
-        interaction = GetNode(Game.CAMERA_PATH) as Interaction;
 
         // CapsuleShape c = new CapsuleShape();
         // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
@@ -90,15 +93,13 @@ public class Player : KinematicBody
         // collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
 
         this.AddChild(collisionShape);
-        this.SetTranslation(new Vector3(0.0f,40.0f,0.0f));
+        this.SetTranslation(PLAYER_INITIAL_POSITION);
 
         myCam = (Camera) this.GetChild(0);
         myCam.SetTranslation(camOffset);
         
         playerGUI = new PlayerGUI(this);
         this.AddChild(playerGUI);
-
-        plants = GetNode(Game.PLANTS_PATH) as Plants;
 
         Inventories = new Dictionary<Item.Type, Inventory>
         {
@@ -109,24 +110,9 @@ public class Player : KinematicBody
 
         InventoryGUI = new InventoryGUI(this, Inventories, this);
 
-
-        this.AddItem(ItemStorage.redRock, 20);
-        this.AddItem(ItemStorage.redRock, 15);
-        this.AddItem(ItemStorage.redRock, 34);
-
         this.AddItem(ItemStorage.cake, 3);
         this.AddItem(ItemStorage.chocolate, 10);
         this.AddItem(ItemStorage.water, 5);
-
-        this.AddItem(ItemStorage.oxygenBacteriaFossil, 10);
-        this.AddItem(ItemStorage.oxygenBacteriaFossil, 5);
-        this.AddItem(ItemStorage.nitrogenBacteriaFossil, 15);
-        this.AddItem(ItemStorage.carbonDioxideBacteriaFossil, 15);
-
-        this.AddItem(ItemStorage.grassFossil, 10);
-        this.AddItem(ItemStorage.treeFossil, 10);
-
-        this.atmosphere = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
     }
 
     private void AddItem(Item i, int n)
@@ -339,9 +325,8 @@ public class Player : KinematicBody
         }
         else if (i is ItemBacteriaVial vial)
         {
-            game.World.Bacteria.TryGetBacteria(vial.BacteriaType(), out Bacteria bacteria);
-            bacteria.AddAmt(vial.Amount);
-            success = true;
+            success = bacteria.TryGetBacteria(vial.BacteriaType(), out Bacteria bacterium);
+            bacterium?.AddAmt(vial.Amount);
         }
 
         if (success)
@@ -382,7 +367,7 @@ public class Player : KinematicBody
         
         Vector3 position = this.GetTranslation();
 
-        if (position.x * position.x + position.z * position.z < WorldGenerator.BASE_RADIUS_SQRD)
+        if (planetBase.IsGlobalPositionInside(position))
         {
             this.ReplenishAir(BASE_AIR_REGEN * delta);
         }
