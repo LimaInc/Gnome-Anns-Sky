@@ -70,7 +70,7 @@ public class ItemStorage
     public static Item grass = new ItemPlant((byte) ItemID.GRASS, "Grass", GRASS_TEX, PlantType.GRASS, Game.GetBlockId<GrassBlock>(), redRock).SetStackable(true);
 
     private static Texture TREE_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemTree.png") as Texture;
-    public static Item tree = new ItemPlant((byte) ItemID.TREE, "Tree", TREE_TEX, PlantType.TREE, Game.GetBlockId<TreeBlock>(), redRock /* TODO: change to tree */).SetStackable(true);
+    public static Item tree = new ItemPlant((byte) ItemID.TREE, "Tree", TREE_TEX, PlantType.TREE, Game.GetBlockId<TreeBlock>(), null /* TODO: change to tree */).SetStackable(true);
 
     public static void RegisterBlockItem(byte id, Item item)
     {
