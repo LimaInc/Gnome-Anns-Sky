@@ -18,7 +18,7 @@ public class Atmosphere : Node
     public float Pressure { get; private set; }
     public float Temperature { get; private set; }
 
-    internal void Init(params AtmosphericComponent[] components)
+    public Atmosphere()
     {
         Temperature = DEFAULT_TEMPERATURE;
         gases = new Dictionary<Gas, float>();
@@ -26,7 +26,11 @@ public class Atmosphere : Node
         {
             gases[g] = 0;
         }
-        foreach (AtmosphericComponent cmp in components)
+    }
+
+    public void AddComponents(params AtmosphericComponent[] components)
+    {
+        foreach(AtmosphericComponent cmp in components)
         {
             this.AddChild(cmp);
         }

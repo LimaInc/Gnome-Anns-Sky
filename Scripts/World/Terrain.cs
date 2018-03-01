@@ -5,6 +5,10 @@ using System.Linq;
 
 public class Terrain : Spatial
 {
+    public const int AVERAGE_HEIGHT = 55;
+    public const int HEIGHT_SPREAD = 128;
+    public const int RED_ROCK_LAYER_NUM = 3;
+
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
     private IDictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>();
 
@@ -12,10 +16,18 @@ public class Terrain : Spatial
 
     public override void _Ready()
     {
-        GD.Print("In _Ready() of Terrain");
         player = GetNode(Game.PLAYER_PATH) as Player;
+
+        worldGenerator = new WorldGenerator();
+        worldGenerator.terrainModifiers.Add(new HillLandscapeTM(AVERAGE_HEIGHT, HEIGHT_SPREAD));
+        worldGenerator.generators.Add(new RockGenerator(RED_ROCK_LAYER_NUM));
+
         Base b = GetNode(Game.PLANET_BASE_PATH) as Base;
-        worldGenerator = new WorldGenerator(b.SmoothingGenerator, new RockGenerator(), b.Generator);
+        Vector2 horizontalBasePos = new Vector2(b.position.x, b.position.z);
+        b.position = new IntVector3(b.position.x, worldGenerator.GetHeightAt(horizontalBasePos) - 1, b.position.z);
+        b.InitGeneration();
+        worldGenerator.terrainModifiers.Add(b.Smoothing);
+        worldGenerator.generators.Add(b.Generator);
     }
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
@@ -83,8 +95,6 @@ public class Terrain : Spatial
 
     public override void _Process(float delta)
     {
-        GD.Print("In _Process() of Terrain");
-
         //Update visible chunks only when the player has moved a certain distance
         Vector3 playerPos = player.GetTranslation();
         if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))
@@ -195,8 +205,6 @@ public class Terrain : Spatial
         new IntVector2[] { new IntVector2(0, 10), new IntVector2(-1, 9), new IntVector2(1, 9), new IntVector2(-2, 8), new IntVector2(2, 8), new IntVector2(-3, 7), new IntVector2(3, 7), new IntVector2(-4, 6), new IntVector2(4, 6), new IntVector2(-5, 5), new IntVector2(5, 5), new IntVector2(-6, 4), new IntVector2(6, 4), new IntVector2(-7, 3), new IntVector2(7, 3), new IntVector2(-8, 2), new IntVector2(8, 2), new IntVector2(-9, 1), new IntVector2(9, 1), new IntVector2(-10, 0), new IntVector2(-9, -1), new IntVector2(-8, -2), new IntVector2(-7, -3), new IntVector2(-6, -4), new IntVector2(-5, -5), new IntVector2(-4, -6), new IntVector2(-3, -7), new IntVector2(-2, -8), new IntVector2(-1, -9), new IntVector2(10, 0), new IntVector2(9, -1), new IntVector2(8, -2), new IntVector2(7, -3), new IntVector2(6, -4), new IntVector2(5, -5), new IntVector2(4, -6), new IntVector2(3, -7), new IntVector2(2, -8), new IntVector2(1, -9), new IntVector2(0, -10), },
         new IntVector2[] { new IntVector2(0, 11), new IntVector2(-1, 10), new IntVector2(1, 10), new IntVector2(-2, 9), new IntVector2(2, 9), new IntVector2(-3, 8), new IntVector2(3, 8), new IntVector2(-4, 7), new IntVector2(4, 7), new IntVector2(-5, 6), new IntVector2(5, 6), new IntVector2(-6, 5), new IntVector2(6, 5), new IntVector2(-7, 4), new IntVector2(7, 4), new IntVector2(-8, 3), new IntVector2(8, 3), new IntVector2(-9, 2), new IntVector2(9, 2), new IntVector2(-10, 1), new IntVector2(10, 1), new IntVector2(-11, 0), new IntVector2(-10, -1), new IntVector2(-9, -2), new IntVector2(-8, -3), new IntVector2(-7, -4), new IntVector2(-6, -5), new IntVector2(-5, -6), new IntVector2(-4, -7), new IntVector2(-3, -8), new IntVector2(-2, -9), new IntVector2(-1, -10), new IntVector2(11, 0), new IntVector2(10, -1), new IntVector2(9, -2), new IntVector2(8, -3), new IntVector2(7, -4), new IntVector2(6, -5), new IntVector2(5, -6), new IntVector2(4, -7), new IntVector2(3, -8), new IntVector2(2, -9), new IntVector2(1, -10), new IntVector2(0, -11), },
    };
-
-
     
     private void UpdateVisibleChunks()
     {

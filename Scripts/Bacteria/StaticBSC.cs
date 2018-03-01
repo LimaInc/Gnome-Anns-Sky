@@ -1,6 +1,6 @@
 public class StaticBSC : BacterialStateComponent
 {
-    public void Update(float delta, PlanetEnvironment w, BacterialState bs)
+    public override void _PhysicsProcess(float delta)
     {
         bs.TryGetBacteria(BacteriumType.OXYGEN, out Bacteria bOxy);
         bs.TryGetBacteria(BacteriumType.NITROGEN, out Bacteria bNito);

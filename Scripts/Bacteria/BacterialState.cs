@@ -15,14 +15,18 @@ public class BacterialState : Node
 
     private IDictionary<BacteriumType,Bacteria> bacteriaTypes;
 
-    public void Init(params BacterialStateComponent[] components)
+    public BacterialState()
     {
         bacteriaTypes = new Dictionary<BacteriumType, Bacteria>();
-        foreach(BacteriumType bt in Enum.GetValues(typeof(BacteriumType)))
+        foreach (BacteriumType bt in Enum.GetValues(typeof(BacteriumType)))
         {
-            bacteriaTypes[bt] = new Bacteria(bt, amt: bInits[bt].Item1, optimal: bInits[bt].Item2, 
+            bacteriaTypes[bt] = new Bacteria(bt, amt: bInits[bt].Item1, optimal: bInits[bt].Item2,
                 growthRate: bInits[bt].Item3, productionRate: bInits[bt].Item4);
         }
+    }
+
+    public void AddComponents(params BacterialStateComponent[] components)
+    {
         foreach (BacterialStateComponent cmp in components)
         {
             this.AddChild(cmp);

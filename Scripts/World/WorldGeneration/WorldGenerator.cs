@@ -6,17 +6,13 @@ public class WorldGenerator
 {
     public const byte AIR_ID = 0;
 
-    OctaveNoise noise = new OctaveNoise(16);
+    public readonly IList<ITerrainModifier> terrainModifiers;
+    public readonly IList<IGenerator> generators;
 
-    public const int MAX_HEIGHT_DIFFERENCE = HEIGHT_SPREAD * 2;
-    private const int AVERAGE_HEIGHT = 55;
-    private const int HEIGHT_SPREAD = 128;
-
-    private List<IGenerator> generators;
-
-    public WorldGenerator(params IGenerator[] generators)
+    public WorldGenerator()
     {
-        this.generators = new List<IGenerator>(generators);
+        this.terrainModifiers = new List<ITerrainModifier>();
+        this.generators = new List<IGenerator>();
     }
 
     public byte[,,] GetChunk(IntVector2 chunkIndex, IntVector3 chunkSize)
@@ -34,6 +30,16 @@ public class WorldGenerator
         return chunk;
     }
 
+    public int GetHeightAt(Vector2 worldCoords)
+    {
+        int h = 0;
+        foreach (ITerrainModifier terrainModifier in terrainModifiers)
+        {
+            terrainModifier.UpdateHeight(worldCoords, ref h);
+        }
+        return h;
+    }
+
     private int[,] GetChunkTerrainHeight(IntVector2 chunkIndex, IntVector3 chunkSize)
     {
         int[,] chunkHeight = new int[chunkSize.x, chunkSize.z];
@@ -43,8 +49,7 @@ public class WorldGenerator
             for (int k = 0; k < chunkSize.z; k++)
             {
                 IntVector2 worldCoords = new IntVector2(chunkIndex.x * chunkSize.x + i, chunkIndex.y * chunkSize.z + k);
-                Vector2 fractionalCoords = (Vector2)worldCoords / 256;
-                chunkHeight[i, k] = (int)(noise.Sample(fractionalCoords.x, fractionalCoords.y) * HEIGHT_SPREAD) + AVERAGE_HEIGHT;
+                chunkHeight[i, k] = GetHeightAt((Vector2)worldCoords);
             }
         }
 
