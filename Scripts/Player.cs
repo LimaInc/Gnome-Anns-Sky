@@ -68,17 +68,6 @@ public class Player : KinematicBody
         Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
 
-        Area area = new Area();
-        area.SetName("AnimalArea");
-        CollisionShape collisionShape = new CollisionShape();
-
-        BoxShape bs = new BoxShape();
-        //bs.SetExtents(Chunk.CHUNK_SIZE * Chunk.BLOCK_SIZE / 2.0f);
-        bs.SetExtents((Chunk.CHUNK_SIZE * Chunk.BLOCK_SIZE /  2.0f) * Terrain.ANIMAL_CHUNK_RANGE);
-        collisionShape.SetShape(bs);
-        area.AddChild(collisionShape);
-        AddChild(area);
-
         collisionShape = new CollisionShape();
 
         // OLD BoxShape collision 
@@ -403,7 +392,7 @@ public class Player : KinematicBody
             }
         }
 
-        velocity += new Vector3(0,-gravity*delta,0);
+        velocity += new Vector3(0,-gravity * delta,0);
 
         Vector3 rot = myCam.GetRotation();
 
