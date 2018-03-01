@@ -18,8 +18,15 @@ public class TreeManager : PlantManager
 
     private float time;
 
-    public TreeManager(Terrain terrain) : base(terrain)
+    public TreeManager(Plants plants) : base(plants)
     {
+        GAS_DELTAS = new Dictionary<Gas, float>
+        {
+            [Gas.OXYGEN] = 0.00005f,
+            [Gas.NITROGEN] = -0.00005f,
+            [Gas.CARBON_DIOXIDE] = -0.00005f
+        };
+
         SPREAD_CHANCE = 0.001;
         time = 0;
         grid = new Dictionary<Tuple<int, int>, List<IntVector3>>();
@@ -50,9 +57,12 @@ public class TreeManager : PlantManager
         treeBlockVectors[idx++] = Tuple.Create(new IntVector3(0, 8, 0), leafBlock);
     }
 
-    public bool Valid(IntVector3 blockPos)
+    protected override bool Valid(IntVector3 blockPos)
     {
-        if (terrain.GetBlock(blockPos) != redRock && terrain.GetBlock(blockPos) != grassBlock)
+        if (terrain.GetBlock(blockPos) != redRock &&
+                terrain.GetBlock(blockPos) != grassBlock &&
+                atmosphere.GetGasAmt(Gas.NITROGEN) < 0.01 &&
+                atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE) < 0.01)
             return false;
 
         for (int i = 0; i < 48; i++)
@@ -83,19 +93,25 @@ public class TreeManager : PlantManager
         return true;
     }
 
-    public override void Spread(float delta)
+    public override void LifeCycle(float delta)
     {
         time += delta;
-        if (time < SPREAD_TIME || blocks.Count == 0)
+        if (time < LIFECYCLE_TICK_TIME || blocks.Count == 0)
             return;
 
         time = 0;
 
+        // in a full game, this would manage the tree growing from a sapling and then dying after some time
+        Spread();
+    }
+
+    protected override void Spread()
+    {
         // Bridson’s algorithm for Poisson-disc sampling
         // https://bost.ocks.org/mike/algorithms/
-        for (double spread_no = blocks.Count*SPREAD_CHANCE; spread_no > 0; spread_no--)
+        for (double spreadNo = blocks.Count*SPREAD_CHANCE; spreadNo > 0; spreadNo--)
         {
-            if (spread_no < 1 && randGen.NextDouble() > spread_no)
+            if (spreadNo < 1 && randGen.NextDouble() > spreadNo)
                 return;
 
             // find a tree that still exists
