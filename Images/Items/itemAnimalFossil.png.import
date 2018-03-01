@@ -2,14 +2,14 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/itemAnimalFossil.PNG-0771378d76a45b8137aa912feb6a61bf.stex"
+path="res://.import/itemAnimalFossil.png-16e6caab4138783c8027cf6d17c2e464.stex"
 
 [deps]
 
-source_file="res://Images/Items/itemAnimalFossil.PNG"
+source_file="res://Images/Items/itemAnimalFossil.png"
 source_md5="37765e0944f2dc1ba8a5938588a56cc7"
 
-dest_files=[ "res://.import/itemAnimalFossil.PNG-0771378d76a45b8137aa912feb6a61bf.stex" ]
+dest_files=[ "res://.import/itemAnimalFossil.png-16e6caab4138783c8027cf6d17c2e464.stex" ]
 dest_md5="4c506d8da96cfaa1b0fa55e1a88dbd5c"
 
 [params]
