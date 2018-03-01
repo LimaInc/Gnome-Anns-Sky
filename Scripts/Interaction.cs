@@ -14,6 +14,7 @@ public class Interaction : Camera
     {
         player = GetNode(Game.PLAYER_PATH) as Player;
 
+
         // Called every time the node is added to the scene.
         // Initialization here
         spaceState = GetWorld().DirectSpaceState;
@@ -107,7 +108,7 @@ public class Interaction : Camera
 
     public byte GetBlock()
     {
-        IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
+        IntVector3? blockPossible = this.GetBlockUnderCursor();
         if (blockPossible.HasValue)
         {
             IntVector3 blockPos = blockPossible.Value;
