@@ -22,7 +22,7 @@ public class Chunk : Spatial
     public byte GetBlockInChunk(int x, int y, int z)
     {
         if(x < 0 || x >= CHUNK_SIZE.x || y < 0 || y >= CHUNK_SIZE.y || z < 0 || z >= CHUNK_SIZE.z)
-            return 0; //Maybe should throw exception/return null here ??
+            return Byte.MaxValue; // TODO: fix
         else
             return blocks[x,y,z];
     }

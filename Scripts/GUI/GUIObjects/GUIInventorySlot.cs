@@ -10,7 +10,7 @@ public class GUIInventorySlot : GUIObject
 
     private GUIInventorySlot exchangeSlot;
     private int index;
-    private Item.Type type;
+    private Item.ItemType type;
 
     private ItemStack stack;
 
@@ -23,60 +23,86 @@ public class GUIInventorySlot : GUIObject
     public const int HOVER_LABEL_Z = 3;
     private Label2D hoverLabel;
 
-    public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.Type t, int ind, Vector2 pos) 
+    private Func<ItemStack,bool> quickMoveItem;
+    private Action invUpdate;
+
+    // TODO: use the invUpdate delegate idea to refactor the inventory with GUI synchronisation system
+    public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.ItemType t, int ind, Vector2 pos, 
+        Func<ItemStack,bool> quickMove = null, Action invUpdateCallback = null)
         : base(new Vector2(), SIZE, TEX) 
     {
-        this.SetPosition(pos);
+        SetPosition(pos);
 
-        this.exchangeSlot = toExchangeOnPress;
-        this.index = ind;
-        this.type = t;
+        exchangeSlot = toExchangeOnPress;
+        quickMoveItem = quickMove;
+        invUpdate = invUpdateCallback;
+        index = ind;
+        type = t;
 
-        this.labelChild = new Label2D();
-        this.labelChild.SetZAsRelative(true);
-        this.labelChild.SetZIndex(LABEL_Z);
+        labelChild = new Label2D();
+        labelChild.SetZAsRelative(true);
+        labelChild.SetZIndex(LABEL_Z);
 
-        this.hoverLabel = new Label2D();
-        this.hoverLabel.Hide();
-        this.hoverLabel.SetZAsRelative(true);
-        this.hoverLabel.SetZIndex(HOVER_LABEL_Z);
-        this.AddChild(hoverLabel);
+        hoverLabel = new Label2D();
+        hoverLabel.Hide();
+        hoverLabel.SetZAsRelative(true);
+        hoverLabel.SetZIndex(HOVER_LABEL_Z);
+        AddChild(hoverLabel);
 
-        this.AssignItemStack(null);
+        AssignItemStack(null);
     }
 
     public override void OnLeftPress()
     {
-        ItemStack floatingStack = exchangeSlot.GetCurItemStack();
-        ItemStack slotStack = this.GetCurItemStack();
+        ItemStack exchangeStack = exchangeSlot.GetCurItemStack();
+        ItemStack slotStack = GetCurItemStack();
 
-        if (floatingStack != null &&
-            !Item.CompatibleWith(floatingStack.GetItem().GetType(), this.GetItemType()))
+        if (quickMoveItem != null  && slotStack != null && Input.IsActionPressed("quick_move_items"))
+        {
+            if (quickMoveItem(slotStack))
+            {
+                ClearItemStack();
+                invUpdate?.Invoke();
+            }
+            return;
+        }
+
+        if (exchangeStack != null &&
+            !Item.CompatibleWith(exchangeStack.Item.IType, this.GetItemType()))
         {
             return;
         }
 
         if (slotStack != null &&
-            !Item.CompatibleWith(slotStack.GetItem().GetType(), exchangeSlot.GetItemType()))
+            !Item.CompatibleWith(slotStack.Item.IType, exchangeSlot.GetItemType()))
         {
             return;
         }
 
-        exchangeSlot.AssignItemStack(slotStack);
-        this.AssignItemStack(floatingStack);
+        // TODO: think of a better conditional
+        if (exchangeStack != null && slotStack != null && slotStack.Item.Stackable && slotStack.Item.Id == exchangeStack.Item.Id)
+        {
+            slotStack.ChangeQuantity(exchangeStack.Count);
+            exchangeSlot.ClearItemStack();
+        }
+        else
+        {
+            exchangeSlot.AssignItemStack(slotStack);
+            this.AssignItemStack(exchangeStack);
+        }
     }
 
     public override void OnHover()
     {
-        this.hoverLabel.Show();
+        hoverLabel.Show();
     }
 
     public override void OnHoverOff()
     {
-        this.hoverLabel.Hide();
+        hoverLabel.Hide();
     }
 
-    public Item.Type GetItemType()
+    public Item.ItemType GetItemType()
     {
         return this.type;
     }
@@ -88,9 +114,9 @@ public class GUIInventorySlot : GUIObject
 
     public void AssignItemStack(ItemStack i)
     {
-        if (i != null && !Item.CompatibleWith(i.GetItem().GetType(), this.type))
+        if (i != null && !Item.CompatibleWith(i.Item.IType, this.type))
         {
-            throw new ArgumentException("Cannot assign stack "+i+" of type "+i.GetItem().GetType()+
+            throw new ArgumentException("Cannot assign stack "+i+" of type "+i.Item.GetType()+
                 " to slot "+this+" that accepts "+this.type);
         }
 
@@ -100,9 +126,14 @@ public class GUIInventorySlot : GUIObject
 
     public ItemStack OfferItemStack(ItemStack i)
     {
-        if (stack.GetItem() == i.GetItem())
+        if (stack == null)
         {
-            stack.AddToQuantity(i.GetCount());
+            AssignItemStack(i);
+            return null;
+        }
+        else if(stack.Item == i.Item && stack.Item.Stackable)
+        {
+            stack.ChangeQuantity(i.Count);
             UpdateLabel();
             return null;
         }
@@ -116,7 +147,7 @@ public class GUIInventorySlot : GUIObject
     {
         base._Process(delta);
 
-        if (stack != null && labelNum != stack.GetCount())
+        if (stack != null && labelNum != stack?.Count)
         {
             UpdateLabel();
         }
@@ -134,31 +165,35 @@ public class GUIInventorySlot : GUIObject
     {
         if (curItemChild != null)
         {
-            this.hoverLabel.Hide();
-            this.curItemChild.RemoveChild(labelChild);
-            this.RemoveChild(curItemChild);
+            hoverLabel.Hide();
+            curItemChild.RemoveChild(labelChild);
+            RemoveChild(curItemChild);
             curItemChild = null;
         }
         if (stack != null)
         {
-            curItemChild = stack.GetItem().GenerateGUISprite();
-            curItemChild.Position = this.index != -1 ?
-                this.rect.Position + SIZE / 2 :
-                this.rect.Position;
+            curItemChild = stack.Item.GenerateGUISprite();
+            curItemChild.Position = index != -1 ?
+                rect.Position + SIZE / 2 :
+                rect.Position;
             curItemChild.ZAsRelative = true;
             curItemChild.ZIndex = CUR_ITEM_CHILD_Z;
-            this.AddChild(curItemChild);
+            AddChild(curItemChild);
             curItemChild.AddChild(labelChild);
-            hoverLabel.Text = stack.GetItem().GetName();
+            hoverLabel.Text = stack.Item.Name;
+        }
+        else
+        {
+            hoverLabel.Text = "";
         }
     }
 
     private void UpdateLabel()
     {
-        labelNum = stack != null ? stack.GetCount() : -1;
-        Vector2 position = this.index != -1 ?
-            this.rect.Position + SIZE / 2 :
-            this.rect.Position;
+        labelNum = stack != null ? stack.Count : -1;
+        Vector2 position = index != -1 ?
+            rect.Position + SIZE / 2 :
+            rect.Position;
 
         if (labelNum <= 1)
         {

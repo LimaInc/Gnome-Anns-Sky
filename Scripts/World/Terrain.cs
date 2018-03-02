@@ -11,14 +11,16 @@ public class Terrain : Spatial
     public const int RED_ROCK_LAYER_NUM = 3;
     public const int FOSSIL_DEPTH = RED_ROCK_LAYER_NUM;
 
+    public const float BASE_FOSSIL_SPAWN_RATE = Game.FOSSIL_SPAWN_MULITPLIER * 0.0003f;
+
     public readonly IList<UniformFossilGenerator> fossilGenerators = new List<UniformFossilGenerator>()
     {
-        new UniformFossilGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.001f),
-        new UniformFossilGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.0005f),
-        new UniformFossilGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.004f),
-        new UniformFossilGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
-        new UniformFossilGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
-        new UniformFossilGenerator(Game.GetBlockId<AnimalFossilBlock>(), FOSSIL_DEPTH, 0.0015f)
+        new UniformFossilGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 10),
+        new UniformFossilGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 4),
+        new UniformFossilGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformFossilGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformFossilGenerator(Game.GetBlockId<AnimalFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformFossilGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE)
     };
 
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
@@ -32,9 +34,10 @@ public class Terrain : Spatial
 
         worldGenerator = new WorldGenerator();
         worldGenerator.terrainModifiers.Add(new HillLandscapeTM(AVERAGE_HEIGHT, HEIGHT_SPREAD));
+        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
         worldGenerator.generators.Add(new RockGenerator(RED_ROCK_LAYER_NUM));
 
-        foreach(UniformFossilGenerator g in fossilGenerators)
+        foreach (UniformFossilGenerator g in fossilGenerators)
         {
             worldGenerator.generators.Add(g);
         }
@@ -46,7 +49,9 @@ public class Terrain : Spatial
         worldGenerator.terrainModifiers.Add(b.Smoothing);
         worldGenerator.generators.Add(b.Generator);
 
-        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
+        Vector2 playerPos = new Vector2(player.Translation.x, player.Translation.z) / Chunk.BLOCK_SIZE;
+        float terrainGraphicalHeight = worldGenerator.GetHeightAt(playerPos) * Chunk.BLOCK_SIZE;
+        player.Translation = new Vector3(playerPos.x, terrainGraphicalHeight + Player.INIT_REL_POS.y, playerPos.y);
     }
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize

@@ -20,29 +20,30 @@ public class Game : Node
     public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
 
     // multiplicative factor for processes in the world (not directly affecting the player)
-    public const int SPEED = 20;
-    public const int PLANT_MAX_SPEED = 1; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
+    public const int FOSSIL_SPAWN_MULITPLIER = 20;
+    public const int SPEED = 10;
+    public const int PLANT_MAX_SPEED = 2; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
 
     public Game()
     {
         //Register blocks
-        Game.RegisterBlock(new Stone());
-        Game.RegisterBlock(new RedRock());
+        RegisterBlock(new Stone());
+        RegisterBlock(new RedRock());
 
-        Game.RegisterBlock(new OxygenBacteriaFossilBlock());
-        Game.RegisterBlock(new NitrogenBacteriaFossilBlock());
-        Game.RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
-        Game.RegisterBlock(new GrassFossilBlock());
-        Game.RegisterBlock(new TreeFossilBlock());
-        Game.RegisterBlock(new AnimalFossilBlock());
+        RegisterBlock(new OxygenBacteriaFossilBlock());
+        RegisterBlock(new NitrogenBacteriaFossilBlock());
+        RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
+        RegisterBlock(new GrassFossilBlock());
+        RegisterBlock(new TreeFossilBlock());
+        RegisterBlock(new AnimalFossilBlock());
 
-        Game.RegisterBlock(new GrassBlock());
-        Game.RegisterBlock(new TreeBlock());
-        Game.RegisterBlock(new LeafBlock());
-        Game.RegisterBlock(new IceBlock());
+        RegisterBlock(new GrassBlock());
+        RegisterBlock(new TreeBlock());
+        RegisterBlock(new LeafBlock());
+        RegisterBlock(new IceBlock());
 
-        Game.RegisterBlock(new HabitationBlock());
-        Game.RegisterBlock(new DefossiliserBlock());
+        RegisterBlock(new HabitationBlock());
+        RegisterBlock(new DefossiliserBlock());
 
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();

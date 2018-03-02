@@ -3,7 +3,7 @@ using Godot;
 
 public class GUIFloatingSlot : GUIInventorySlot
 {
-    public GUIFloatingSlot() : base(null, Item.Type.ANY, -1, new Vector2())
+    public GUIFloatingSlot() : base(null, Item.ItemType.ANY, -1, new Vector2())
     {
         this.sprite.SetTexture(new ImageTexture());
     }

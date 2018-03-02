@@ -91,10 +91,10 @@
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemBacteriaVial.cs" />
+    <Compile Include="Scripts\Inventory\ItemID.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
-    <Compile Include="Scripts\Inventory\ItemFood.cs" />
     <Compile Include="Scripts\Inventory\ItemBlock.cs" />
-    <Compile Include="Scripts\Inventory\ItemDrink.cs" />
+    <Compile Include="Scripts\Inventory\ItemConsumable.cs" />
     <Compile Include="Scripts\Inventory\ItemPlant.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\PlayerGUI.cs" />

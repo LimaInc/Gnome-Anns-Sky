@@ -93,7 +93,7 @@ public class Interaction : Camera
 
     public byte RemoveBlock()
     {
-        IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
+        IntVector3? blockPossible = GetBlockPositionUnderCursor();
 
         if (blockPossible.HasValue)
         {

@@ -4,10 +4,10 @@ using System;
 public class Inventory
 {
     public readonly int size;
-    private Item.Type type;
+    private Item.ItemType type;
     private ItemStack[] stacks;
 
-    public Inventory(Item.Type type, int size)
+    public Inventory(Item.ItemType type, int size)
     {
         this.type = type;
         this.size = size;
@@ -33,18 +33,18 @@ public class Inventory
 
     public bool TryAddItemStack(ItemStack i)
     {
-        return TryAddItem(i.GetItem(), i.GetCount());
+        return TryAddItem(i.Item, i.Count);
     }
 
     public bool CanAdd(Item item, int cnt)
     {
-        if (!Item.CompatibleWith(item.GetType(), type))
+        if (!Item.CompatibleWith(item.IType, type))
         {
-            GD.Print("Something just tried to add a " + item.GetName() + " to a " + this.type + " inventory!");
+            GD.Print("Something just tried to add a " + item.Name + " to a " + this.type + " inventory!");
             return false;
         }
 
-        if (!item.IsStackable())
+        if (!item.Stackable)
         {
             return CountEmptyStacks() >= cnt;
         }
@@ -52,7 +52,7 @@ public class Inventory
         {
             for (int i = 0; i < this.size; i++)
             {
-                if (stacks[i] == null || stacks[i].GetItem().GetType() == item.GetType())
+                if (stacks[i] == null || stacks[i].Item.Id == item.Id)
                 {
                     return true;
                 }
@@ -83,7 +83,7 @@ public class Inventory
         else
         {
 
-            if (!item.IsStackable())
+            if (!item.Stackable)
             {
                 for (int j = 0; j < cnt; j++)
                 {
@@ -103,7 +103,7 @@ public class Inventory
                 int? index = TryGetStackIndex(item);
                 if (index.HasValue)
                 {
-                    stacks[index.Value].AddToQuantity(cnt);
+                    stacks[index.Value].ChangeQuantity(cnt);
                     return true;
                 }
                 else
@@ -119,14 +119,15 @@ public class Inventory
                 }
             }
         }
-        throw new Exception("This should never have happened");
+        throw new Exception("This should never have happened, trying to add "+cnt+" of "+item+
+            " to a full inventory, even though the CanAdd function returns "+CanAdd(item, cnt));
     }
 
     public int? TryGetStackIndex(Item item)
     {
         for (int i = 0; i < this.size; i++)
         {
-            if (stacks[i]?.GetItem()?.GetID() == item.GetID())
+            if (stacks[i]?.Item.Id == item.Id)
                 return i;
         }
         return null;
@@ -137,8 +138,8 @@ public class Inventory
         int count = 0;
         for (int i = 0; i < this.size; i++)
         {
-            if (stacks[i]?.GetItem()?.GetID() == item.GetID())
-                count += stacks[i].GetCount();
+            if (stacks[i]?.Item.Id == item.Id)
+                count += stacks[i].Count;
         }
         return count;
     }

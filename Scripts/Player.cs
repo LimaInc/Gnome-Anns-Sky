@@ -1,24 +1,32 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Player : KinematicBody
 {
-    private static bool DEBUG_DEATH_ENABLED = false;
+    public enum Stats
+    {
+        AIR, WATER, FOOD
+    }
 
-    private float moveSpeed = 30.0f;
-    private float jumpPower = 12.0f;
-    private float camRotateSpeed = 0.01f;
+    private static bool DEBUG_DEATH_ENABLED = true;
 
-    private float xz_inertia = 0.85f;
-    private float y_intertia = 1;
+    private const float MOVE_SPEED = 30;
+    private const float JUMP_POWER = 12;
+    private const float SPRINT_SPEED = MOVE_SPEED * SPRINT_MULT;
+
+    private const float SPRINT_MULT = 3;
+
+    private readonly Vector3 INERTIA = new Vector3(0.85f, 1, 0.85f);
 
     private Vector3 velocity = new Vector3();
 
-    private Vector3 camOffset = new Vector3(0.0f, 0.4f, 0.0f);
-    private Vector3 deadCamOffset = new Vector3(0.0f, -0.4f, 0.0f);
+    private const float CAM_ROT_SPEED = 0.01f;
+    private readonly Vector3 CAM_OFFSET = new Vector3(0, 0.4f, 0);
+    private readonly Vector3 DEAD_CAM_OFFSET = new Vector3(0, -0.4f, 0);
 
-    private static float gravity = 40.0f;
+    private readonly Vector3 GRAVITY = new Vector3(0, -40, 0);
 
     private CollisionShape collisionShape;
     private Camera myCam;
@@ -32,21 +40,35 @@ public class Player : KinematicBody
 
     public static Texture CURSOR = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "cursor.png") as Texture;
 
-    //Original implementation was written in integers, hence why the max constants exist
-    public static float MAX_AIR = 1.0f;
-    public float CurrentAir { get; set; } = MAX_AIR;
+    private const float STATS_REFERENCE = 0.0015f;
+    public static IDictionary<Stats, float> DEFAULT_STAT_CHANGE = new Dictionary<Stats, float>
+    {
+        [Stats.AIR] = - 2.0f * STATS_REFERENCE,
+        [Stats.WATER] = - 1.4f * STATS_REFERENCE,
+        [Stats.FOOD] = - 1.0f * STATS_REFERENCE,
+    };
+    private const float MOVE_DEGRAD_MULT = 5;
+    private const float SPRINT_DEGRAD_MULT = 4;
+    private const float BASE_AIR_REGEN_MULT = 25;
+    private const float ATM_AIR_MAX_REGEN_MULT = 20;
+    //single frame
+    private const float JUMP_DEGRAD_MULT = 50;
 
-    public static float MAX_THIRST = 1.0f;
-    public float CurrentThirst { get; set; } = MAX_THIRST;
+    private const float BASE_AIR_REGEN = BASE_AIR_REGEN_MULT * STATS_REFERENCE;
+    private const float ATMOSPHERE_AIR_REGEN = ATM_AIR_MAX_REGEN_MULT * STATS_REFERENCE;
 
-    public static float MAX_HUNGER = 1.0f;
-    public float CurrentHunger { get; set; } = MAX_HUNGER;
-    
-    private bool dead;
+    private readonly IDictionary<Stats, float> statistics = new Dictionary<Stats, float>
+    {
+        [Stats.AIR] = 1,
+        [Stats.WATER] = 1,
+        [Stats.FOOD] = 1
+    };
+
+    public bool Dead { get; private set; }
 
     public const int PLAYER_INVENTORY_COUNT = 40;
 
-    public IDictionary<Item.Type, Inventory> Inventories { get; private set; }
+    public IDictionary<Item.ItemType, Inventory> Inventories { get; private set; }
 
     private Interaction interaction;
     private Base planetBase;
@@ -54,8 +76,7 @@ public class Player : KinematicBody
     private Plants plants;
     private BacterialState bacteria;
 
-
-    private static readonly Vector3 PLAYER_INITIAL_POSITION = new Vector3(0, 60, 0);
+    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 5, 0);
 
     public override void _Ready()
     {
@@ -81,32 +102,32 @@ public class Player : KinematicBody
         // collisionShape.SetShape(c);
         // collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
 
-        this.AddChild(collisionShape);
-        this.SetTranslation(PLAYER_INITIAL_POSITION);
+        AddChild(collisionShape);
 
-        myCam = (Camera) this.GetChild(0);
-        myCam.SetTranslation(camOffset);
+        myCam = GetNode(Game.CAMERA_PATH) as Camera;
+        myCam.SetTranslation(CAM_OFFSET);
         
         playerGUI = new PlayerGUI(this);
         this.AddChild(playerGUI);
 
-        Inventories = new Dictionary<Item.Type, Inventory>
+        Inventories = new Dictionary<Item.ItemType, Inventory>
         {
-            [Item.Type.CONSUMABLE] = new Inventory(Item.Type.CONSUMABLE, PLAYER_INVENTORY_COUNT),
-            [Item.Type.FOSSIL] = new Inventory(Item.Type.FOSSIL, PLAYER_INVENTORY_COUNT),
-            [Item.Type.BLOCK] = new Inventory(Item.Type.BLOCK, PLAYER_INVENTORY_COUNT)
+            [Item.ItemType.CONSUMABLE] = new Inventory(Item.ItemType.CONSUMABLE, PLAYER_INVENTORY_COUNT),
+            [Item.ItemType.FOSSIL] = new Inventory(Item.ItemType.FOSSIL, PLAYER_INVENTORY_COUNT),
+            [Item.ItemType.BLOCK] = new Inventory(Item.ItemType.BLOCK, PLAYER_INVENTORY_COUNT)
         };
 
         InventoryGUI = new InventoryGUI(this, Inventories, this);
 
-        this.AddItem(ItemStorage.cake, 3);
-        this.AddItem(ItemStorage.chocolate, 10);
-        this.AddItem(ItemStorage.water, 5);
+        this.AddItem(ItemStorage.items[ItemID.CAKE], 3);
+        this.AddItem(ItemStorage.items[ItemID.CHOCOLATE], 10);
+        this.AddItem(ItemStorage.items[ItemID.WATER], 5);
     }
 
+    // maybe a bit hacky, TODO: think about it
     private void AddItem(Item i, int n)
     {
-        Inventories[i.GetType()].TryAddItem(i, n);
+        Inventories[i.IType].TryAddItem(i, n);
     }
 
     public CollisionShape GetCollisionShape()
@@ -114,28 +135,16 @@ public class Player : KinematicBody
         return this.collisionShape;
     }
 
-    public bool IsInventoryOpen()
-    {
-        return OpenedGUI == InventoryGUI;
-    }
-
     public override void _Input(InputEvent e)
     {
-        if (dead) return;
+        if (Dead) return;
 
         if(OpenedGUI == null)
         {
-            if (e is InputEventMouseMotion)
+            if (e is InputEventMouseMotion emm)
             {
-                Vector3 rot = this.GetRotation();
-
-                InputEventMouseMotion emm = (InputEventMouseMotion)e;
-
-                Vector2 rel = emm.GetRelative();
-
-                Vector3 rotd = new Vector3(-rel.y * camRotateSpeed, -rel.x * camRotateSpeed, 0.0f);
-
-                Vector3 targetRotation = myCam.GetRotation() + rotd;
+                Vector3 targetRotation = myCam.Rotation + 
+                    new Vector3(-emm.Relative.y * CAM_ROT_SPEED, -emm.Relative.x * CAM_ROT_SPEED, 0.0f);
 
                 //Clamp x rotation between -180 and 180 degrees
                 float xRot = targetRotation.x;
@@ -173,12 +182,12 @@ public class Player : KinematicBody
 
                         if (this.ItemInHand != null)
                         {
-                            Item i = this.ItemInHand.GetItem();
+                            Item i = this.ItemInHand.Item;
                             if (i is ItemBlock curBlock)
                             {
                                 if (curBlock.Block == b)
                                 {
-                                    this.ItemInHand.AddToQuantity(1);
+                                    this.ItemInHand.ChangeQuantity(1);
                                     addedToHand = true;
                                 }
                             }
@@ -193,64 +202,9 @@ public class Player : KinematicBody
         }
     }
 
-    public void ReplenishHunger(float v)
+    public void ChangeStat(Stats stat, float v)
     {
-        this.CurrentHunger += v;
-
-        if (this.CurrentHunger > MAX_HUNGER)
-            this.CurrentHunger = MAX_HUNGER;
-    }
-
-    public void ReplenishAir(float v)
-    {
-        if (Single.IsNaN(v))
-            return;
-
-        this.CurrentAir += v;
-
-        if (this.CurrentAir > MAX_AIR)
-            this.CurrentAir = MAX_AIR;
-    }
-
-    public void ReplenishThirst(float v)
-    {
-        this.CurrentThirst += v;
-
-        if (this.CurrentThirst > MAX_THIRST)
-            this.CurrentThirst = MAX_THIRST;
-    }
-
-    public void DepleteHunger(float v)
-    {
-        this.CurrentHunger -= v;
-
-        if (this.CurrentHunger < 0)
-        {
-            this.CurrentHunger = 0;
-            this.Kill();
-        }
-    }
-
-    public void DepleteAir(float v)
-    {
-        this.CurrentAir -= v;
-
-        if (this.CurrentAir < 0)
-        {
-            this.CurrentAir = 0;
-            this.Kill();
-        }
-    }
-
-    public void DepleteThirst(float v)
-    {
-        this.CurrentThirst -= v;
-
-        if (this.CurrentThirst < 0)
-        {
-            this.CurrentThirst = 0;
-            this.Kill();
-        }
+        statistics[stat] = Mathf.Min(1, Mathf.Max(0, statistics[stat] + v));
     }
 
     public void Push(Vector3 v)
@@ -265,7 +219,7 @@ public class Player : KinematicBody
             return;
         }
 
-        this.dead = true;
+        Dead = true;
 
         if (OpenedGUI != null)
             this.CloseGUI();
@@ -276,32 +230,21 @@ public class Player : KinematicBody
         this.AddChild(dg);
     }
 
-    public bool IsDead()
-    {
-        return dead;
-    }
-
     public void HandleUseItem()
     {
         if (this.ItemInHand == null)
             return;
 
-        Item i = this.ItemInHand.GetItem();
+        Item i = this.ItemInHand.Item;
 
         bool success = false;
         if (i is ItemBlock b)
         {
             success = this.interaction.PlaceBlock(b.Block);
         }
-        else if (i is ItemFood f)
+        else if (i is ItemConsumable d)
         {
-            ReplenishHunger(f.ReplenishValue);
-
-            success = true;
-        }
-        else if (i is ItemDrink d)
-        {
-            ReplenishThirst(d.ReplenishValue);
+            ChangeStat(d.StatToReplenish, d.StatValueChange);
 
             success = true;
         }
@@ -313,14 +256,14 @@ public class Player : KinematicBody
         }
         else if (i is ItemBacteriaVial vial)
         {
-            success = bacteria.TryGetBacteria(vial.BacteriaType(), out Bacteria bacterium);
+            success = bacteria.TryGetBacteria(vial.BType, out Bacteria bacterium);
             bacterium?.AddAmt(vial.Amount);
         }
 
         if (success)
         {
-            this.ItemInHand.SubtractCount(1);
-            if (this.ItemInHand.GetCount() == 0)
+            this.ItemInHand.ChangeQuantity(-1);
+            if (this.ItemInHand.Count == 0)
             {
                 this.ItemInHand = null;
             }
@@ -328,44 +271,22 @@ public class Player : KinematicBody
         }
     }
 
-    private bool onFloor;
-
-    //These numbers control how the player's needs change as they move around the world
-    
-    private static float DEGRED_BALANCE_AIR = 2.0f;
-    private static float DEGRED_BALANCE_THIRST = 1.4f;
-    private static float DEGRED_BALANCE_HUNGER = 1.8f;
-
-    private static float BASIC_DEGRED = 0.001f;
-    private static float MOVE_DEGRED = 0.005f;
-    //single frame
-    private static float JUMP_DEGRED = 0.05f;
-    
-    private static float BASE_AIR_REGEN = 0.025f;
-    private static float SPRINT_DEGRED_MULT = 4.0f;
-
-    private static float ATMOSPHERE_AIR_REGEN = 0.020f;
-
     private void ProcessAlive(float delta)
     {
         if (Input.IsActionJustPressed("debug_kill"))
         {
-            this.Kill();
+            Kill();
         }
         
-        Vector3 position = this.GetTranslation();
-
-        if (planetBase.IsGlobalPositionInside(position))
+        if (planetBase.IsGlobalPositionInside(Translation))
         {
-            this.ReplenishAir(BASE_AIR_REGEN * delta);
+            ChangeStat(Stats.AIR, BASE_AIR_REGEN * delta);
         }
-
-        this.ReplenishAir(ATMOSPHERE_AIR_REGEN * delta * Mathf.Pow(atmosphere.GetGasProgress(Gas.OXYGEN),2));
-
-        //Basic degredation
-        this.DepleteAir(BASIC_DEGRED * delta * DEGRED_BALANCE_AIR);
-        this.DepleteThirst(BASIC_DEGRED * delta * DEGRED_BALANCE_THIRST);
-        this.DepleteHunger(BASIC_DEGRED * delta * DEGRED_BALANCE_HUNGER);
+        ChangeStat(Stats.AIR, ATMOSPHERE_AIR_REGEN * delta * Mathf.Pow(atmosphere.GetGasProgress(Gas.OXYGEN),2));
+        foreach(KeyValuePair<Stats,float> kvPair in DEFAULT_STAT_CHANGE)
+        {
+            ChangeStat(kvPair.Key, delta * kvPair.Value);
+        }
 
         if (Input.IsActionJustPressed("inventory"))
         {
@@ -379,71 +300,79 @@ public class Player : KinematicBody
             }
         }
 
-        if (OpenedGUI == null)
-        {
-            if (Input.IsActionJustPressed("jump") && onFloor)
-            {
-                this.DepleteAir(JUMP_DEGRED * delta * DEGRED_BALANCE_AIR);
-                this.DepleteThirst(JUMP_DEGRED * delta * DEGRED_BALANCE_THIRST);
-                this.DepleteHunger(JUMP_DEGRED * delta * DEGRED_BALANCE_HUNGER);
+        DoMovement(delta);
 
-                velocity += new Vector3(0.0f, jumpPower, 0.0f);
-            }
+        CheckIfStillAlive();
+    }
+
+    private void CheckIfStillAlive()
+    {
+        if (!Dead)
+        {
+            Dead = statistics.Values.Any(v => v <= 0) || Translation.y <= 0;
         }
+    }
 
-        velocity += new Vector3(0,-gravity * delta,0);
-
-        Vector3 rot = myCam.GetRotation();
-
-        float sin = (float) Math.Sin(rot.y);
-        float cos = (float) Math.Cos(rot.y);
-
+    private void DoMovement(float delta)
+    {
+        velocity += GRAVITY * delta;
         if (OpenedGUI == null)
         {
+            if (Input.IsActionJustPressed("jump") && IsOnFloor())
+            {
+                foreach (KeyValuePair<Stats, float> kvPair in DEFAULT_STAT_CHANGE)
+                {
+                    ChangeStat(kvPair.Key, delta * JUMP_DEGRAD_MULT * kvPair.Value);
+                }
+
+                velocity += new Vector3(0.0f, JUMP_POWER, 0.0f);
+            }
+
+            float sin = Mathf.Sin(myCam.Rotation.y);
+            float cos = Mathf.Cos(myCam.Rotation.y);
+
             Vector3 movDir = new Vector3();
             if (Input.IsActionPressed("forward"))
             {
-                movDir += new Vector3(-sin,0.0f,-cos);
+                movDir += new Vector3(-sin, 0.0f, -cos);
             }
             if (Input.IsActionPressed("backward"))
             {
-                movDir += new Vector3(sin,0.0f,cos);
+                movDir += new Vector3(sin, 0.0f, cos);
             }
             if (Input.IsActionPressed("left"))
             {
-                movDir += new Vector3(-cos,0.0f,sin);
+                movDir += new Vector3(-cos, 0.0f, sin);
             }
             if (Input.IsActionPressed("right"))
             {
-                movDir += new Vector3(cos,0.0f,-sin);
+                movDir += new Vector3(cos, 0.0f, -sin);
             }
 
             if (!movDir.Equals(new Vector3()))
             {
-                this.DepleteAir(MOVE_DEGRED * delta * DEGRED_BALANCE_AIR);
-                this.DepleteThirst(MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST);
-                this.DepleteHunger(MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER);
+                float speed;
+                float degradMult;
+                if (Input.IsActionPressed("sprint"))
+                {
+                    degradMult = SPRINT_DEGRAD_MULT;
+                    speed = SPRINT_SPEED;
+                }
+                else
+                {
+                    degradMult = MOVE_DEGRAD_MULT;
+                    speed = MOVE_SPEED;
+                }
+                foreach (KeyValuePair<Stats, float> kvPair in DEFAULT_STAT_CHANGE)
+                {
+                    ChangeStat(kvPair.Key, degradMult * delta * kvPair.Value);
+                }
+                movDir = movDir.Normalized();
+                velocity += movDir * speed * delta; ;
             }
-
-            movDir = movDir.Normalized();
-            if(Input.IsActionPressed("sprint"))
-            {
-                this.DepleteAir(MOVE_DEGRED * delta * DEGRED_BALANCE_AIR * SPRINT_DEGRED_MULT);
-                this.DepleteThirst(MOVE_DEGRED * delta * DEGRED_BALANCE_THIRST * SPRINT_DEGRED_MULT);
-                this.DepleteHunger(MOVE_DEGRED * delta * DEGRED_BALANCE_HUNGER * SPRINT_DEGRED_MULT);
-                movDir *= 3f;
-            }
-
-            velocity += movDir * moveSpeed * delta;
         }
-
-        velocity = new Vector3(velocity.x * xz_inertia, velocity.y * y_intertia, velocity.z * xz_inertia);
-
-        velocity = this.MoveAndSlide(velocity, new Vector3(0.0f, 1.0f, 0.0f));
-
-        // myCam.SetTranslation(this.physicsBody.GetTranslation() + camOffset);
-
-        onFloor = this.IsOnFloor();
+        velocity *= INERTIA;
+        velocity = MoveAndSlide(velocity, new Vector3(0, 1, 0));
     }
 
     public void OpenGUI(GUI gui)
@@ -468,17 +397,21 @@ public class Player : KinematicBody
 
     public void ProcessDead(float delta)
     {
-
     }
 
     public override void _Process(float delta)
     {
-        if (dead)
+        if (Dead)
         {
             ProcessDead(delta);
         } else
         {
             ProcessAlive(delta);
         }
+    }
+
+    public float this[Stats s]
+    {
+        get => statistics[s];
     }
 }
