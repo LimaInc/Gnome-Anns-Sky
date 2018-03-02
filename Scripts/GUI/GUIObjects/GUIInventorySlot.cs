@@ -94,12 +94,12 @@ public class GUIInventorySlot : GUIObject
 
     public override void OnHover()
     {
-        this.hoverLabel.Show();
+        hoverLabel.Show();
     }
 
     public override void OnHoverOff()
     {
-        this.hoverLabel.Hide();
+        hoverLabel.Hide();
     }
 
     public Item.ItemType GetItemType()
@@ -147,7 +147,7 @@ public class GUIInventorySlot : GUIObject
     {
         base._Process(delta);
 
-        if (stack != null && labelNum != stack.Count)
+        if (stack != null && labelNum != stack?.Count)
         {
             UpdateLabel();
         }
@@ -165,31 +165,35 @@ public class GUIInventorySlot : GUIObject
     {
         if (curItemChild != null)
         {
-            this.hoverLabel.Hide();
-            this.curItemChild.RemoveChild(labelChild);
-            this.RemoveChild(curItemChild);
+            hoverLabel.Hide();
+            curItemChild.RemoveChild(labelChild);
+            RemoveChild(curItemChild);
             curItemChild = null;
         }
         if (stack != null)
         {
             curItemChild = stack.Item.GenerateGUISprite();
-            curItemChild.Position = this.index != -1 ?
-                this.rect.Position + SIZE / 2 :
-                this.rect.Position;
+            curItemChild.Position = index != -1 ?
+                rect.Position + SIZE / 2 :
+                rect.Position;
             curItemChild.ZAsRelative = true;
             curItemChild.ZIndex = CUR_ITEM_CHILD_Z;
-            this.AddChild(curItemChild);
+            AddChild(curItemChild);
             curItemChild.AddChild(labelChild);
             hoverLabel.Text = stack.Item.Name;
+        }
+        else
+        {
+            hoverLabel.Text = "";
         }
     }
 
     private void UpdateLabel()
     {
         labelNum = stack != null ? stack.Count : -1;
-        Vector2 position = this.index != -1 ?
-            this.rect.Position + SIZE / 2 :
-            this.rect.Position;
+        Vector2 position = index != -1 ?
+            rect.Position + SIZE / 2 :
+            rect.Position;
 
         if (labelNum <= 1)
         {
