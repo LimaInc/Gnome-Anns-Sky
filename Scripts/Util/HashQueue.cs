@@ -19,6 +19,12 @@ public class HashQueue<T> : ICollection, IEnumerable<T>, IEnumerable, IReadOnlyC
         hashSet = new HashSet<T>();
     }
 
+    public HashQueue(IEnumerable<T> collection)
+    {
+        queue = new Queue<T>(collection);
+        hashSet = new HashSet<T>(collection);
+    }
+
     public void Clear()
     {
         queue.Clear();
