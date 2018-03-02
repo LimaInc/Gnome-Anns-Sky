@@ -126,6 +126,7 @@
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
     <Compile Include="Scripts\Util\TextureManager.cs" />
     <Compile Include="Scripts\World\PlanetEnvironment.cs" />
+    <Compile Include="Scripts\World\Sun.cs" />
     <Compile Include="Scripts\World\WorldGeneration\IGenerator.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\World\WorldGeneration\BaseGenerator.cs" />
