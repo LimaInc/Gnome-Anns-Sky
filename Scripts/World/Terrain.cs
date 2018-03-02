@@ -34,9 +34,10 @@ public class Terrain : Spatial
 
         worldGenerator = new WorldGenerator();
         worldGenerator.terrainModifiers.Add(new HillLandscapeTM(AVERAGE_HEIGHT, HEIGHT_SPREAD));
+        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
         worldGenerator.generators.Add(new RockGenerator(RED_ROCK_LAYER_NUM));
 
-        foreach(UniformFossilGenerator g in fossilGenerators)
+        foreach (UniformFossilGenerator g in fossilGenerators)
         {
             worldGenerator.generators.Add(g);
         }
@@ -48,7 +49,9 @@ public class Terrain : Spatial
         worldGenerator.terrainModifiers.Add(b.Smoothing);
         worldGenerator.generators.Add(b.Generator);
 
-        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
+        Vector2 playerPos = new Vector2(player.Translation.x, player.Translation.z) / Chunk.BLOCK_SIZE;
+        float terrainGraphicalHeight = worldGenerator.GetHeightAt(playerPos) * Chunk.BLOCK_SIZE;
+        player.Translation = new Vector3(playerPos.x, terrainGraphicalHeight + Player.INIT_REL_POS.y, playerPos.y);
     }
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize

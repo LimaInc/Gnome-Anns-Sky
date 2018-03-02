@@ -10,7 +10,7 @@ public class Player : KinematicBody
         AIR, WATER, FOOD
     }
 
-    private static bool DEBUG_DEATH_ENABLED = false;
+    private static bool DEBUG_DEATH_ENABLED = true;
 
     private const float MOVE_SPEED = 30;
     private const float JUMP_POWER = 12;
@@ -18,7 +18,7 @@ public class Player : KinematicBody
 
     private const float SPRINT_MULT = 3;
 
-    private readonly Vector3 INERTIA = new Vector3(0.85f, 0.85f, 1);
+    private readonly Vector3 INERTIA = new Vector3(0.85f, 1, 0.85f);
 
     private Vector3 velocity = new Vector3();
 
@@ -26,7 +26,7 @@ public class Player : KinematicBody
     private readonly Vector3 CAM_OFFSET = new Vector3(0, 0.4f, 0);
     private readonly Vector3 DEAD_CAM_OFFSET = new Vector3(0, -0.4f, 0);
 
-    private const float GRAVITY = -40;
+    private readonly Vector3 GRAVITY = new Vector3(0, -40, 0);
 
     private CollisionShape collisionShape;
     private Camera myCam;
@@ -76,7 +76,7 @@ public class Player : KinematicBody
     private Plants plants;
     private BacterialState bacteria;
 
-    private static readonly Vector3 PLAYER_INITIAL_POSITION = new Vector3(0, 60, 0);
+    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 5, 0);
 
     public override void _Ready()
     {
@@ -102,10 +102,9 @@ public class Player : KinematicBody
         // collisionShape.SetShape(c);
         // collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
 
-        this.AddChild(collisionShape);
-        this.SetTranslation(PLAYER_INITIAL_POSITION);
+        AddChild(collisionShape);
 
-        myCam = (Camera) this.GetChild(0);
+        myCam = GetNode(Game.CAMERA_PATH) as Camera;
         myCam.SetTranslation(CAM_OFFSET);
         
         playerGUI = new PlayerGUI(this);
@@ -144,13 +143,8 @@ public class Player : KinematicBody
         {
             if (e is InputEventMouseMotion emm)
             {
-                Vector3 rot = this.GetRotation();
-
-                Vector2 rel = emm.GetRelative();
-
-                Vector3 rotd = new Vector3(-rel.y * CAM_ROT_SPEED, -rel.x * CAM_ROT_SPEED, 0.0f);
-
-                Vector3 targetRotation = myCam.GetRotation() + rotd;
+                Vector3 targetRotation = myCam.Rotation + 
+                    new Vector3(-emm.Relative.y * CAM_ROT_SPEED, -emm.Relative.x * CAM_ROT_SPEED, 0.0f);
 
                 //Clamp x rotation between -180 and 180 degrees
                 float xRot = targetRotation.x;
@@ -284,7 +278,7 @@ public class Player : KinematicBody
             Kill();
         }
         
-        if (planetBase.IsGlobalPositionInside(GetTranslation()))
+        if (planetBase.IsGlobalPositionInside(Translation))
         {
             ChangeStat(Stats.AIR, BASE_AIR_REGEN * delta);
         }
@@ -313,14 +307,17 @@ public class Player : KinematicBody
 
     private void CheckIfStillAlive()
     {
-        Dead |= statistics.Values.Any(v => v <= 0) || 
-                GetTranslation().z <= 0;
+        if (!Dead)
+        {
+            Dead = statistics.Values.Any(v => v <= 0) || Translation.y <= 0;
+        }
     }
 
     private void DoMovement(float delta)
     {
-        Debug.PrintPlace("entereing");
-        velocity += new Vector3(0, GRAVITY * delta, 0);
+        // Debug.PrintPlace("Velocity before gravity " + velocity);
+        velocity += GRAVITY * delta;
+        // Debug.PrintPlace("Velocity after gravity " + velocity);
         if (OpenedGUI == null)
         {
             if (Input.IsActionJustPressed("jump") && IsOnFloor())
@@ -333,10 +330,8 @@ public class Player : KinematicBody
                 velocity += new Vector3(0.0f, JUMP_POWER, 0.0f);
             }
 
-            Vector3 rot = myCam.GetRotation();
-
-            float sin = (float)Math.Sin(rot.y);
-            float cos = (float)Math.Cos(rot.y);
+            float sin = Mathf.Sin(myCam.Rotation.y);
+            float cos = Mathf.Cos(myCam.Rotation.y);
 
             Vector3 movDir = new Vector3();
             if (Input.IsActionPressed("forward"))
@@ -378,10 +373,11 @@ public class Player : KinematicBody
                 velocity += movDir * speed * delta; ;
             }
         }
+        // Debug.PrintPlace("Velocity after input " + velocity);
         velocity *= INERTIA;
-        Debug.PrintPlace("finishing with new velocity = "+velocity);
+        // Debug.PrintPlace("Velocity after insertia " + velocity);
         velocity = MoveAndSlide(velocity, new Vector3(0, 1, 0));
-        Debug.PrintPlace("after move and slide = " + velocity);
+        // Debug.PrintPlace("Velocity after move and slide " + velocity);
     }
 
     public void OpenGUI(GUI gui)
@@ -406,7 +402,6 @@ public class Player : KinematicBody
 
     public void ProcessDead(float delta)
     {
-
     }
 
     public override void _Process(float delta)

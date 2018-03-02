@@ -40,7 +40,7 @@ public class ItemStorage
 
         // arbitrary choice: maps file name (without file extension) to texture
         texDict = texFileNames.ToDictionary(k => k.Split('.')[0],
-            k => ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemRedRock.png") as Texture);
+            k => ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + k) as Texture);
 
         // arbitrary choice: blocks are stackable
         var itemBlockInits = new List<Tuple<ItemID, string, string, byte>>

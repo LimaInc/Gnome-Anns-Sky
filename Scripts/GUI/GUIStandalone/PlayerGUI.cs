@@ -38,7 +38,6 @@ public class PlayerGUI : GUI
         [Player.Stats.AIR] = new Sprite
         {
             Texture = AIR_ICON_TEX,
-            Scale = ICON_SCALE
         }
     };
 
@@ -114,10 +113,10 @@ public class PlayerGUI : GUI
             Player.Stats stat = kvPair.Key;
             statBars[stat] = new GUIVerticalBar(empty, BAR_LENGTH, kvPair.Value);
             AddChild(statBars[stat]);
+            statBarSprites[stat].Scale = ICON_SCALE;
             statBarSprites[stat].Position = ICON_OFFSET;
             statBars[stat].AddChild(statBarSprites[stat]);
         }
-
         foreach (KeyValuePair<Gas, Color> kvPair in gasBarColors)
         {
             Gas g = kvPair.Key;
@@ -137,23 +136,23 @@ public class PlayerGUI : GUI
 
     public override void HandleResize()
     {
-        Vector2 baseStatOffset = new Vector2(BAR_EDGE_OFFSET, this.GetViewportDimensions().y - BAR_LENGTH - BAR_EDGE_OFFSET);
-        Vector2 statOffsetDiff = new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0);
+        Vector2 baseStatOffset = new Vector2(BAR_EDGE_OFFSET, GetViewportDimensions().y - BAR_LENGTH - BAR_EDGE_OFFSET);
+        Vector2 statOffsetDiff = new Vector2(BAR_SEPARATION + GUIVerticalBar.WIDTH, 0);
         foreach (KeyValuePair<Player.Stats,GUIVerticalBar> kvPair in statBars)
         {
             kvPair.Value.Position = baseStatOffset + statOffsetDiff * statBarOffsetIndices[kvPair.Key];
         }
 
-        Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 + ATM_BAR_LENGTH / 2, ATM_BAR_EDGE_OFFSET);
+        Vector2 baseAtmosOffset = new Vector2(GetViewportDimensions().x / 2 + ATM_BAR_LENGTH / 2, ATM_BAR_EDGE_OFFSET);
         Vector2 amtosOffsetDiff = new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0);
         foreach (KeyValuePair<Gas, GUIHorizontalBar> kvPair in gasBars)
         {
-            kvPair.Value.Position = baseStatOffset + statOffsetDiff * gasBarOffsetIndices[kvPair.Key];
+            kvPair.Value.Position = baseAtmosOffset + amtosOffsetDiff * gasBarOffsetIndices[kvPair.Key];
         }
         
-        inHandLabel.Position = new Vector2(this.GetViewportDimensions().x / 2 - 80, this.GetViewportDimensions().y - 15);
+        inHandLabel.Position = new Vector2(GetViewportDimensions().x / 2 - 80, GetViewportDimensions().y - 15);
         
-        crosshair.Position = this.GetViewportDimensions() / 2;
+        crosshair.Position = GetViewportDimensions() / 2;
     }
 
     public override void _Process(float delta)
