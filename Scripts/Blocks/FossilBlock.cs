@@ -2,6 +2,7 @@
 {
     private readonly string[] texturePaths; 
 
+    public override bool Breakable { get { return true; } }
     public override string[] TexturePaths { get => texturePaths; }
 
     public FossilBlock(string texture)

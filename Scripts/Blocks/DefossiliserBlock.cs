@@ -4,6 +4,7 @@ using Godot;
 
 class DefossiliserBlock : CubeBlock
 {
+    public override bool Breakable { get { return false; } }
     public Defossiliser Machine { private set; get; }
 
     private static readonly string[] texturePaths = 
