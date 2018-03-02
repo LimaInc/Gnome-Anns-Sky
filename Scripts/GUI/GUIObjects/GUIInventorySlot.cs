@@ -47,11 +47,11 @@ public class GUIInventorySlot : GUIObject
 
     public override void OnLeftPress()
     {
-        ItemStack floatingStack = exchangeSlot.GetCurItemStack();
-        ItemStack slotStack = this.GetCurItemStack();
+        ItemStack exchangeStack = exchangeSlot.GetCurItemStack();
+        ItemStack slotStack = GetCurItemStack();
 
-        if (floatingStack != null &&
-            !Item.CompatibleWith(floatingStack.Item.IType, this.GetItemType()))
+        if (exchangeStack != null &&
+            !Item.CompatibleWith(exchangeStack.Item.IType, this.GetItemType()))
         {
             return;
         }
@@ -62,9 +62,17 @@ public class GUIInventorySlot : GUIObject
             return;
         }
 
-        // slotStack.Item.Stackable
-        exchangeSlot.AssignItemStack(slotStack);
-        this.AssignItemStack(floatingStack);
+        // TODO: think of a better conditional
+        if (exchangeStack != null && slotStack != null && slotStack.Item.Stackable && slotStack.Item.Id == exchangeStack.Item.Id)
+        {
+            slotStack.ChangeQuantity(exchangeStack.Count);
+            exchangeSlot.ClearItemStack();
+        }
+        else
+        {
+            exchangeSlot.AssignItemStack(slotStack);
+            AssignItemStack(exchangeStack);
+        }
     }
 
     public override void OnHover()
