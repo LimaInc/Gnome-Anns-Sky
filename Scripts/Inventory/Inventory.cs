@@ -52,7 +52,7 @@ public class Inventory
         {
             for (int i = 0; i < this.size; i++)
             {
-                if (stacks[i] == null || stacks[i].Item.IType == item.IType)
+                if (stacks[i] == null || stacks[i].Item.Id == item.Id)
                 {
                     return true;
                 }
@@ -119,7 +119,8 @@ public class Inventory
                 }
             }
         }
-        throw new Exception("This should never have happened");
+        throw new Exception("This should never have happened, trying to add "+cnt+" of "+item+
+            " to a full inventory, even though the CanAdd function returns "+CanAdd(item, cnt));
     }
 
     public int? TryGetStackIndex(Item item)

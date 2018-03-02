@@ -26,10 +26,8 @@ public class Defossiliser : Node
 
     public float DefossilisingProgress { get; private set; }
     public DefossiliserAction ActionInProgress { get; private set; }
-
-    public delegate void InventoryChangeHandler();
-
-    public InventoryChangeHandler Callback { get; set; }
+    
+    public Action Callback { get; set; }
 
     public Defossiliser(IList<DefossiliserAction> possibleProcesses = null)
     {

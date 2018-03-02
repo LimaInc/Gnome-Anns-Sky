@@ -36,7 +36,7 @@ public class DefossiliserGUI : GUI
     {
         [Item.ItemType.BLOCK] = "Blocks",
         [Item.ItemType.CONSUMABLE] = "Consumables",
-        [Item.ItemType.FOSSIL] = "Fossils"
+        [Item.ItemType.FOSSIL] = "Processed"
     };
     private static readonly IDictionary<Item.ItemType, int> subInvIndices = new Dictionary<Item.ItemType, int>
     {
@@ -51,30 +51,56 @@ public class DefossiliserGUI : GUI
         [Item.ItemType.FOSSIL] = null
     };
 
-    public DefossiliserGUI(Defossiliser defossiliser, Player p, 
+    public DefossiliserGUI(Defossiliser defossiliserMachine, Player p, 
         IDictionary<Item.ItemType,Inventory> inventories, Node vSource) : base(vSource)
     {
-        this.defossiliser = defossiliser;
-        this.subInventories = inventories;
-        this.player = p;
+        defossiliser = defossiliserMachine;
+        subInventories = inventories;
+        player = p;
 
         Initialize();
     }
 
+    // TOOD: inventory / GUI synchronization is a mess
+    // rewrite it (shouldn't change too much,
+    //              mainly SaveSlots() and UpdateSlots() methods and immediate neighbours)
+    // using delegates / lambdas / anonymous functions / whatever your favorite term is
     private void Initialize()
     {
-        this.Hide();
+        Hide();
 
         Vector2 empty = new Vector2();
+
+        bool offerToMainInventory(ItemStack iStack)
+        {
+            SaveSlotState();
+            bool result = subInventories[iStack.Item.IType].TryAddItemStack(iStack);
+            UpdateSlots();
+            return result;
+        }
+
         floatingSlot = new GUIFloatingSlot();
-        inSlotArray = new GUIInventorySlotArray(floatingSlot, Item.ItemType.ANY, IN_SLOT_COUNT, empty);
+        inSlotArray = new GUIInventorySlotArray(floatingSlot, Item.ItemType.ANY, IN_SLOT_COUNT, empty,
+            offerToMainInventory,
+            () => inSlotArray.SaveToInventory(defossiliser.InInventory));
         progressBar = new GUIVerticalBar(empty, PROGRESS_BAR_HEIGHT, new Color(0, 0.6f, 0));
         progressBar.Rotate(Mathf.PI);
-        outSlotArray = new GUIInventorySlotArray(floatingSlot, Item.ItemType.ANY, OUT_SLOT_COUNT, empty);
+        outSlotArray = new GUIInventorySlotArray(floatingSlot, Item.ItemType.ANY, OUT_SLOT_COUNT, empty, 
+            offerToMainInventory, 
+            () => outSlotArray.SaveToInventory(defossiliser.OutInventory));
+
+        bool offerToInputInventory(ItemStack iStack)
+        {
+            SaveSlotState();
+            bool result = defossiliser.InInventory.TryAddItemStack(iStack);
+            UpdateSlots();
+            return result;
+        }
+
         foreach (Item.ItemType type in new List<Item.ItemType>(subArrays.Keys))
         {
             subArrays[type] = new GUILabeledSlotArray(floatingSlot, type, subInventoryNames[type], INVENTORY_SLOT_COUNT, 
-                empty, empty);
+                empty, empty, offerToInputInventory);
         }
         box = new GUIBox(this.GetViewportDimensions() / 2, BOX_SIZE);
         this.AddChild(box);

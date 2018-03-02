@@ -43,8 +43,6 @@ public class Base : Node
         Generator = new BaseGenerator(this);
     }
 
-    private int n = 0;
-
     public bool IsGlobalPositionInside(Vector3 pos)
     {
         Vector3 localPos = pos / Chunk.BLOCK_SIZE - position;

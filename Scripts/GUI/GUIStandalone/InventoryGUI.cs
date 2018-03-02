@@ -38,7 +38,7 @@ public class InventoryGUI : GUI
     {
         [Item.ItemType.BLOCK] = "Blocks",
         [Item.ItemType.CONSUMABLE] = "Consumables",
-        [Item.ItemType.FOSSIL] = "Fossils"
+        [Item.ItemType.FOSSIL] = "Processed"
     };
 
     private static readonly IDictionary<Item.ItemType, int> subInvIndices = new Dictionary<Item.ItemType, int>
@@ -101,11 +101,29 @@ public class InventoryGUI : GUI
             ZIndex = FLOATING_SLOT_Z
         };
 
+        // this is rather ad-hoc and in general unsafe without thinking about how the slots are synchronized with the inventory
+        // TODO: short-term think of a better solution here
+        // TODO: long-term think of a better slot sync scheme
+        bool offerToMainInventory(ItemStack iStack)
+        {
+            SaveSlotState();
+            bool result = subInventories[iStack.Item.IType].TryAddItemStack(iStack);
+            UpdateSlots();
+            return result;
+        }
+        handSlot = new GUIInventorySlot(floatingSlot, Item.ItemType.ANY, -2, HAND_SLOT_OFFSET, offerToMainInventory)
+        {
+            ZAsRelative = true,
+            ZIndex = HAND_SLOT_Z
+        };
+        handSlot.AssignItemStack(player.ItemInHand);
+
         foreach (Item.ItemType type in new List<Item.ItemType>(subInvSlots.Keys))
         {
             Vector2 empty = new Vector2();
+            
             subInvSlots[type] = new GUILabeledSlotArray(floatingSlot, type, subInventoryNames[type], SLOT_COUNT,
-                empty, empty)
+                empty, empty, iStack => handSlot.OfferItemStack(iStack) == null)
             {
                 ZAsRelative = true,
                 ZIndex = ARRAY_SLOT_Z
@@ -117,23 +135,6 @@ public class InventoryGUI : GUI
             ZAsRelative = true,
             ZIndex = BOX_Z
         };
-
-        // this is rather ad-hoc and in general unsafe without thinking about how the slots are synchronized with the inventory
-        // TODO: short-term think of a better solution here
-        // TODO: long-term think of a better slot sync scheme
-        bool addToInvSlotArray(ItemStack iStack)
-        {
-            SaveSlotState();
-            bool result = subInventories[iStack.Item.IType].TryAddItemStack(iStack);
-            UpdateSlots();
-            return result;
-        }
-        handSlot = new GUIInventorySlot(floatingSlot, Item.ItemType.ANY, -2, HAND_SLOT_OFFSET, addToInvSlotArray)
-        {
-            ZAsRelative = true,
-            ZIndex = HAND_SLOT_Z
-        };
-        handSlot.AssignItemStack(player.ItemInHand);
 
         this.AddChild(box);
         foreach (GUILabeledSlotArray slotArr in subInvSlots.Values)

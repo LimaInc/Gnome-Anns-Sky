@@ -12,16 +12,22 @@ public class GUIInventorySlotArray : GUIComplexObject
     public Vector2 SlotSpacing { get; private set; }
     public Vector2 Offset { get; private set; }
 
+    private Func<ItemStack, bool> quickMoveItemStack;
+    private Action invUpdate;
+
     public GUIInventorySlotArray(GUIInventorySlot exchangeSlot, Item.ItemType type, 
-        IntVector2 size, Vector2 slotSpacing)
+        IntVector2 size, Vector2 slotSpacing, 
+        Func<ItemStack,bool> quickMove = null, Action invUpdateCallback = null)
     {
-        this.ExchangeSlot = exchangeSlot;
-        this.SlotType = type;
-        this.Dimensions = size;
+        ExchangeSlot = exchangeSlot;
+        SlotType = type;
+        Dimensions = size;
+        quickMoveItemStack = quickMove;
+        invUpdate = invUpdateCallback;
 
-        this.slots = new GUIInventorySlot[Dimensions.x, Dimensions.y];
+        slots = new GUIInventorySlot[Dimensions.x, Dimensions.y];
 
-        this.SlotSpacing = slotSpacing;
+        SlotSpacing = slotSpacing;
 
         PositionSlots();
     }
@@ -49,7 +55,7 @@ public class GUIInventorySlotArray : GUIComplexObject
 
     internal void SetSize(Vector2 slotSpacing)
     {
-        this.SlotSpacing = slotSpacing;
+        SlotSpacing = slotSpacing;
         HandleResize();
     }
 
@@ -75,13 +81,13 @@ public class GUIInventorySlotArray : GUIComplexObject
         {
             for (int y = Dimensions.y - 1; y >= 0; y--)
             {
-                Vector2 pos = new Vector2(x, y) * (GUIInventorySlot.SIZE + this.SlotSpacing) + GUIInventorySlot.SIZE / 2;
+                Vector2 pos = new Vector2(x, y) * (GUIInventorySlot.SIZE + SlotSpacing) + GUIInventorySlot.SIZE / 2;
 
                 int ind = x + y * Dimensions.x;
 
                 Vector2 slotPos = pos - GUIInventorySlot.SIZE / 2;
                 ItemStack iStack = this[x, y]?.GetCurItemStack();
-                this[x, y] = new GUIInventorySlot(this.ExchangeSlot, this.SlotType, ind, slotPos)
+                this[x, y] = new GUIInventorySlot(ExchangeSlot, SlotType, ind, slotPos, quickMoveItemStack, invUpdate)
                 {
                     ZAsRelative = true,
                     ZIndex = 1

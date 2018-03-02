@@ -8,8 +8,9 @@ public class GUILabeledSlotArray : GUIInventorySlotArray
     public Vector2 LabelShift { get; private set; }
 
     public GUILabeledSlotArray(GUIInventorySlot exchangeSlot, Item.ItemType type, String labelText,
-        IntVector2 size, Vector2 slotSpacing, Vector2 labelShift)
-        : base(exchangeSlot, type, size, slotSpacing)
+        IntVector2 size, Vector2 slotSpacing, Vector2 labelShift, 
+        Func<ItemStack,bool> quickMove = null, Action invUpdate = null)
+        : base(exchangeSlot, type, size, slotSpacing, quickMove, invUpdate)
     {
         this.LabelShift = labelShift;
 

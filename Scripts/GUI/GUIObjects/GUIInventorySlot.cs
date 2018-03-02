@@ -24,15 +24,18 @@ public class GUIInventorySlot : GUIObject
     private Label2D hoverLabel;
 
     private Func<ItemStack,bool> quickMoveItem;
+    private Action invUpdate;
 
+    // TODO: use the invUpdate delegate idea to refactor the inventory with GUI synchronisation system
     public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.ItemType t, int ind, Vector2 pos, 
-        Func<ItemStack,bool> quickMove = null) 
+        Func<ItemStack,bool> quickMove = null, Action invUpdateCallback = null)
         : base(new Vector2(), SIZE, TEX) 
     {
         SetPosition(pos);
 
         exchangeSlot = toExchangeOnPress;
         quickMoveItem = quickMove;
+        invUpdate = invUpdateCallback;
         index = ind;
         type = t;
 
@@ -59,6 +62,7 @@ public class GUIInventorySlot : GUIObject
             if (quickMoveItem(slotStack))
             {
                 ClearItemStack();
+                invUpdate?.Invoke();
             }
             return;
         }
@@ -122,7 +126,12 @@ public class GUIInventorySlot : GUIObject
 
     public ItemStack OfferItemStack(ItemStack i)
     {
-        if (stack.Item == i.Item)
+        if (stack == null)
+        {
+            AssignItemStack(i);
+            return null;
+        }
+        else if(stack.Item == i.Item && stack.Item.Stackable)
         {
             stack.ChangeQuantity(i.Count);
             UpdateLabel();
