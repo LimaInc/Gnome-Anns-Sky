@@ -118,7 +118,17 @@ public class InventoryGUI : GUI
             ZIndex = BOX_Z
         };
 
-        handSlot = new GUIInventorySlot(floatingSlot, Item.ItemType.ANY, -2, HAND_SLOT_OFFSET)
+        // this is rather ad-hoc and in general unsafe without thinking about how the slots are synchronized with the inventory
+        // TODO: short-term think of a better solution here
+        // TODO: long-term think of a better slot sync scheme
+        bool addToInvSlotArray(ItemStack iStack)
+        {
+            SaveSlotState();
+            bool result = subInventories[iStack.Item.IType].TryAddItemStack(iStack);
+            UpdateSlots();
+            return result;
+        }
+        handSlot = new GUIInventorySlot(floatingSlot, Item.ItemType.ANY, -2, HAND_SLOT_OFFSET, addToInvSlotArray)
         {
             ZAsRelative = true,
             ZIndex = HAND_SLOT_Z

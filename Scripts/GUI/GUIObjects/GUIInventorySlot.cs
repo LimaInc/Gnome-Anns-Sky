@@ -23,32 +23,45 @@ public class GUIInventorySlot : GUIObject
     public const int HOVER_LABEL_Z = 3;
     private Label2D hoverLabel;
 
-    public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.ItemType t, int ind, Vector2 pos) 
+    private Func<ItemStack,bool> quickMoveItem;
+
+    public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.ItemType t, int ind, Vector2 pos, 
+        Func<ItemStack,bool> quickMove = null) 
         : base(new Vector2(), SIZE, TEX) 
     {
-        this.SetPosition(pos);
+        SetPosition(pos);
 
-        this.exchangeSlot = toExchangeOnPress;
-        this.index = ind;
-        this.type = t;
+        exchangeSlot = toExchangeOnPress;
+        quickMoveItem = quickMove;
+        index = ind;
+        type = t;
 
-        this.labelChild = new Label2D();
-        this.labelChild.SetZAsRelative(true);
-        this.labelChild.SetZIndex(LABEL_Z);
+        labelChild = new Label2D();
+        labelChild.SetZAsRelative(true);
+        labelChild.SetZIndex(LABEL_Z);
 
-        this.hoverLabel = new Label2D();
-        this.hoverLabel.Hide();
-        this.hoverLabel.SetZAsRelative(true);
-        this.hoverLabel.SetZIndex(HOVER_LABEL_Z);
-        this.AddChild(hoverLabel);
+        hoverLabel = new Label2D();
+        hoverLabel.Hide();
+        hoverLabel.SetZAsRelative(true);
+        hoverLabel.SetZIndex(HOVER_LABEL_Z);
+        AddChild(hoverLabel);
 
-        this.AssignItemStack(null);
+        AssignItemStack(null);
     }
 
     public override void OnLeftPress()
     {
         ItemStack exchangeStack = exchangeSlot.GetCurItemStack();
         ItemStack slotStack = GetCurItemStack();
+
+        if (quickMoveItem != null  && slotStack != null && Input.IsActionPressed("quick_move_items"))
+        {
+            if (quickMoveItem(slotStack))
+            {
+                ClearItemStack();
+            }
+            return;
+        }
 
         if (exchangeStack != null &&
             !Item.CompatibleWith(exchangeStack.Item.IType, this.GetItemType()))
@@ -71,7 +84,7 @@ public class GUIInventorySlot : GUIObject
         else
         {
             exchangeSlot.AssignItemStack(slotStack);
-            AssignItemStack(exchangeStack);
+            this.AssignItemStack(exchangeStack);
         }
     }
 

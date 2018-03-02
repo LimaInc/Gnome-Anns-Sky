@@ -40,12 +40,12 @@ public class Player : KinematicBody
 
     public static Texture CURSOR = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "cursor.png") as Texture;
 
-    private const float STATS_REFERENCE = 0.001f;
+    private const float STATS_REFERENCE = 0.0015f;
     public static IDictionary<Stats, float> DEFAULT_STAT_CHANGE = new Dictionary<Stats, float>
     {
-        [Stats.AIR] = 2.0f * STATS_REFERENCE,
-        [Stats.WATER] = 1.4f * STATS_REFERENCE,
-        [Stats.FOOD] = 1.0f * STATS_REFERENCE,
+        [Stats.AIR] = - 2.0f * STATS_REFERENCE,
+        [Stats.WATER] = - 1.4f * STATS_REFERENCE,
+        [Stats.FOOD] = - 1.0f * STATS_REFERENCE,
     };
     private const float MOVE_DEGRAD_MULT = 5;
     private const float SPRINT_DEGRAD_MULT = 4;
@@ -315,9 +315,7 @@ public class Player : KinematicBody
 
     private void DoMovement(float delta)
     {
-        // Debug.PrintPlace("Velocity before gravity " + velocity);
         velocity += GRAVITY * delta;
-        // Debug.PrintPlace("Velocity after gravity " + velocity);
         if (OpenedGUI == null)
         {
             if (Input.IsActionJustPressed("jump") && IsOnFloor())
@@ -373,11 +371,8 @@ public class Player : KinematicBody
                 velocity += movDir * speed * delta; ;
             }
         }
-        // Debug.PrintPlace("Velocity after input " + velocity);
         velocity *= INERTIA;
-        // Debug.PrintPlace("Velocity after insertia " + velocity);
         velocity = MoveAndSlide(velocity, new Vector3(0, 1, 0));
-        // Debug.PrintPlace("Velocity after move and slide " + velocity);
     }
 
     public void OpenGUI(GUI gui)

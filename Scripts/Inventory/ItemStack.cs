@@ -1,6 +1,3 @@
-using System;
-using Godot;
-
 public class ItemStack
 {
     public Item Item { get; private set; }
