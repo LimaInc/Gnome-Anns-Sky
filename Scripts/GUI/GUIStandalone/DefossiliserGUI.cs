@@ -194,6 +194,6 @@ public class DefossiliserGUI : GUI
     
     public override void _Process(float delta)
     {
-        progressBar.SetPercentage(defossiliser.DefossilisingProgress);
+        progressBar.Percentage = defossiliser.DefossilisingProgress;
     }
 }

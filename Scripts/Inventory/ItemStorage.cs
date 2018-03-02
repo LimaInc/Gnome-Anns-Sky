@@ -1,68 +1,118 @@
 using System;
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
+using static ItemID;
 
 public class ItemStorage
 {
     private static Dictionary<byte, Item> blockItems = new Dictionary<byte, Item>();
-    
-    // UGLY, TODO: fix
-    private static Texture RED_ROCK_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemRedRock.png") as Texture;
-    public static Item redRock = new ItemBlock(ItemID.RED_ROCK, "Red Rock", RED_ROCK_TEX, Game.GetBlockId<RedRock>());//.SetStackable(true);
-    private static Texture ICE_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemIce.png") as Texture;
-    public static Item ice = new ItemBlock(ItemID.ICE, "Ice", ICE_TEX, Game.GetBlockId<IceBlock>());//.SetStackable(true);
 
-    private static Texture CHOCOLATE_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemChocolate.png") as Texture;
-    public static Item chocolate = new ItemConsumable(ItemID.CHOCOLATE, "Chocolate", CHOCOLATE_TEX, Player.Stats.FOOD, 0.2f);
+    public static readonly IDictionary<ItemID, Item> items = new Dictionary<ItemID, Item>();
 
-    private static Texture CAKE_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemCake.png") as Texture;
-    public static Item cake = new ItemConsumable(ItemID.CAKE, "Cake", CAKE_TEX, Player.Stats.FOOD, 0.5f);
+    private static readonly IDictionary<string, Texture> texDict;
 
-    private static Texture STONE_BLOCK_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemStone.png") as Texture;
-    public static Item stone = new ItemBlock(ItemID.STONE_BLOCK, "Stone", STONE_BLOCK_TEX, Game.GetBlockId<Stone>());//.SetStackable(true);
+    static ItemStorage()
+    {
+        // so far that's tradeoff between number of lines needed to add new item type
+        // and number of lines needed to add new item of existing type
+        // this version is left here with hope of further refactoring 
+        // (ideally up to the point where item data is loaded from files)
+        // TODO :: still ugly, fix (somehow)
+        IList<string> texFileNames = new List<string>
+        {
+            "itemRedRock.png",
+            "itemIce.png",
+            "itemChocolate.png",
+            "itemCake.png",
+            "itemStone.png",
+            "itemWater.png",
+            "itemBacteriaFossil.png",
+            "itemGrassFossil.png",
+            "itemTreeFossil.png",
+            "itemAnimalFossil.png",
+            "itemOxygenBacteriaVial.png",
+            "itemNitrogenBacteriaVial.png",
+            "itemCarbonDioxideBacteriaVial.png",
+            "itemGrass.png",
+            "itemTree.png"
+        };
 
-    private static Texture WATER_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemWater.png") as Texture;
-    public static Item water = new ItemConsumable(ItemID.WATER, "Water", WATER_TEX, Player.Stats.WATER, 0.4f);
+        // arbitrary choice: maps file name (without file extension) to texture
+        texDict = texFileNames.ToDictionary(k => k.Split('.')[0],
+            k => ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemRedRock.png") as Texture);
 
-    private static Texture BACTERIA_FOSSIL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemBacteriaFossil.png") as Texture;
-    public static Item oxygenBacteriaFossil =
-        new ItemBlock(ItemID.OXYGEN_BACTERIA_FOSSIL, "OxygenBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<OxygenBacteriaFossilBlock>());//.SetStackable(true);
+        // arbitrary choice: blocks are stackable
+        var itemBlockInits = new List<Tuple<ItemID, string, string, byte>>
+        {
+            Tuple.Create(ItemID.RED_ROCK, "Red Rock", "itemRedRock", Game.GetBlockId<RedRock>()),
+            Tuple.Create(ItemID.STONE_BLOCK, "Stone", "itemStone", Game.GetBlockId<Stone>()),
+            Tuple.Create(ItemID.ICE, "Ice", "itemIce", Game.GetBlockId<IceBlock>()),
+            Tuple.Create(ItemID.OXYGEN_BACTERIA_FOSSIL, "O2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<OxygenBacteriaFossilBlock>()),
+            Tuple.Create(ItemID.NITROGEN_BACTERIA_FOSSIL, "N2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<NitrogenBacteriaFossilBlock>()),
+            Tuple.Create(ItemID.CARBON_DIOXIDE_BACTERIA_FOSSIL, "CO2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>()),
+            Tuple.Create(ItemID.GRASS_FOSSIL, "Grass Fossil", "itemGrassFossil", Game.GetBlockId<GrassFossilBlock>()),
+            Tuple.Create(ItemID.TREE_FOSSIL, "Tree Fossil", "itemTreeFossil", Game.GetBlockId<TreeFossilBlock>()),
+            Tuple.Create(ItemID.ANIMAL_FOSSIL, "Animal Fossil", "itemAnimalFossil", Game.GetBlockId<AnimalFossilBlock>())
+        };
 
-    public static Item nitrogenBacteriaFossil =
-        new ItemBlock(ItemID.NITROGEN_BACTERIA_FOSSIL, "NitrogenBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<NitrogenBacteriaFossilBlock>());//.SetStackable(true);
+        // arbitrary choice: consumables are not stackable
+        var itemConsumableInits = new List<Tuple<ItemID, string, string, Player.Stats, float>>
+        {
+            Tuple.Create(CHOCOLATE, "Chocolate", "itemChocolate",Player.Stats.FOOD,0.2f),
+            Tuple.Create(CAKE, "Cake", "itemCake",Player.Stats.FOOD,0.2f),
+            Tuple.Create(WATER, "Water", "itemWater",Player.Stats.WATER,0.2f)
+        };
 
-    public static Item carbonDioxideBacteriaFossil =
-        new ItemBlock(ItemID.CARBON_DIOXIDE_BACTERIA_FOSSIL, "CarbonDioxideBacteriaFossil", BACTERIA_FOSSIL_TEX, Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>());//.SetStackable(true);
-    
-    private static Texture GRASS_FOSSIL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemGrassFossil.png") as Texture;
-    public static Item grassFossil =
-        new ItemBlock(ItemID.GRASS_FOSSIL, "GrassFossil", GRASS_FOSSIL_TEX, Game.GetBlockId<GrassFossilBlock>());//.SetStackable(true);
+        // arbitrary choice: vials are stackable
+        var itemVialInits = new List<Tuple<ItemID, string, string>>
+        {
+            Tuple.Create(OXYGEN_BACTERIA_VIAL, "O2 Bacteria", "itemOxygenBacteriaVial"),
+            Tuple.Create(NITROGEN_BACTERIA_VIAL, "N2 Bacteria", "itemNitrogenBacteriaVial"),
+            Tuple.Create(CARBON_DIOXIDE_BACTERIA_VIAL, "CO2 Bacteria", "itemCarbonDioxideBacteriaVial")
+        };
+        
+        // arbitrary choice: plants are stackable
+        var plantInits = new List<Tuple<ItemID, string, string, PlantType, byte, ItemID?>>
+        {
+            Tuple.Create(GRASS, "Grass", "itemGrass", PlantType.GRASS, Game.GetBlockId<GrassBlock>(), (ItemID?)RED_ROCK),
+            Tuple.Create(TREE, "Tree", "itemTree", PlantType.TREE, Game.GetBlockId<TreeBlock>(),  (ItemID?)null /* TODO: change to tree */)
+        };
+        
+        foreach (var data in itemBlockInits)
+        {
+            items[data.Item1] = new ItemBlock(data.Item1, data.Item2, GetTexture(data.Item3), data.Item4);
+            items[data.Item1].Stackable = true;
+        }
+        foreach (var data in itemConsumableInits)
+        {
+            items[data.Item1] = new ItemConsumable(data.Item1, data.Item2, GetTexture(data.Item3), data.Item4, data.Item5);
+        }
+        foreach (var data in itemVialInits)
+        {
+            items[data.Item1] = new ItemBacteriaVial(data.Item1, data.Item2, GetTexture(data.Item3));
+            items[data.Item1].Stackable = true;
+        }
+        foreach (var data in plantInits)
+        {
+            items[data.Item1] = new ItemPlant(data.Item1, data.Item2, GetTexture(data.Item3), data.Item4, data.Item5, 
+                data.Item6.HasValue ? items[data.Item6.Value] : null);
+            items[data.Item1].Stackable = true;
+        }
+    }
 
-    private static Texture TREE_FOSSIL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemTreeFossil.png") as Texture;
-    public static Item treeFossil =
-        new ItemBlock(ItemID.TREE_FOSSIL, "TreeFossil", TREE_FOSSIL_TEX, Game.GetBlockId<TreeFossilBlock>());//.SetStackable(true);
-
-    private static Texture ANIMAL_FOSSIL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemAnimalFossil.png") as Texture;
-    public static Item animalFossil =
-        new ItemBlock(ItemID.ANIMAL_FOSSIL, "AnimalFossil", ANIMAL_FOSSIL_TEX, Game.GetBlockId<AnimalFossilBlock>());//.SetStackable(true);
-
-    private static Texture OXYGEN_BACTERIA_VIAL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemOxygenBacteriaVial.png") as Texture;
-    public static Item oxygenBacteriaVial = 
-        new ItemBacteriaVial(ItemID.OXYGEN_BACTERIA_VIAL, "OxygenBacteriaVial", OXYGEN_BACTERIA_VIAL_TEX);
-
-    private static Texture NITROGEN_BACTERIA_VIAL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemNitrogenBacteriaVial.png") as Texture;
-    public static Item nitrogenBacteriaVial = 
-        new ItemBacteriaVial(ItemID.NITROGEN_BACTERIA_VIAL, "NitrogenBacteriaVial", NITROGEN_BACTERIA_VIAL_TEX);
-    
-    private static Texture CARBON_DIOXIDE_BACTERIA_VIAL_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemCarbonDioxideBacteriaVial.png") as Texture;
-    public static Item carbonDioxideBacteriaVial = 
-        new ItemBacteriaVial(ItemID.CARBON_DIOXIDE_BACTERIA_VIAL, "CarbonDioxideBacteriaVial", CARBON_DIOXIDE_BACTERIA_VIAL_TEX);
-
-    private static Texture GRASS_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemGrass.png") as Texture;
-    public static Item grass = new ItemPlant(ItemID.GRASS, "Grass", GRASS_TEX, PlantType.GRASS, Game.GetBlockId<GrassBlock>(), redRock);//.SetStackable(true);
-
-    private static Texture TREE_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemTree.png") as Texture;
-    public static Item tree = new ItemPlant(ItemID.TREE, "Tree", TREE_TEX, PlantType.TREE, Game.GetBlockId<TreeBlock>(), null /* TODO: change to tree */);//.SetStackable(true);
+    private static Texture GetTexture(string name)
+    {
+        bool found = texDict.TryGetValue(name, out Texture tex);
+        if (found)
+        {
+            return tex;
+        }
+        else
+        {
+            throw new ArgumentException("'" + name + "' is not a name of any known texture");
+        }
+    }
 
     public static void RegisterBlockItem(byte id, Item item)
     {

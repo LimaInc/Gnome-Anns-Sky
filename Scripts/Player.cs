@@ -120,9 +120,9 @@ public class Player : KinematicBody
 
         InventoryGUI = new InventoryGUI(this, Inventories, this);
 
-        this.AddItem(ItemStorage.cake, 3);
-        this.AddItem(ItemStorage.chocolate, 10);
-        this.AddItem(ItemStorage.water, 5);
+        this.AddItem(ItemStorage.items[ItemID.CAKE], 3);
+        this.AddItem(ItemStorage.items[ItemID.CHOCOLATE], 10);
+        this.AddItem(ItemStorage.items[ItemID.WATER], 5);
     }
 
     // maybe a bit hacky, TODO: think about it
@@ -319,6 +319,7 @@ public class Player : KinematicBody
 
     private void DoMovement(float delta)
     {
+        Debug.PrintPlace("entereing");
         velocity += new Vector3(0, GRAVITY * delta, 0);
         if (OpenedGUI == null)
         {
@@ -378,7 +379,9 @@ public class Player : KinematicBody
             }
         }
         velocity *= INERTIA;
+        Debug.PrintPlace("finishing with new velocity = "+velocity);
         velocity = MoveAndSlide(velocity, new Vector3(0, 1, 0));
+        Debug.PrintPlace("after move and slide = " + velocity);
     }
 
     public void OpenGUI(GUI gui)

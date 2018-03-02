@@ -33,8 +33,8 @@ public class PlayerGUI : GUI
     };
     private readonly static IDictionary<Player.Stats, Sprite> statBarSprites = new Dictionary<Player.Stats, Sprite>
     {
-        [Player.Stats.WATER] = ItemStorage.water.GenerateGUISprite(),
-        [Player.Stats.FOOD] = ItemStorage.cake.GenerateGUISprite(),
+        [Player.Stats.WATER] = ItemStorage.items[ItemID.WATER].GenerateGUISprite(),
+        [Player.Stats.FOOD] = ItemStorage.items[ItemID.CAKE].GenerateGUISprite(),
         [Player.Stats.AIR] = new Sprite
         {
             Texture = AIR_ICON_TEX,

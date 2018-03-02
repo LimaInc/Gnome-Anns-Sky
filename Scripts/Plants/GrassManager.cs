@@ -9,14 +9,13 @@ public class GrassManager : PlantManager
     private static byte redRock = Game.GetBlockId<RedRock>();
 
     private const float BASE_GAS_PRODUCTION = 0.00000001f;
-    public static readonly IDictionary<Gas, float> gasProduction = new Dictionary<Gas, float>
+    public static readonly IDictionary<Gas, float> GAS_PRODUCTION = new Dictionary<Gas, float>
     {
         [Gas.OXYGEN] = BASE_GAS_PRODUCTION,
         [Gas.NITROGEN] = -BASE_GAS_PRODUCTION,
         [Gas.CARBON_DIOXIDE] = -BASE_GAS_PRODUCTION,
     };
-
-    public static readonly IDictionary<Gas, float> gasRequirements = new Dictionary<Gas, float>
+    public static readonly IDictionary<Gas, float> GAS_REQUIREMENTS = new Dictionary<Gas, float>
     {
         [Gas.OXYGEN] = 0.2f,
         [Gas.NITROGEN] = 0.8f,
@@ -39,8 +38,11 @@ public class GrassManager : PlantManager
     {
         this.plants = plants;
 
-        SPREAD_CHANCE = 0.901;
+        SPREAD_CHANCE = 0.501;
         time = 0;
+
+        GAS_DELTAS = GAS_PRODUCTION;
+
 
         physicsBodies = new Dictionary<IntVector3, PhysicsBody>();
     }
@@ -115,7 +117,7 @@ public class GrassManager : PlantManager
             time = 0;
 
             // kill off some grass if there is too little gas
-            float numberToDie = gasRequirements.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
+            float numberToDie = GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
 
             while (numberToDie > 0)
             {
