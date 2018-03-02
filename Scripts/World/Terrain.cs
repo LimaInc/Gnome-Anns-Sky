@@ -206,8 +206,11 @@ public class Terrain : Spatial
             chunksToUpdate.Enqueue(below);
     }
 
-    Queue<IntVector2> chunksToUpdate = new Queue<IntVector2>();
-    Queue<IntVector2> chunksToRemove = new Queue<IntVector2>();
+    //Queue<IntVector2> chunksToUpdate = new Queue<IntVector2>();
+    //Queue<IntVector2> chunksToRemove = new Queue<IntVector2>();
+
+    HashQueue<IntVector2> chunksToUpdate = new HashQueue<IntVector2>();
+    HashQueue<IntVector2> chunksToRemove = new HashQueue<IntVector2>();
 
     IntVector2[][] chunkLoadIndices = new IntVector2[][]
     {
@@ -254,6 +257,6 @@ public class Terrain : Spatial
             }
         }
 
-        chunksToRemove = new Queue<IntVector2>(loadedChunks.Keys.Except(chunksLoadedThisUpdate));
+        chunksToRemove = new HashQueue<IntVector2>(loadedChunks.Keys.Except(chunksLoadedThisUpdate));
     }
 }
