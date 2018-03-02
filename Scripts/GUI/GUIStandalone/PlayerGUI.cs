@@ -1,19 +1,46 @@
 using System;
 using Godot;
+using System.Collections.Generic;
 
 public class PlayerGUI : GUI
 {
     private static Texture AIR_ICON_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "airIcon.png") as Texture;
-    
     public static Texture CROSSHAIR_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "crosshairWhite.png") as Texture;
 
-    private readonly static Color OXYGEN_COLOR = Colors.MAGENTA;
-    private readonly static Color NITROGEN_COLOR = Colors.CYAN;
-    private readonly static Color CARBON_DIOXIDE_COLOR = Colors.YELLOW;
-
-    private readonly static Color AIR_COLOR = OXYGEN_COLOR;
-    private readonly static Color THIRST_COLOR = new Color(0.0f, 0.0f, 1.0f);
-    private readonly static Color HUNGER_COLOR = new Color(0.0f, 0.7f, 0.2f);
+    private readonly static IDictionary<Gas, Color> gasBarColors = new Dictionary<Gas, Color>
+    {
+        [Gas.OXYGEN] = Colors.MAGENTA,
+        [Gas.NITROGEN] = Colors.CYAN,
+        [Gas.CARBON_DIOXIDE] = Colors.YELLOW
+    };
+    private readonly static IDictionary<Gas, float> gasBarOffsetIndices = new Dictionary<Gas, float>
+    {
+        [Gas.OXYGEN] = -1,
+        [Gas.NITROGEN] = 0,
+        [Gas.CARBON_DIOXIDE] = 1
+    };
+    private readonly static IDictionary<Player.Stats, Color> statBarColors = new Dictionary<Player.Stats, Color>
+    {
+        [Player.Stats.AIR] = gasBarColors[Gas.OXYGEN],
+        [Player.Stats.WATER] = new Color(0.0f, 0.0f, 1.0f),
+        [Player.Stats.FOOD] = new Color(0.0f, 0.7f, 0.2f)
+    };
+    private readonly static IDictionary<Player.Stats, float> statBarOffsetIndices = new Dictionary<Player.Stats, float>
+    {
+        [Player.Stats.AIR] = 0,
+        [Player.Stats.WATER] = 1,
+        [Player.Stats.FOOD] = 2
+    };
+    private readonly static IDictionary<Player.Stats, Sprite> statBarSprites = new Dictionary<Player.Stats, Sprite>
+    {
+        [Player.Stats.WATER] = ItemStorage.water.GenerateGUISprite(),
+        [Player.Stats.FOOD] = ItemStorage.cake.GenerateGUISprite(),
+        [Player.Stats.AIR] = new Sprite
+        {
+            Texture = AIR_ICON_TEX,
+            Scale = ICON_SCALE
+        }
+    };
 
     private const float BAR_LENGTH = 200;
     private const float BAR_SEPARATION = 30;
@@ -27,19 +54,10 @@ public class PlayerGUI : GUI
 
     private Player player;
 
-    private GUIVerticalBar air;
-    private GUIVerticalBar thirst;
-    private GUIVerticalBar hunger;
-
-    private Sprite airIcon;
-    private Sprite thirstIcon;
-    private Sprite hungerIcon;
+    private readonly static IDictionary<Gas, GUIHorizontalBar> gasBars = new Dictionary<Gas, GUIHorizontalBar>();
+    private readonly static IDictionary<Player.Stats, GUIVerticalBar> statBars = new Dictionary<Player.Stats, GUIVerticalBar>();
 
     private Label2D inHandLabel;
-
-    private GUIHorizontalBar atmosOxygen;
-    private GUIHorizontalBar atmosNitrogen;
-    private GUIHorizontalBar atmosCarbonDioxide;
 
     private Sprite crosshair;
 
@@ -66,14 +84,14 @@ public class PlayerGUI : GUI
 
     public override void _Ready()
     {
-        this.atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
+        atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
     }
 
     public PlayerGUI(Player p) : base(p)
     {
-        this.player = p;
+        player = p;
         Initialize();
-        this.BackgroundMode = false;
+        BackgroundMode = false;
     }
 
     private void ChangeToBackgroundMode()
@@ -91,67 +109,47 @@ public class PlayerGUI : GUI
     {
         Vector2 empty = new Vector2();
 
-        this.air = new GUIVerticalBar(empty, BAR_LENGTH, AIR_COLOR);
-        this.thirst = new GUIVerticalBar(empty, BAR_LENGTH, THIRST_COLOR);
-        this.hunger = new GUIVerticalBar(empty, BAR_LENGTH, HUNGER_COLOR);
+        foreach (KeyValuePair<Player.Stats,Color> kvPair in statBarColors)
+        {
+            Player.Stats stat = kvPair.Key;
+            statBars[stat] = new GUIVerticalBar(empty, BAR_LENGTH, kvPair.Value);
+            AddChild(statBars[stat]);
+            statBarSprites[stat].Position = ICON_OFFSET;
+            statBars[stat].AddChild(statBarSprites[stat]);
+        }
 
-        hungerIcon = ItemStorage.cake.GenerateGUISprite();
-        hungerIcon.SetScale(ICON_SCALE);
-        thirstIcon = ItemStorage.water.GenerateGUISprite();
-        thirstIcon.SetScale(ICON_SCALE);
-        airIcon = new Sprite();
-        airIcon.SetTexture(AIR_ICON_TEX);
-        airIcon.SetScale(ICON_SCALE);
-        
-        hungerIcon.Position = ICON_OFFSET;
-        thirstIcon.Position = ICON_OFFSET;
-        airIcon.Position = ICON_OFFSET;
-
-        this.AddChild(this.air);
-        this.AddChild(this.thirst);
-        this.AddChild(this.hunger);
-
-        this.air.AddChild(airIcon);
-        this.thirst.AddChild(thirstIcon);
-        this.hunger.AddChild(hungerIcon);
-
-        this.atmosNitrogen = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, NITROGEN_COLOR);
-        this.atmosOxygen = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, OXYGEN_COLOR);
-        this.atmosCarbonDioxide = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, CARBON_DIOXIDE_COLOR);
-
-        this.AddChild(this.atmosOxygen);
-        this.AddChild(this.atmosNitrogen);
-        this.AddChild(this.atmosCarbonDioxide);
+        foreach (KeyValuePair<Gas, Color> kvPair in gasBarColors)
+        {
+            Gas g = kvPair.Key;
+            gasBars[g] = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, kvPair.Value);
+            AddChild(gasBars[g]);
+        }
 
         inHandLabel = new Label2D();
-        this.AddChild(inHandLabel);
+        AddChild(inHandLabel);
 
-        crosshair = new Sprite();
-        crosshair.SetTexture(CROSSHAIR_TEX);
-        this.AddChild(crosshair);
+        crosshair = new Sprite()
+        {
+            Texture = CROSSHAIR_TEX
+        };
+        AddChild(crosshair);
     }
 
     public override void HandleResize()
     {
-        Vector2 baseStatusOffset = new Vector2(BAR_EDGE_OFFSET, this.GetViewportDimensions().y - BAR_LENGTH - BAR_EDGE_OFFSET);
-
-        Vector2 airPos = baseStatusOffset;
-        Vector2 thirstPos = airPos + new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0);
-        Vector2 hungerPos = thirstPos + new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0);
-
-        this.air.Position = airPos;
-        this.thirst.Position = thirstPos;
-        this.hunger.Position = hungerPos;
+        Vector2 baseStatOffset = new Vector2(BAR_EDGE_OFFSET, this.GetViewportDimensions().y - BAR_LENGTH - BAR_EDGE_OFFSET);
+        Vector2 statOffsetDiff = new Vector2(BAR_SEPARATION + GUIHorizontalBar.WIDTH, 0);
+        foreach (KeyValuePair<Player.Stats,GUIVerticalBar> kvPair in statBars)
+        {
+            kvPair.Value.Position = baseStatOffset + statOffsetDiff * statBarOffsetIndices[kvPair.Key];
+        }
 
         Vector2 baseAtmosOffset = new Vector2(this.GetViewportDimensions().x / 2 + ATM_BAR_LENGTH / 2, ATM_BAR_EDGE_OFFSET);
-
-        Vector2 atmosMiddlePos = baseAtmosOffset;
-        Vector2 atmosLeftPos = atmosMiddlePos - new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0);
-        Vector2 atmosRightPos = atmosMiddlePos + new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0);
-        
-        this.atmosNitrogen.Position = atmosLeftPos;
-        this.atmosOxygen.Position = atmosMiddlePos;
-        this.atmosCarbonDioxide.Position = atmosRightPos;
+        Vector2 amtosOffsetDiff = new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0);
+        foreach (KeyValuePair<Gas, GUIHorizontalBar> kvPair in gasBars)
+        {
+            kvPair.Value.Position = baseStatOffset + statOffsetDiff * gasBarOffsetIndices[kvPair.Key];
+        }
         
         inHandLabel.Position = new Vector2(this.GetViewportDimensions().x / 2 - 80, this.GetViewportDimensions().y - 15);
         
@@ -162,27 +160,19 @@ public class PlayerGUI : GUI
     {
         base._Process(delta);
 
-        this.air.SetPercentage((float) this.player.CurrentAir / Player.MAX_AIR);
-        this.thirst.SetPercentage((float) this.player.CurrentThirst / Player.MAX_THIRST);
-        this.hunger.SetPercentage((float) this.player.CurrentHunger / Player.MAX_HUNGER);
-
-        if (this.atm != null)
+        foreach (KeyValuePair<Player.Stats, GUIVerticalBar> kvPair in statBars)
         {
-            this.atmosOxygen.SetPercentage(this.atm.GetGasProgress(Gas.OXYGEN));
-            this.atmosNitrogen.SetPercentage(this.atm.GetGasProgress(Gas.NITROGEN));
-            this.atmosCarbonDioxide.SetPercentage(this.atm.GetGasProgress(Gas.CARBON_DIOXIDE));
+            kvPair.Value.Percentage = player[kvPair.Key];
         }
-        else
+        foreach (KeyValuePair<Gas, GUIHorizontalBar> kvPair in gasBars)
         {
-            this.atmosOxygen.SetPercentage(0.0f);
-            this.atmosNitrogen.SetPercentage(0.0f);
-            this.atmosCarbonDioxide.SetPercentage(0.0f);
+            kvPair.Value.Percentage = atm.GetGasProgress(kvPair.Key);
         }
 
         if (!BackgroundMode && player.ItemInHand != null)
         {
-            inHandLabel.Text = "Currently in hand: " + player.ItemInHand.GetItem().GetName() + ",    " +
-                "Quantity : " + player.ItemInHand.GetCount();
+            inHandLabel.Text = "Currently in hand: " + player.ItemInHand.Item.Name + ",    " +
+                "Quantity : " + player.ItemInHand.Count;
         }
         else 
         {

@@ -45,8 +45,8 @@ public class Defossiliser : Node
         this.possibleProcesses = possibleProcesses ?? DEFAULT_PROCESSES;
         DefossilisingProgress = 0;
 
-        InInventory = new Inventory(Item.Type.ANY, IN_INVENTORY_SIZE);
-        OutInventory = new Inventory(Item.Type.ANY, OUT_INVENTORY_SIZE);
+        InInventory = new Inventory(Item.ItemType.ANY, IN_INVENTORY_SIZE);
+        OutInventory = new Inventory(Item.ItemType.ANY, OUT_INVENTORY_SIZE);
     }
 
     public void HandleInput(InputEvent e, Player p)

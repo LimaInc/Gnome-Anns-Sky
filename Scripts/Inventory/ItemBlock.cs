@@ -5,10 +5,9 @@ public class ItemBlock : Item
 {
     public byte Block { get; }
 
-    public ItemBlock(byte id, String name, Texture tex, byte b) : base(id, name, tex, Item.Type.BLOCK) 
+    public ItemBlock(ItemID id, String name, Texture tex, byte b) : base(id, name, tex, Item.ItemType.BLOCK) 
     {
-        this.Block = b;
-
+        Block = b;
         ItemStorage.RegisterBlockItem(b, this);
     }
 }

@@ -22,8 +22,8 @@ public class Plants : Node
 
     public bool Plant(ItemPlant plantItem, IntVector3 blockPos)
     {
-        if (plantManagers.ContainsKey(plantItem.PlantType))
-            return plantManagers[plantItem.PlantType].PlantOn(blockPos);
+        if (plantManagers.ContainsKey(plantItem.PType))
+            return plantManagers[plantItem.PType].PlantOn(blockPos);
         return false;
     }
 

@@ -4,10 +4,10 @@ using System;
 public class Inventory
 {
     public readonly int size;
-    private Item.Type type;
+    private Item.ItemType type;
     private ItemStack[] stacks;
 
-    public Inventory(Item.Type type, int size)
+    public Inventory(Item.ItemType type, int size)
     {
         this.type = type;
         this.size = size;

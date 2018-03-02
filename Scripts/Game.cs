@@ -20,8 +20,9 @@ public class Game : Node
     public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
 
     // multiplicative factor for processes in the world (not directly affecting the player)
-    public const int SPEED = 20;
-    public const int PLANT_MAX_SPEED = 1; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
+    public const int FOSSIL_SPAWN_MULITPLIER = 20;
+    public const int SPEED = 50;
+    public const int PLANT_MAX_SPEED = 2; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
 
     public Game()
     {
@@ -119,7 +120,7 @@ public class Game : Node
         return blocks[id];
     }
 
-    public static bool isBreakable(byte id)
+    public static bool IsBreakable(byte id)
     {
         return breakables[id];
     }

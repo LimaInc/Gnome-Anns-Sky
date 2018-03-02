@@ -17,7 +17,7 @@ public class DefossiliserGUI : GUI
 
     private Defossiliser defossiliser;
     private Player player;
-    private IDictionary<Item.Type, Inventory> subInventories;
+    private IDictionary<Item.ItemType, Inventory> subInventories;
 
     private GUIBox box;
 
@@ -25,34 +25,34 @@ public class DefossiliserGUI : GUI
     private GUIInventorySlotArray inSlotArray;
     private GUIVerticalBar progressBar;
     private GUIInventorySlotArray outSlotArray;
-    private IDictionary<Item.Type, GUILabeledSlotArray> subArrays = new Dictionary<Item.Type, GUILabeledSlotArray>
+    private IDictionary<Item.ItemType, GUILabeledSlotArray> subArrays = new Dictionary<Item.ItemType, GUILabeledSlotArray>
     {
-        [Item.Type.BLOCK] = null,
-        [Item.Type.CONSUMABLE] = null,
-        [Item.Type.FOSSIL] = null
+        [Item.ItemType.BLOCK] = null,
+        [Item.ItemType.CONSUMABLE] = null,
+        [Item.ItemType.FOSSIL] = null
     };
 
-    private static readonly IDictionary<Item.Type, String> subInventoryNames = new Dictionary<Item.Type, String>
+    private static readonly IDictionary<Item.ItemType, String> subInventoryNames = new Dictionary<Item.ItemType, String>
     {
-        [Item.Type.BLOCK] = "Blocks",
-        [Item.Type.CONSUMABLE] = "Consumables",
-        [Item.Type.FOSSIL] = "Fossils"
+        [Item.ItemType.BLOCK] = "Blocks",
+        [Item.ItemType.CONSUMABLE] = "Consumables",
+        [Item.ItemType.FOSSIL] = "Fossils"
     };
-    private static readonly IDictionary<Item.Type, int> subInvIndices = new Dictionary<Item.Type, int>
+    private static readonly IDictionary<Item.ItemType, int> subInvIndices = new Dictionary<Item.ItemType, int>
     {
-        [Item.Type.CONSUMABLE] = 0,
-        [Item.Type.FOSSIL] = 1,
-        [Item.Type.BLOCK] = 2
+        [Item.ItemType.CONSUMABLE] = 0,
+        [Item.ItemType.FOSSIL] = 1,
+        [Item.ItemType.BLOCK] = 2
     };
-    private static readonly IDictionary<Item.Type, Label> subInvLabels = new Dictionary<Item.Type, Label>
+    private static readonly IDictionary<Item.ItemType, Label> subInvLabels = new Dictionary<Item.ItemType, Label>
     {
-        [Item.Type.BLOCK] = null,
-        [Item.Type.CONSUMABLE] = null,
-        [Item.Type.FOSSIL] = null
+        [Item.ItemType.BLOCK] = null,
+        [Item.ItemType.CONSUMABLE] = null,
+        [Item.ItemType.FOSSIL] = null
     };
 
     public DefossiliserGUI(Defossiliser defossiliser, Player p, 
-        IDictionary<Item.Type,Inventory> inventories, Node vSource) : base(vSource)
+        IDictionary<Item.ItemType,Inventory> inventories, Node vSource) : base(vSource)
     {
         this.defossiliser = defossiliser;
         this.subInventories = inventories;
@@ -67,11 +67,11 @@ public class DefossiliserGUI : GUI
 
         Vector2 empty = new Vector2();
         floatingSlot = new GUIFloatingSlot();
-        inSlotArray = new GUIInventorySlotArray(floatingSlot, Item.Type.ANY, IN_SLOT_COUNT, empty);
+        inSlotArray = new GUIInventorySlotArray(floatingSlot, Item.ItemType.ANY, IN_SLOT_COUNT, empty);
         progressBar = new GUIVerticalBar(empty, PROGRESS_BAR_HEIGHT, new Color(0, 0.6f, 0));
         progressBar.Rotate(Mathf.PI);
-        outSlotArray = new GUIInventorySlotArray(floatingSlot, Item.Type.ANY, OUT_SLOT_COUNT, empty);
-        foreach (Item.Type type in new List<Item.Type>(subArrays.Keys))
+        outSlotArray = new GUIInventorySlotArray(floatingSlot, Item.ItemType.ANY, OUT_SLOT_COUNT, empty);
+        foreach (Item.ItemType type in new List<Item.ItemType>(subArrays.Keys))
         {
             subArrays[type] = new GUILabeledSlotArray(floatingSlot, type, subInventoryNames[type], INVENTORY_SLOT_COUNT, 
                 empty, empty);
@@ -91,7 +91,7 @@ public class DefossiliserGUI : GUI
     private void UpdateSlots()
     {
         UpdateDefossiliserSlotState();
-        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subArrays)
+        foreach (KeyValuePair<Item.ItemType, GUILabeledSlotArray> kvPair in subArrays)
         {
             kvPair.Value.OverrideFromInventory(subInventories[kvPair.Key]);
         }
@@ -106,7 +106,7 @@ public class DefossiliserGUI : GUI
     private void SaveSlotState()
     {
         SaveDefossiliserSlotState();
-        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subArrays)
+        foreach (KeyValuePair<Item.ItemType, GUILabeledSlotArray> kvPair in subArrays)
         {
             kvPair.Value.SaveToInventory(subInventories[kvPair.Key]);
         }
@@ -131,7 +131,7 @@ public class DefossiliserGUI : GUI
         Vector2 offset = SLOT_OFFSET - BOX_SIZE / 2;
         Vector2 delta = new Vector2(subArraySize.x + sectionSpacing, 0);
 
-        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subArrays)
+        foreach (KeyValuePair<Item.ItemType, GUILabeledSlotArray> kvPair in subArrays)
         {
             kvPair.Value.SetPosition(offset + delta * subInvIndices[kvPair.Key]);
             kvPair.Value.SetSize(SLOT_SPACING, LABEL_SHIFT);
@@ -164,7 +164,7 @@ public class DefossiliserGUI : GUI
         ItemStack stack = floatingSlot.GetCurItemStack();
         if (stack != null)
         {
-            this.subInventories[stack.GetItem().GetType()].TryAddItemStack(stack);
+            this.subInventories[stack.Item.IType].TryAddItemStack(stack);
             floatingSlot.ClearItemStack();
         }
     }

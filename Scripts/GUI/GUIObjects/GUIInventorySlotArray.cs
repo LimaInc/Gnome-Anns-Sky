@@ -4,7 +4,7 @@ using Godot;
 public class GUIInventorySlotArray : GUIComplexObject
 {
     public GUIInventorySlot ExchangeSlot { get; private set; }
-    public Item.Type SlotType { get; private set; }
+    public Item.ItemType SlotType { get; private set; }
     public IntVector2 Dimensions { get; private set; }
 
     private GUIInventorySlot[,] slots;
@@ -12,7 +12,7 @@ public class GUIInventorySlotArray : GUIComplexObject
     public Vector2 SlotSpacing { get; private set; }
     public Vector2 Offset { get; private set; }
 
-    public GUIInventorySlotArray(GUIInventorySlot exchangeSlot, Item.Type type, 
+    public GUIInventorySlotArray(GUIInventorySlot exchangeSlot, Item.ItemType type, 
         IntVector2 size, Vector2 slotSpacing)
     {
         this.ExchangeSlot = exchangeSlot;

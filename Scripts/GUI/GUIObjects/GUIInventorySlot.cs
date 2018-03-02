@@ -10,7 +10,7 @@ public class GUIInventorySlot : GUIObject
 
     private GUIInventorySlot exchangeSlot;
     private int index;
-    private Item.Type type;
+    private Item.ItemType type;
 
     private ItemStack stack;
 
@@ -23,7 +23,7 @@ public class GUIInventorySlot : GUIObject
     public const int HOVER_LABEL_Z = 3;
     private Label2D hoverLabel;
 
-    public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.Type t, int ind, Vector2 pos) 
+    public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.ItemType t, int ind, Vector2 pos) 
         : base(new Vector2(), SIZE, TEX) 
     {
         this.SetPosition(pos);
@@ -51,17 +51,18 @@ public class GUIInventorySlot : GUIObject
         ItemStack slotStack = this.GetCurItemStack();
 
         if (floatingStack != null &&
-            !Item.CompatibleWith(floatingStack.GetItem().GetType(), this.GetItemType()))
+            !Item.CompatibleWith(floatingStack.Item.IType, this.GetItemType()))
         {
             return;
         }
 
         if (slotStack != null &&
-            !Item.CompatibleWith(slotStack.GetItem().GetType(), exchangeSlot.GetItemType()))
+            !Item.CompatibleWith(slotStack.Item.IType, exchangeSlot.GetItemType()))
         {
             return;
         }
 
+        // slotStack.Item.Stackable
         exchangeSlot.AssignItemStack(slotStack);
         this.AssignItemStack(floatingStack);
     }
@@ -76,7 +77,7 @@ public class GUIInventorySlot : GUIObject
         this.hoverLabel.Hide();
     }
 
-    public Item.Type GetItemType()
+    public Item.ItemType GetItemType()
     {
         return this.type;
     }
@@ -88,9 +89,9 @@ public class GUIInventorySlot : GUIObject
 
     public void AssignItemStack(ItemStack i)
     {
-        if (i != null && !Item.CompatibleWith(i.GetItem().GetType(), this.type))
+        if (i != null && !Item.CompatibleWith(i.Item.IType, this.type))
         {
-            throw new ArgumentException("Cannot assign stack "+i+" of type "+i.GetItem().GetType()+
+            throw new ArgumentException("Cannot assign stack "+i+" of type "+i.Item.GetType()+
                 " to slot "+this+" that accepts "+this.type);
         }
 
@@ -100,9 +101,9 @@ public class GUIInventorySlot : GUIObject
 
     public ItemStack OfferItemStack(ItemStack i)
     {
-        if (stack.GetItem() == i.GetItem())
+        if (stack.Item == i.Item)
         {
-            stack.AddToQuantity(i.GetCount());
+            stack.ChangeQuantity(i.Count);
             UpdateLabel();
             return null;
         }
@@ -116,7 +117,7 @@ public class GUIInventorySlot : GUIObject
     {
         base._Process(delta);
 
-        if (stack != null && labelNum != stack.GetCount())
+        if (stack != null && labelNum != stack.Count)
         {
             UpdateLabel();
         }
@@ -141,7 +142,7 @@ public class GUIInventorySlot : GUIObject
         }
         if (stack != null)
         {
-            curItemChild = stack.GetItem().GenerateGUISprite();
+            curItemChild = stack.Item.GenerateGUISprite();
             curItemChild.Position = this.index != -1 ?
                 this.rect.Position + SIZE / 2 :
                 this.rect.Position;
@@ -149,13 +150,13 @@ public class GUIInventorySlot : GUIObject
             curItemChild.ZIndex = CUR_ITEM_CHILD_Z;
             this.AddChild(curItemChild);
             curItemChild.AddChild(labelChild);
-            hoverLabel.Text = stack.GetItem().GetName();
+            hoverLabel.Text = stack.Item.Name;
         }
     }
 
     private void UpdateLabel()
     {
-        labelNum = stack != null ? stack.GetCount() : -1;
+        labelNum = stack != null ? stack.Count : -1;
         Vector2 position = this.index != -1 ?
             this.rect.Position + SIZE / 2 :
             this.rect.Position;

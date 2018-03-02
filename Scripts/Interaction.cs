@@ -93,7 +93,7 @@ public class Interaction : Camera
 
     public byte RemoveBlock()
     {
-        if (!Game.isBreakable(GetBlock()))
+        if (!Game.IsBreakable(GetBlock()))
             return 0;
 
         IntVector3? blockPossible = this.GetBlockPositionUnderCursor();

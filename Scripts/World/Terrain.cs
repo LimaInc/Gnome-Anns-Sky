@@ -11,14 +11,16 @@ public class Terrain : Spatial
     public const int RED_ROCK_LAYER_NUM = 3;
     public const int FOSSIL_DEPTH = RED_ROCK_LAYER_NUM;
 
+    public const float BASE_FOSSIL_SPAWN_RATE = Game.FOSSIL_SPAWN_MULITPLIER * 0.0003f;
+
     public readonly IList<UniformFossilGenerator> fossilGenerators = new List<UniformFossilGenerator>()
     {
-        new UniformFossilGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.001f),
-        new UniformFossilGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.0005f),
-        new UniformFossilGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.004f),
-        new UniformFossilGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
-        new UniformFossilGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
-        new UniformFossilGenerator(Game.GetBlockId<AnimalFossilBlock>(), FOSSIL_DEPTH, 0.0015f)
+        new UniformFossilGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 10),
+        new UniformFossilGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 4),
+        new UniformFossilGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformFossilGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformFossilGenerator(Game.GetBlockId<AnimalFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformFossilGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE)
     };
 
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
