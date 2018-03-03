@@ -1,3 +1,4 @@
+using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,13 @@ public class TreeManager : PlantManager
     private Dictionary<Tuple<int, int>, List<IntVector3>> grid;
 
     private float time;
+    private Dictionary<IntVector3, PhysicsBody> physicsBodies;
+    private Plants plants;
 
     public TreeManager(Plants plants) : base(plants)
     {
+        this.plants = plants;
+
         GAS_DELTAS = new Dictionary<Gas, float>
         {
             [Gas.OXYGEN] = 0.00005f,
@@ -31,6 +36,8 @@ public class TreeManager : PlantManager
         SPREAD_CHANCE = 0.001;
         time = 0;
         grid = new Dictionary<Tuple<int, int>, List<IntVector3>>();
+
+        physicsBodies = new Dictionary<IntVector3, PhysicsBody>();
 
         int idx = 0;
         for (int y = 1; y < 6; y++)
@@ -90,6 +97,29 @@ public class TreeManager : PlantManager
         if (!grid.ContainsKey(gridPos))
             grid[gridPos] = new List<IntVector3>();
         grid[gridPos].Add(blockPos);
+
+        CollisionShape collisionShape = new CollisionShape();
+        BoxShape b = new BoxShape();
+        b.SetExtents(new Vector3(Block.SIZE, 0.2f, Block.SIZE) / 2.0f);
+        collisionShape.SetShape(b);
+
+        PhysicsBody physicsBody = new StaticBody();
+        physicsBody.AddToGroup("plants");
+        physicsBody.AddToGroup("alive");
+        physicsBody.SetTranslation((blockPos + new Vector3(0, 1, 0)) * Block.SIZE + new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2.0f);
+
+        // Make sure player cannot collide with trees.
+        physicsBody.SetCollisionLayerBit(0, false);
+        physicsBody.SetCollisionMaskBit(0, false);
+
+        // Make sure plants can collide with areas for detection and animal bodies.
+        physicsBody.SetCollisionLayerBit(1, true);
+        physicsBody.SetCollisionMaskBit(31, true);
+
+        physicsBody.AddChild(collisionShape);
+
+        physicsBodies[blockPos] = physicsBody;
+        plants.AddChild(physicsBody);
 
         return true;
     }
