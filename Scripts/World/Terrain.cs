@@ -46,8 +46,8 @@ public class Terrain : Spatial
             chunkLoadIndices[i] = new IntVector2[4*i];
             for (int j = 0; j < i; j++)
             {
-                chunkLoadIndices[i][        j] = new IntVector2(j, i - j);
-                chunkLoadIndices[i][    i + j] = new IntVector2(i - j, - j);
+                chunkLoadIndices[i][0 * i + j] = new IntVector2(j, i - j);
+                chunkLoadIndices[i][1 * i + j] = new IntVector2(i - j, - j);
                 chunkLoadIndices[i][2 * i + j] = new IntVector2(- j, - (i - j));
                 chunkLoadIndices[i][3 * i + j] = new IntVector2(-(i - j), j);
             }
