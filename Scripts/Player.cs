@@ -71,7 +71,6 @@ public class Player : KinematicBody
         {
             if (!dead && value && DEBUG_DEATH_ENABLED)
             {
-                Debug.PrintPlace("Dying");
                 OpenGUI(new DeadGUI(this));
             }
             dead = value;
