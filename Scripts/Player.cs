@@ -64,7 +64,18 @@ public class Player : KinematicBody
         [Stats.FOOD] = 1
     };
 
-    public bool Dead { get; private set; }
+    private bool dead = false;
+    public bool Dead {
+        get => dead;
+        private set
+        {
+            if (!dead && value && DEBUG_DEATH_ENABLED)
+            {
+                OpenGUI(new DeadGUI(this));
+            }
+            dead = value;
+        }
+    }
 
     public const int PLAYER_INVENTORY_COUNT = 40;
 
@@ -212,24 +223,6 @@ public class Player : KinematicBody
         velocity += v;
     }
 
-    public void Kill()
-    {
-        if (!DEBUG_DEATH_ENABLED) 
-        {
-            return;
-        }
-
-        Dead = true;
-
-        if (OpenedGUI != null)
-            CloseGUI();
-        else
-            RemoveChild(playerGUI);
-
-        DeadGUI dg = new DeadGUI(this);
-        AddChild(dg);
-    }
-
     public void HandleUseItem()
     {
         if (ItemInHand == null)
@@ -290,7 +283,8 @@ public class Player : KinematicBody
     {
         if (Input.IsActionJustPressed("debug_kill"))
         {
-            Kill();
+            Dead = true;
+            return;
         }
         
         if (planetBase.IsGlobalPositionInside(Translation))
@@ -311,7 +305,7 @@ public class Player : KinematicBody
             }
             else
             {
-                this.CloseGUI();
+                CloseGUI();
             }
         }
 
