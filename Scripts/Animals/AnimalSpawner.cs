@@ -83,7 +83,8 @@ public class AnimalSpawner : Node
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             10,
             90,
-            "animal0"
+            "animal0",
+            2
         );
 
         AnimalPreset female0 = new AnimalPreset(
@@ -92,7 +93,8 @@ public class AnimalSpawner : Node
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             10,
             90,
-            "animal0"
+            "animal0",
+            2
         );
 
         AnimalPreset maleFrog = new AnimalPreset(
@@ -101,7 +103,8 @@ public class AnimalSpawner : Node
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             90,
-            "frog"
+            "frog",
+            1
         );
 
         AnimalPreset femaleFrog = new AnimalPreset(
@@ -110,7 +113,8 @@ public class AnimalSpawner : Node
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             90,
-            "frog"
+            "frog",
+            1
         );
 
         AnimalPreset maleBig = new AnimalPreset(
@@ -119,7 +123,8 @@ public class AnimalSpawner : Node
             AnimalBehaviourComponent.AnimalDiet.Omnivore,
             100,
             70,
-            "big"
+            "big",
+            3
         );
 
         AnimalPreset femaleBig = new AnimalPreset(
@@ -128,7 +133,8 @@ public class AnimalSpawner : Node
             AnimalBehaviourComponent.AnimalDiet.Omnivore,
             100,
             70,
-            "big"
+            "big",
+            3
         );
 
         AnimalPreset maleFrogBD = new AnimalPreset(
@@ -228,7 +234,7 @@ public class AnimalSpawner : Node
 
         entity.SetName("Entity");
 
-        AnimalBehaviourComponent behaviourComponent = new AnimalBehaviourComponent(entity, preset.sex, preset.diet, preset.foodChainLevel, preset.breedability, preset.presetName, preset.oxygenConsumption, preset.co2Production);
+        AnimalBehaviourComponent behaviourComponent = new AnimalBehaviourComponent(entity, preset.sex, preset.diet, preset.foodChainLevel, preset.breedability, preset.presetName, preset.oxygenConsumption, preset.co2Production, preset.foodDrop);
         PhysicsComponent physicsComponent = new PhysicsComponent(entity);
         entity.AddComponent(behaviourComponent);
         entity.AddComponent(physicsComponent);

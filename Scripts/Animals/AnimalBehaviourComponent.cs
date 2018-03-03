@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class AnimalBehaviourComponent : BaseComponent
 {
     public AnimalBehaviourComponent(Entity parent, AnimalSex sex, AnimalDiet diet, int foodChainLevel,
-        int breedability, string presetName, float oxygenConsumption, float co2Production) : base(parent)
+        int breedability, string presetName, float oxygenConsumption, float co2Production, int foodDrop) : base(parent)
     {
         this.Sex = sex;
         this.Diet = diet;
@@ -15,6 +15,7 @@ public class AnimalBehaviourComponent : BaseComponent
         this.Satiated = 80.0f;
         this.oxygenConsumption = oxygenConsumption;
         this.co2Production = co2Production;
+        this.FoodDrop = foodDrop;
     }
 
     public enum AnimalSex
@@ -70,6 +71,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
     public KinematicBody Body { get; private set; }
 
+    public int FoodDrop { get; private set; }
     public AnimalSex Sex { get; private set; }
     public AnimalDiet Diet { get; private set; }
     public int FoodChainLevel { get; private set; }

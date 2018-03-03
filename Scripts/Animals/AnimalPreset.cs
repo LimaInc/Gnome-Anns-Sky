@@ -11,8 +11,9 @@ public class AnimalPreset
     public string presetName;
     public float oxygenConsumption;
     public float co2Production;
+    public int foodDrop;
 
-    public AnimalPreset(AnimalBehaviourComponent.AnimalSex sex, PackedScene scene, AnimalBehaviourComponent.AnimalDiet diet, int foodChainLevel, int breedability, string presetName,
+    public AnimalPreset(AnimalBehaviourComponent.AnimalSex sex, PackedScene scene, AnimalBehaviourComponent.AnimalDiet diet, int foodChainLevel, int breedability, string presetName, int foodDrop = 1,
         float oxygenConsumption = 0.0001f, float co2Production = 0.0001f)
     {
         this.sex = sex;
@@ -23,5 +24,6 @@ public class AnimalPreset
         this.presetName = presetName;
         this.oxygenConsumption = oxygenConsumption;
         this.co2Production = co2Production;
+        this.foodDrop = foodDrop;
     }
 }

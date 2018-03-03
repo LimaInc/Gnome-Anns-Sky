@@ -79,7 +79,7 @@ public class Interaction : Camera
 
     private Node HitAnimal(Dictionary<object, object> hitInfo)
     {
-        if(hitInfo["collider"] != null && hitInfo["collider"] is Node)
+        if(hitInfo != null && hitInfo["collider"] is Node)
         {
             Node obj = (Node)hitInfo["collider"];
             if (obj.IsInGroup("alive") && obj.IsInGroup("animals"))
@@ -94,7 +94,7 @@ public class Interaction : Camera
     {
         AnimalBehaviourComponent animal = ((Entity)animalNode.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
         animal.Kill();
-        player.AddItem(ItemStorage.items[ItemID.MEAT], 1);
+        player.AddItem(ItemStorage.items[ItemID.MEAT], animal.FoodDrop);
     }
 
     public IntVector3? GetBlockPositionUnderCursor(Dictionary<object, object> hitInfo)

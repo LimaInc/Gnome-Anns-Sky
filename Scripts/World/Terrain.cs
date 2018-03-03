@@ -143,41 +143,42 @@ public class Terrain : Spatial
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
             if (buildMesh)
                 chunksToUpdate.Enqueue(chunkIndex);
-        }
 
-        chunkNo++;
 
-        //We take data from ANIMAL_CHUNK_RANGE closest chunks to player, throw it in a normal distribution, and generate animals from the dist.
-        //We can't handle so many animals, though, so currently only generate animals in one in every ANIMAL_CHUNK_RANGE * 4 chunks (so 1/4 the expected amount).
-        if(chunkNo == (int)ANIMAL_CHUNK_RANGE * 4)
-        {
-            chunkNo = 0;
-            // Spawn animals
-            Vector3 playerPos = player.GetTranslation();
-            IntVector2 playerChunk = new IntVector2((int)(playerPos.x / (Chunk.SIZE.x * Block.SIZE)), (int)(playerPos.z / (Chunk.SIZE.z * Block.SIZE)));
-            Dictionary<string, int> animalCount = CountAnimalsInChunk(playerChunk);
+            chunkNo++;
 
-            Random rand = new Random();
-
-            foreach (KeyValuePair<string, int> pair in animalCount)
+            //We take data from ANIMAL_CHUNK_RANGE closest chunks to player, throw it in a normal distribution, and generate animals from the dist.
+            if (chunkNo == (int)ANIMAL_CHUNK_RANGE)
             {
-                //number to spawn
-                double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
-                double u2 = 1.0 - rand.NextDouble();
-                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
-                             Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-                double randNormal = (pair.Value + (pair.Value / 4.0f) * randStdNormal);
+                chunkNo = 0;
+                // Spawn animals
+                Vector3 playerPos = player.GetTranslation();
+                IntVector2 playerChunk = new IntVector2((int)(playerPos.x / (Chunk.SIZE.x * Block.SIZE)), (int)(playerPos.z / (Chunk.SIZE.z * Block.SIZE)));
+                Dictionary<string, int> animalCount = CountAnimalsInChunk(playerChunk);
 
-                int number = (int)(Math.Max(0, Math.Round(randNormal / ANIMAL_CHUNK_RANGE)));
+                Random rand = new Random();
 
-                for (int i = 0; i < number; i++)
+                foreach (KeyValuePair<string, int> pair in animalCount)
                 {
-                    double sexNum = rand.NextDouble();
-                    AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
-                    Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE);
-                    Vector3 chunkSize = Chunk.SIZE * Block.SIZE;
-                    Vector3 randomPosition = new Vector3(rand.Next(0, (int)chunkSize.x), 100.0f, rand.Next(0, (int)chunkSize.z));
-                    GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner").Call("SpawnAnimal", pair.Key, sex, chunkOrigin+randomPosition);
+                    //number to spawn
+                    double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
+                    double u2 = 1.0 - rand.NextDouble();
+                    double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                                 Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+                    double randNormal = (pair.Value + (pair.Value / 4.0f) * randStdNormal);
+
+                    int number = (int)(Math.Max(0, Math.Round(randNormal / ANIMAL_CHUNK_RANGE)));
+
+                    for (int i = 0; i < number; i++)
+                    {
+                        GD.Print("Spawning animal in chunk create");
+                        double sexNum = rand.NextDouble();
+                        AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
+                        Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE);
+                        Vector3 chunkSize = Chunk.SIZE * Block.SIZE;
+                        Vector3 randomPosition = new Vector3(rand.Next(0, (int)chunkSize.x), 100.0f, rand.Next(0, (int)chunkSize.z));
+                        GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner").Call("SpawnAnimal", pair.Key, sex, chunkOrigin + randomPosition);
+                    }
                 }
             }
         }
