@@ -92,7 +92,6 @@
     <Compile Include="Scripts\Fossils\Defossiliser.cs" />
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIBox.cs" />
-    <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\Compass.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DefossiliserGUI.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIComplexObject.cs" />
@@ -105,7 +104,6 @@
     <Compile Include="Scripts\GUI\GUIObjects\GUIVerticalBar.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\Label2D.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DeadGUI.cs" />
-    <Compile Include="Scripts\GUI\GUIStandalone\DefossiliserGUI.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\GUI.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\InventoryGUI.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\PlayerGUI.cs" />
