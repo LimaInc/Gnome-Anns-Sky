@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class TreeManager : PlantManager
 {
@@ -116,17 +117,17 @@ public class TreeManager : PlantManager
 
             // find a tree that still exists
             int idx = randGen.Next(blocks.Count);
-            IntVector3 block = blocks[idx];
-            while (terrain.GetBlock(block + new IntVector3(0, 1, 0)) == 0) // test for tree block above position
+            IntVector3 block = blocks.ElementAt(idx);
+            while (terrain.GetBlock(block + new IntVector3(0, 1, 0)) != treeBlock) // test for tree block above position
             {
-                blocks.RemoveAt(idx);
+                blocks.Remove(block);
                 grid[Tuple.Create(block.x/GRID_SIZE, block.z/GRID_SIZE)].Remove(block);
 
                 if (blocks.Count == 0)
                     return;
 
                 idx = randGen.Next(blocks.Count);
-                block = blocks[idx];
+                block = blocks.ElementAt(idx);
             }
 
             // generate a candidate tree

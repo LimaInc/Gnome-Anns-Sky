@@ -5,8 +5,9 @@ using System.Linq;
 
 public class GrassManager : PlantManager
 {
-    private static byte grassBlock = Game.GetBlockId<GrassBlock>();
-    private static byte redRock = Game.GetBlockId<RedRock>();
+    private static readonly byte GRASS_BLOCK_ID = Game.GetBlockId<GrassBlock>();
+    private static readonly byte RED_ROCK_ID = Game.GetBlockId<RedRock>();
+    private const byte AIR_ID = WorldGenerator.AIR_ID;
 
     private const float BASE_GAS_PRODUCTION = 0.00000001f;
     public static readonly IDictionary<Gas, float> GAS_PRODUCTION = new Dictionary<Gas, float>
@@ -17,9 +18,9 @@ public class GrassManager : PlantManager
     };
     public static readonly IDictionary<Gas, float> GAS_REQUIREMENTS = new Dictionary<Gas, float>
     {
-        [Gas.OXYGEN] = 0.2f,
-        [Gas.NITROGEN] = 0.8f,
-        [Gas.CARBON_DIOXIDE] = 0.6f,
+        [Gas.OXYGEN] = 0.0f,
+        [Gas.NITROGEN] = 0.0f,
+        [Gas.CARBON_DIOXIDE] = 0.0f,
     };
 
     private static IntVector3[] adjacentBlockVectors = new IntVector3[12] {
@@ -49,10 +50,9 @@ public class GrassManager : PlantManager
 
     protected override bool Valid(IntVector3 blockPos)
     {
-        return terrain.GetBlock(blockPos) == redRock &&
-               terrain.GetBlock(blockPos + new IntVector3(0, 1, 0)) == 0 &&
-               atmosphere.GetGasAmt(Gas.NITROGEN) > 0.01 &&
-               atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE) > 0.01;
+        return terrain.GetBlock(blockPos) == RED_ROCK_ID &&
+               terrain.GetBlock(blockPos + new IntVector3(0, 1, 0)) == AIR_ID &&
+               GAS_REQUIREMENTS.All(kvPair => atmosphere.GetGasProgress(kvPair.Key) >= kvPair.Value);
     }
 
     public override bool PlantOn(IntVector3 blockPos)
@@ -78,7 +78,7 @@ public class GrassManager : PlantManager
         int idx = 0;
         foreach (IntVector3 blockPos in blockPosList)
         {
-            blocksToChange[idx++] = Tuple.Create(blockPos, grassBlock);
+            blocksToChange[idx++] = Tuple.Create(blockPos, GRASS_BLOCK_ID);
 
             CollisionShape collisionShape = new CollisionShape();
             BoxShape b = new BoxShape();
@@ -105,55 +105,53 @@ public class GrassManager : PlantManager
         }
 
         terrain.SetBlocks(blocksToChange);
-        blocks.AddRange(validBlocks);
+        blocks.UnionWith(validBlocks);
         time = 0;
         return true;
     }
 
     public override void LifeCycle(float delta)
     {
+        time += delta;
+        if (time < LIFECYCLE_TICK_TIME || blocks.Count == 0)
+            return;
+        time = 0;
+
         // remove blocks that are no longer grass
         List<IntVector3> blocksToRemove = (from block in blocks
-                                           where terrain.GetBlock(block) != grassBlock
-                                           select block).ToList<IntVector3>();
+                                           where !physicsBodies[block].IsInGroup("alive")
+                                           select block).ToList();
 
-        blocks = (from block in blocks
-                  where terrain.GetBlock(block) == grassBlock
-                  select block).ToList<IntVector3>();
+        blocks.ExceptWith(blocksToRemove);
 
-        time += delta;
-        if (time > LIFECYCLE_TICK_TIME && blocks.Count != 0)
-        {
-            time = 0;
-
-            // kill off some grass if there is too little gas
-            float numberToDie = 0; //TEMP COMMENT GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
-
-            while (numberToDie > 0)
-            {
-                if (blocks.Count == 0)
-                    break;
-
-                int idx = randGen.Next(blocks.Count);
-                IntVector3 block = blocks[idx];
-                blocks.RemoveAt(idx);
-                blocksToRemove.Add(block);
-
-                if (numberToDie < 1 && randGen.NextDouble() > numberToDie)
-                    break;
-
-                terrain.SetBlock(block, redRock);
-                numberToDie--;
-            }
-
-            Spread();
-        }
-
+        List<Tuple<IntVector3, byte>> blocksToChange = new List<Tuple<IntVector3, byte>>();
         foreach (IntVector3 block in blocksToRemove)
+            blocksToChange.Add(Tuple.Create(block, RED_ROCK_ID));
+
+        // kill off some grass if there is too little gas
+        float numberToDie = 5 * GAS_REQUIREMENTS.Sum(kvPair => Mathf.Max(kvPair.Value - atmosphere.GetGasProgress(kvPair.Key), 0));
+
+        while (numberToDie > 0)
         {
+            if (blocks.Count == 0)
+                break;
+
+            if (numberToDie < 1 && randGen.NextDouble() > numberToDie)
+                break;
+
+            int idx = randGen.Next(blocks.Count);
+            IntVector3 block = blocks.ElementAt(idx);
+            physicsBodies[block].RemoveFromGroup("alive");
             physicsBodies[block].QueueFree();
             physicsBodies.Remove(block);
+            blocks.Remove(block);
+
+            blocksToChange.Add(Tuple.Create(block, RED_ROCK_ID));
+            numberToDie--;
         }
+        terrain.SetBlocks(blocksToChange);
+
+        Spread();
 
     }
 
@@ -168,7 +166,7 @@ public class GrassManager : PlantManager
 
             // find a grass block that still exists
             int idx = randGen.Next(blocks.Count);
-            IntVector3 block = blocks[idx];
+            IntVector3 block = blocks.ElementAt(idx);
 
             // get adjacent blocks
             List<IntVector3> adjacentBlocks = new List<IntVector3>();
