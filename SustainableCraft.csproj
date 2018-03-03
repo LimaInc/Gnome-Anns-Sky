@@ -82,7 +82,7 @@
     <Compile Include="Scripts\Fossils\Defossiliser.cs" />
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\Game.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\Compass.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUICompass.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DefossiliserGUI.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIComplexObject.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIFloatingSlot.cs" />

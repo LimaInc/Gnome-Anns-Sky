@@ -76,7 +76,7 @@ public class InventoryGUI : GUI
 
     public override void HandleResize()
     {
-        box.Position = this.GetViewportDimensions() / 2;
+        box.Position = GetViewportDimensions() / 2;
         
         Vector2 sectionSize = SLOT_COUNT * (SLOT_SPACING + GUIInventorySlot.SIZE);
         float sectionSpacing = (BOX_SIZE.x - subInvSlots.Count * sectionSize.x - 2 * SLOT_OFFSET.x) / (subInvSlots.Count - 1);

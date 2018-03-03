@@ -13,29 +13,44 @@ public class GUIVerticalBar : GUIObject
     {
         get => perc;
         set {
-            perc = Mathf.Clamp(value, 0, 1);
-            cRect.SetPosition(rect.Position + new Vector2(0, (1 - perc) * height));
-            cRect.SetSize(new Vector2(WIDTH, perc * height));
+            float newValue = Mathf.Clamp(value, 0, 1);
+            if (perc != newValue)
+            {
+                perc = newValue;
+                cRect.SetPosition(rect.Position + new Vector2(0, (1 - perc) * height));
+                cRect.SetSize(new Vector2(WIDTH, perc * height));
+            }
         }
     }
 
     private Color color;
+    private Func<float> percSupplier;
 
     public virtual Vector2 Size { get => new Vector2(WIDTH, height); }
 
-    public GUIVerticalBar(Vector2 pos, float height, Color c)
-        : base(pos, new Vector2(WIDTH,height), TEX)
+    public GUIVerticalBar(Vector2 pos, float height_, Color color_, Func<float> percSupplier_ = null)
+        : base(pos, new Vector2(WIDTH,height_), TEX)
     {   
-        this.height = height;
-        this.color = c;
+        height = height_;
+        color = color_;
+        percSupplier = percSupplier_;
 
         cRect = new ColorRect
         {
-            Color = c
+            Color = color
         };
 
-        this.RemoveChild(this.sprite);
-        this.AddChild(cRect);
-        this.AddChild(this.sprite);
+        RemoveChild(sprite);
+        AddChild(cRect);
+        AddChild(sprite);
+    }
+
+    public override void _Process(float delta)
+    {
+        base._Process(delta);
+        if (percSupplier != null)
+        {
+            perc = percSupplier();
+        }
     }
 }
