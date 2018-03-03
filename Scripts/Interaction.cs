@@ -14,6 +14,7 @@ public class Interaction : Camera
     {
         player = GetNode(Game.PLAYER_PATH) as Player;
 
+
         // Called every time the node is added to the scene.
         // Initialization here
         spaceState = GetWorld().DirectSpaceState;
@@ -76,10 +77,28 @@ public class Interaction : Camera
         return hitInfo.Count > 0 ? hitInfo : null;
     }
 
-    public IntVector3? GetBlockPositionUnderCursor()
+    private Node HitAnimal(Dictionary<object, object> hitInfo)
     {
-        var hitInfo = GetHitInfo();
+        if(hitInfo != null && hitInfo["collider"] is Node)
+        {
+            Node obj = (Node)hitInfo["collider"];
+            if (obj.IsInGroup("alive") && obj.IsInGroup("animals"))
+            {
+                return obj;
+            }
+        }
+        return null;
+    }
 
+    private void KillAnimal(Node animalNode)
+    {
+        AnimalBehaviourComponent animal = ((Entity)animalNode.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+        animal.Kill();
+        player.AddItem(ItemStorage.items[ItemID.MEAT], animal.FoodDrop);
+    }
+
+    public IntVector3? GetBlockPositionUnderCursor(Dictionary<object, object> hitInfo)
+    {
         if(hitInfo != null) //Hit something
         {
             Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Block.SIZE;
@@ -91,27 +110,37 @@ public class Interaction : Camera
 
     public byte RemoveBlock()
     {
-        IntVector3? blockPossible = GetBlockPositionUnderCursor();
+        var hitInfo = GetHitInfo();
 
-        if (blockPossible.HasValue)
+        Node animal = HitAnimal(hitInfo);
+        if (animal != null)
         {
-            IntVector3 blockPos = blockPossible.Value;
-            
-            byte ret = terrain.GetBlock(blockPos);
+            KillAnimal(animal);   
+        }
+        else
+        {
+            IntVector3? blockPossible = GetBlockPositionUnderCursor(hitInfo);
 
-            if (!Game.GetBlock(ret).Breakable)
-                return 0;
-            
-            terrain.SetBlock(blockPos, 0);
-            return ret;
+            if (blockPossible.HasValue)
+            {
+                IntVector3 blockPos = blockPossible.Value;
+
+                byte ret = terrain.GetBlock(blockPos);
+
+                if (!Game.GetBlock(ret).Breakable)
+                    return 0;
+
+                terrain.SetBlock(blockPos, 0);
+                return ret;
+            }
         }
         
         return 0;
     }
 
-    public byte GetBlock()
+    public byte GetBlock(Dictionary<object, object> hitInfo)
     {
-        IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
+        IntVector3? blockPossible = this.GetBlockPositionUnderCursor(hitInfo);
         if (blockPossible.HasValue)
         {
             IntVector3 blockPos = blockPossible.Value;

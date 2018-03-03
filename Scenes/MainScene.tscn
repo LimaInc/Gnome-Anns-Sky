@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/World/Sun.cs" type="Script" id=2]
@@ -10,9 +10,7 @@
 [ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=8]
 [ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=9]
 [ext_resource path="res://Scripts/World/Base.cs" type="Script" id=10]
-
-
-
+[ext_resource path="res://Scripts/Animals/AnimalSpawner.cs" type="Script" id=11]
 
 [sub_resource type="ProceduralSky" id=1]
 
@@ -207,5 +205,9 @@ script = ExtResource( 9 )
 [node name="Base" type="Node" parent="." index="4"]
 
 script = ExtResource( 10 )
+
+[node name="AnimalSpawner" type="Node" parent="." index="5"]
+
+script = ExtResource( 11 )
 
 
