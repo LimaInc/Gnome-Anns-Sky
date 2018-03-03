@@ -8,7 +8,7 @@ public class PlanetEnvironment : WorldEnvironment
     {
         Atmosphere atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
         BacterialState bacteria  = GetNode(Game.BACTERIAL_STATE_PATH) as BacterialState;
-        atm.AddComponents(new GasEscapingAC(), new ColorMixingAC());
+        atm.AddComponents(new GasEscapingAC(), new ColorMixingAC(), new SandstormComingAC());
         bacteria.AddComponents(new AsymptoticGrowthBSC(), new ProductionBSC());
     }
 }

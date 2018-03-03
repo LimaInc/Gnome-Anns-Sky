@@ -12,6 +12,8 @@ public class Colors
     public static readonly Color WHITE = new CMYKColor(1,1,1,0).AsRGB();
     public static readonly Color GRAY = new Color(0.5f, 0.5f, 0.5f);
     public static readonly Color DARK_GRAY = new Color(0.10f, 0.15f, 0.19f);
+    public static readonly Color SCARLET = new Color(1, 0.2f, 0);
+    public static readonly Color DARK_RED = new Color(0.5f, 0, 0);
 
     public static Color Add(Color a, Color b)
     {

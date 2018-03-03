@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/World/Terrain.cs" type="Script" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=7]
 [ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=8]
 [ext_resource path="res://Scripts/World/Base.cs" type="Script" id=9]
+[ext_resource path="res://Scripts/NaturalDisasters/DisasterManager.cs" type="Script" id=10]
 
 [sub_resource type="ProceduralSky" id=1]
 
@@ -202,5 +203,10 @@ script = ExtResource( 8 )
 [node name="Base" type="Node" parent="." index="4"]
 
 script = ExtResource( 9 )
+
+[node name="DisasterManager" type="WorldEnvironment" parent="." index="5"]
+
+environment = null
+script = ExtResource( 10 )
 
 
