@@ -101,7 +101,6 @@ public class Terrain : Spatial
     {
         IntVector2 chunkIndex = new IntVector2(MathUtil.RoundDownDiv(x, Chunk.SIZE.x),
                                                MathUtil.RoundDownDiv(z, Chunk.SIZE.z));
-        Debug.Message = "Args " + new IntVector3(x, y, z);
 
         IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.SIZE);
 
@@ -109,7 +108,7 @@ public class Terrain : Spatial
         {
             return tuple.Item1.GetBlockInChunk(positionInChunk);
         }
-        else //Should only happen when outside chunks are checking for adjacent blocks
+        else // Should only happen when outside chunks are checking for adjacent blocks
         {
             return Byte.MaxValue;
         }

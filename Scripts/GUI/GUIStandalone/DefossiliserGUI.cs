@@ -176,7 +176,8 @@ public class DefossiliserGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
-        this.Show();
+        HandleResize();
+        Show();
         Input.SetMouseMode(Input.MouseMode.Visible);
         UpdateSlots();
         defossiliser.Callback = UpdateDefossiliserSlotState;

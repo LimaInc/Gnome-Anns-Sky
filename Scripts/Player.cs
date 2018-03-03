@@ -76,7 +76,7 @@ public class Player : KinematicBody
     private Plants plants;
     private BacterialState bacteria;
 
-    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 20, 0);
+    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 5, 0);
 
     public override void _Ready()
     {
@@ -232,7 +232,7 @@ public class Player : KinematicBody
 
     public void HandleUseItem()
     {
-        if (this.ItemInHand == null)
+        if (ItemInHand == null)
             return;
 
         Item i = this.ItemInHand.Item;
@@ -240,7 +240,7 @@ public class Player : KinematicBody
         bool success = false;
         if (i is ItemBlock b)
         {
-            success = this.interaction.PlaceBlock(b.Block);
+            success = interaction.PlaceBlock(b.Block);
         }
         else if (i is ItemConsumable d)
         {
@@ -248,26 +248,41 @@ public class Player : KinematicBody
 
             success = true;
         }
-        else if (i is ItemPlant p)
-        {
-            IntVector3? blockPos = this.interaction.GetBlockPositionUnderCursor();
-            if (blockPos.HasValue)
-                success = plants.Plant(p, blockPos.Value);
-        }
         else if (i is ItemBacteriaVial vial)
         {
             success = bacteria.TryGetBacteria(vial.BType, out Bacteria bacterium);
             bacterium?.AddAmt(vial.Amount);
         }
+        else if (i is ItemPlant p)
+        {
+            IntVector3? blockPos = interaction.GetBlockPositionUnderCursor();
+            if (blockPos.HasValue)
+                success = plants.Plant(p, blockPos.Value);
+        }
+        else if (i is ItemSpawnEgg egg)
+        {
+            Vector3? graphicalPosition = (Vector3?)interaction.GetHitInfo()?["position"];
+            if (graphicalPosition.HasValue)
+            {
+                string animal = egg.Preset;
+                // SPAWN ANIMAL HERE
+                // something like
+                // SpawnAnimal(animal, randomSex, graphicalPosition.Value);
+                // set success to true if spawn successful
+                // otherwise success should be left unset (or set to false)
+                success = true;
+            }
+                
+        }
 
         if (success)
         {
-            this.ItemInHand.ChangeQuantity(-1);
-            if (this.ItemInHand.Count == 0)
+            ItemInHand.ChangeQuantity(-1);
+            if (ItemInHand.Count == 0)
             {
-                this.ItemInHand = null;
+                ItemInHand = null;
             }
-            this.InventoryGUI.UpdateHandSlot();
+            InventoryGUI.UpdateHandSlot();
         }
     }
 
@@ -377,9 +392,9 @@ public class Player : KinematicBody
 
     public void OpenGUI(GUI gui)
     {
-        this.CloseGUI();
+        CloseGUI();
         gui.HandleOpen(this);
-        this.AddChild(gui);
+        AddChild(gui);
         OpenedGUI = gui;
         playerGUI.BackgroundMode = true;
     }

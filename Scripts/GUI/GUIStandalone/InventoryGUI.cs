@@ -164,8 +164,9 @@ public class InventoryGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
+        HandleResize();
         UpdateSlots();
-        this.Show();
+        Show();
         Input.SetMouseMode(Input.MouseMode.Visible);
     }
 
