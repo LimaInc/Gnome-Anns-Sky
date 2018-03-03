@@ -95,49 +95,52 @@ public class GrassManager : PlantManager
         }
 
         terrain.SetBlocks(blocksToChange);
-        blocks.AddRange(validBlocks);
+        blocks.UnionWith(validBlocks);
         time = 0;
         return true;
     }
 
     public override void LifeCycle(float delta)
     {
+        time += delta;
+        if (time < LIFECYCLE_TICK_TIME || blocks.Count == 0)
+            return;
+        time = 0;
+
         // remove blocks that are no longer grass
         List<IntVector3> blocksToRemove = (from block in blocks
                                            where terrain.GetBlock(block) != grassBlock
                                            select block).ToList<IntVector3>();
 
-        blocks = (from block in blocks
-                  where terrain.GetBlock(block) == grassBlock
-                  select block).ToList<IntVector3>();
+        blocks = new HashSet<IntVector3>(from block in blocks
+                                         where terrain.GetBlock(block) == grassBlock
+                                         select block);
 
-        time += delta;
-        if (time > LIFECYCLE_TICK_TIME && blocks.Count != 0)
+        // kill off some grass if there is too little gas
+        double numberToDie = 5*Math.Max(0.01 - atmosphere.GetGasAmt(Gas.NITROGEN), 0) +
+                             5*Math.Max(0.01 - atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE), 0) +
+                             5*Math.Max(0.001 - atmosphere.GetGasAmt(Gas.OXYGEN), 0);
+
+        numberToDie = 0.0;
+
+        while (numberToDie > 0)
         {
-            time = 0;
+            if (blocks.Count == 0)
+                break;
 
-            // kill off some grass if there is too little gas
-            float numberToDie = GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
+            int idx = randGen.Next(blocks.Count);
+            IntVector3 block = blocks.ElementAt(idx);
+            blocks.Remove(block);
+            blocksToRemove.Add(block);
 
-            while (numberToDie > 0)
-            {
-                if (blocks.Count == 0)
-                    break;
+            if (numberToDie < 1 && randGen.NextDouble() > numberToDie)
+                break;
 
-                int idx = randGen.Next(blocks.Count);
-                IntVector3 block = blocks[idx];
-                blocks.RemoveAt(idx);
-                blocksToRemove.Add(block);
-
-                if (numberToDie < 1 && randGen.NextDouble() > numberToDie)
-                    break;
-
-                terrain.SetBlock(block, redRock);
-                numberToDie--;
-            }
-
-            Spread();
+            terrain.SetBlock(block, redRock);
+            numberToDie--;
         }
+
+        Spread();
 
         foreach (IntVector3 block in blocksToRemove)
         {
@@ -158,7 +161,7 @@ public class GrassManager : PlantManager
 
             // find a grass block that still exists
             int idx = randGen.Next(blocks.Count);
-            IntVector3 block = blocks[idx];
+            IntVector3 block = blocks.ElementAt(idx);
 
             // get adjacent blocks
             List<IntVector3> adjacentBlocks = new List<IntVector3>();
