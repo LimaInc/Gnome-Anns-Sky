@@ -86,6 +86,39 @@ public class Terrain : Spatial
         player.Translation = new Vector3(playerPos.x, terrainGraphicalHeight + Player.INIT_REL_POS.y, playerPos.y);
     }
 
+    public const float ANIMAL_CHUNK_RANGE = 16.0f;
+
+    private int chunkNo = 0;
+
+    private Dictionary<string,int> CountAnimalsInChunk(IntVector2 chunkIndex)
+    {
+        Vector3 playerPos = player.GetTranslation();
+
+        Vector3 chunkCentre = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE) + (new Vector3((Chunk.SIZE.x * Block.SIZE), 0, (Chunk.SIZE.y * Block.SIZE)) / 2.0f);      
+
+        Array bodies = ((Area)player.GetNode("AnimalArea")).GetOverlappingBodies();
+
+        Dictionary<string, int> count = new Dictionary<string, int>();
+
+        foreach (PhysicsBody body in bodies)
+        {
+            if (body.IsInGroup("animals"))
+            {
+                AnimalBehaviourComponent behaviour = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+                if (!count.ContainsKey(behaviour.PresetName))
+                {
+                    count.Add(behaviour.PresetName,1);
+                }
+                else
+                {
+                    count[behaviour.PresetName]++;
+                }
+            }
+        }
+
+        return count;
+    }
+
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
     private void CreateChunk(IntVector2 chunkIndex, bool buildMesh)
     {
@@ -110,6 +143,44 @@ public class Terrain : Spatial
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
             if (buildMesh)
                 chunksToUpdate.Enqueue(chunkIndex);
+
+
+            chunkNo++;
+
+            //We take data from ANIMAL_CHUNK_RANGE closest chunks to player, throw it in a normal distribution, and generate animals from the dist.
+            if (chunkNo == (int)ANIMAL_CHUNK_RANGE)
+            {
+                chunkNo = 0;
+                // Spawn animals
+                Vector3 playerPos = player.GetTranslation();
+                IntVector2 playerChunk = new IntVector2((int)(playerPos.x / (Chunk.SIZE.x * Block.SIZE)), (int)(playerPos.z / (Chunk.SIZE.z * Block.SIZE)));
+                Dictionary<string, int> animalCount = CountAnimalsInChunk(playerChunk);
+
+                Random rand = new Random();
+
+                foreach (KeyValuePair<string, int> pair in animalCount)
+                {
+                    //number to spawn
+                    double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
+                    double u2 = 1.0 - rand.NextDouble();
+                    double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                                 Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+                    double randNormal = (pair.Value + (pair.Value / 4.0f) * randStdNormal);
+
+                    int number = (int)(Math.Max(0, Math.Round(randNormal / ANIMAL_CHUNK_RANGE)));
+
+                    for (int i = 0; i < number; i++)
+                    {
+                        GD.Print("Spawning animal in chunk create");
+                        double sexNum = rand.NextDouble();
+                        AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
+                        Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE);
+                        Vector3 chunkSize = Chunk.SIZE * Block.SIZE;
+                        Vector3 randomPosition = new Vector3(rand.Next(0, (int)chunkSize.x), 100.0f, rand.Next(0, (int)chunkSize.z));
+                        GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner").Call("SpawnAnimal", pair.Key, sex, chunkOrigin + randomPosition);
+                    }
+                }
+            }
         }
     }
 
@@ -164,7 +235,7 @@ public class Terrain : Spatial
         }
     }
 
-    public void SetBlocks(Tuple<IntVector3, byte>[] blocks)
+    public void SetBlocks(IEnumerable<Tuple<IntVector3, byte>> blocks)
     {
         HashSet<IntVector2> chunks = new HashSet<IntVector2>();
         foreach (Tuple<IntVector3, byte> b in blocks)

@@ -5,7 +5,7 @@ public abstract class PlantManager
 {
     protected Atmosphere atmosphere;
     protected Terrain terrain;
-    protected List<IntVector3> blocks;
+    protected HashSet<IntVector3> blocks;
 
     protected float LIFECYCLE_TICK_TIME = 1f;
     protected double SPREAD_CHANCE;
@@ -17,7 +17,7 @@ public abstract class PlantManager
     {
         this.atmosphere = plants.atmosphere;
         this.terrain = plants.terrain;
-        blocks = new List<IntVector3>();
+        blocks = new HashSet<IntVector3>();
     }
 
     abstract protected bool Valid(IntVector3 blockPos);

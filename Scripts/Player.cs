@@ -10,7 +10,7 @@ public class Player : KinematicBody
         AIR, WATER, FOOD
     }
 
-    private static bool DEBUG_DEATH_ENABLED = true;
+    private static bool DEBUG_DEATH_ENABLED = false;
 
     private const float MOVE_SPEED = 30;
     private const float JUMP_POWER = 12;
@@ -99,6 +99,9 @@ public class Player : KinematicBody
 
         Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
+        
+        Area area = new Area();
+        area.SetName("AnimalArea");
 
         // OLD BoxShape collision 
         collisionShape = new CollisionShape
@@ -110,8 +113,8 @@ public class Player : KinematicBody
         };
 
         // CapsuleShape c = new CapsuleShape();
-        // c.SetRadius(Chunk.BLOCK_SIZE / 2.0f - 0.05f);
-        // c.SetHeight( Chunk.BLOCK_SIZE - 0.05f);
+        // c.SetRadius(Block.SIZE / 2.0f - 0.05f);
+        // c.SetHeight( Block.SIZE - 0.05f);
         // collisionShape.SetShape(c);
         // collisionShape.Rotate(new Vector3(1.0f, 0.0f, 0.0f), (float) Math.PI / 2.0f);
 
@@ -141,7 +144,7 @@ public class Player : KinematicBody
     }
 
     // maybe a bit hacky, TODO: think about it
-    private void AddItem(Item i, int n)
+    public void AddItem(Item i, int n)
     {
         Inventories[i.IType].TryAddItem(i, n);
     }
@@ -174,7 +177,7 @@ public class Player : KinematicBody
                 {
                     if (ItemInHand == null)
                     {
-                        byte b = interaction.GetBlock();
+                        byte b = interaction.GetBlock(interaction.GetHitInfo());
                         Block block = Game.GetBlock(b);
                         if (block is DefossiliserBlock db)
                         {
@@ -252,7 +255,7 @@ public class Player : KinematicBody
         }
         else if (i is ItemPlant p)
         {
-            IntVector3? blockPos = interaction.GetBlockPositionUnderCursor();
+            IntVector3? blockPos = interaction.GetBlockPositionUnderCursor(interaction.GetHitInfo());
             if (blockPos.HasValue)
                 success = plants.Plant(p, blockPos.Value);
         }
@@ -262,11 +265,8 @@ public class Player : KinematicBody
             if (graphicalPosition.HasValue)
             {
                 string animal = egg.Preset;
-                // SPAWN ANIMAL HERE
-                // something like
-                // SpawnAnimal(animal, randomSex, graphicalPosition.Value);
-                // set success to true if spawn successful
-                // otherwise success should be left unset (or set to false)
+                int nextSex = BaseComponent.random.Next(0, 2);
+                GetNode(Game.ANIMAL_SPAWNER_PATH).Call("SpawnAnimal", animal, (AnimalBehaviourComponent.AnimalSex)nextSex, graphicalPosition.Value + new Vector3(0,2,0));
                 success = true;
             }
                 
@@ -320,7 +320,7 @@ public class Player : KinematicBody
 
     private void CheckIfStillAlive()
     {
-        if (!Dead)
+        if (DEBUG_DEATH_ENABLED && !Dead)
         {
             Dead = statistics.Values.Any(v => v <= 0) || Translation.y <= 0;
         }
