@@ -13,7 +13,7 @@ public class GUIVerticalBar : GUIObject
     {
         get => perc;
         set {
-            perc = Mathf.Min(1, Mathf.Max(0, value));
+            perc = Mathf.Clamp(value, 0, 1);
             cRect.SetPosition(rect.Position + new Vector2(0, (1 - perc) * height));
             cRect.SetSize(new Vector2(WIDTH, perc * height));
         }

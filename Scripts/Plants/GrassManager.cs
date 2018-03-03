@@ -85,7 +85,7 @@ public class GrassManager : PlantManager
 
             CollisionShape collisionShape = new CollisionShape();
             BoxShape b = new BoxShape();
-            b.SetExtents(new Vector3(Chunk.BLOCK_SIZE, Chunk.BLOCK_SIZE, Chunk.BLOCK_SIZE) / 2);
+            b.SetExtents(new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2);
             collisionShape.SetShape(b);
 
             physicsBody.AddChild(collisionShape);

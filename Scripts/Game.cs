@@ -35,7 +35,9 @@ public class Game : Node
         RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
         RegisterBlock(new GrassFossilBlock());
         RegisterBlock(new TreeFossilBlock());
-        RegisterBlock(new AnimalFossilBlock());
+        RegisterBlock(new FrogFossilBlock());
+        RegisterBlock(new RegularAnimalFossilBlock());
+        RegisterBlock(new BigAnimalFossilBlock());
 
         RegisterBlock(new GrassBlock());
         RegisterBlock(new TreeBlock());

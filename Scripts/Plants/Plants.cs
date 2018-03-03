@@ -30,7 +30,7 @@ public class Plants : Node
     public override void _PhysicsProcess(float delta)
     {
         // TODO: fix plants so that there is no reasonable limit to speedup
-        delta *= Math.Min(Game.SPEED, Game.PLANT_MAX_SPEED);
+        delta *= Mathf.Min(Game.SPEED, Game.PLANT_MAX_SPEED);
         foreach (PlantManager plantManager in plantManagers.Values)
         {
             plantManager.LifeCycle(delta);

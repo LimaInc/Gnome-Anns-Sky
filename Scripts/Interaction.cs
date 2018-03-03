@@ -39,13 +39,13 @@ public class Interaction : Camera
 
         if(hitInfo.Count != 0) //Hit something
         {
-            Vector3 pos = (Vector3)hitInfo["position"] + (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
-            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
+            Vector3 pos = (Vector3)hitInfo["position"] + (Vector3)hitInfo["normal"] * 0.5f * Block.SIZE;
+            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
 
-            Vector3 blockCollisionPos = new Vector3(blockPos.x, blockPos.y, blockPos.z) * Chunk.BLOCK_SIZE;
+            Vector3 blockCollisionPos = new Vector3(blockPos.x, blockPos.y, blockPos.z) * Block.SIZE;
 
             BoxShape bs = new BoxShape();
-            bs.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f));
+            bs.SetExtents(new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2);
 
             PhysicsShapeQueryParameters psqp = new PhysicsShapeQueryParameters();
             psqp.SetShape(bs);
@@ -84,8 +84,8 @@ public class Interaction : Camera
 
         if(hitInfo.Count != 0) //Hit something
         {
-            Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
-            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
+            Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Block.SIZE;
+            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
             return blockPos;
         }
         return null;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Godot;
 using static ItemID;
 
@@ -13,12 +12,15 @@ public class Defossiliser : Node
     public readonly IList<DefossiliserAction> possibleProcesses;
     public readonly IList<DefossiliserAction> DEFAULT_PROCESSES = new List<DefossiliserAction>
     {
+        new DefossiliserAction(ICE, WATER, processingTime: 5, outItemCount: 2),
         new DefossiliserAction(OXYGEN_BACTERIA_FOSSIL, OXYGEN_BACTERIA_VIAL, processingTime: 12),
         new DefossiliserAction(NITROGEN_BACTERIA_FOSSIL, NITROGEN_BACTERIA_VIAL, processingTime: 10),
         new DefossiliserAction(CARBON_DIOXIDE_BACTERIA_FOSSIL, CARBON_DIOXIDE_BACTERIA_VIAL, processingTime: 7),
         new DefossiliserAction(GRASS_FOSSIL, GRASS, processingTime: 15),
-        new DefossiliserAction(TREE_FOSSIL, TREE, processingTime: 30),
-        new DefossiliserAction(ICE, WATER, processingTime: 5, outItemCount: 2),
+        new DefossiliserAction(TREE_FOSSIL, TREE, processingTime: 30, inItemCount: 3),
+        new DefossiliserAction(FROG_FOSSIL, FROG_EGG, processingTime: 40, inItemCount: 2),
+        new DefossiliserAction(REGULAR_ANIMAL_FOSSIL, REGULAR_EGG, processingTime: 60, inItemCount: 3),
+        new DefossiliserAction(BIG_ANIMAL_FOSSIL, BIG_EGG, processingTime: 120, inItemCount: 5)
     };
 
     public Inventory OutInventory { get; private set; }

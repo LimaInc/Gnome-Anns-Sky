@@ -5,6 +5,8 @@ using Godot;
 
 class Debug
 {
+    public static string Message { get; set; }
+
     public static void PrintPlace(string id = null)
     {
         StackFrame sf = new StackTrace().GetFrame(1);

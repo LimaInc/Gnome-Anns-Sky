@@ -35,7 +35,10 @@ public class ItemStorage
             "itemNitrogenBacteriaVial.png",
             "itemCarbonDioxideBacteriaVial.png",
             "itemGrass.png",
-            "itemTree.png"
+            "itemTree.png",
+            "itemFrogEgg.png",
+            "itemEgg.png",
+            "itemBigEgg.png"
         };
 
         // arbitrary choice: maps file name (without file extension) to texture
@@ -45,15 +48,17 @@ public class ItemStorage
         // arbitrary choice: blocks are stackable
         var itemBlockInits = new List<Tuple<ItemID, string, string, byte>>
         {
-            Tuple.Create(ItemID.RED_ROCK, "Red Rock", "itemRedRock", Game.GetBlockId<RedRock>()),
-            Tuple.Create(ItemID.STONE_BLOCK, "Stone", "itemStone", Game.GetBlockId<Stone>()),
-            Tuple.Create(ItemID.ICE, "Ice", "itemIce", Game.GetBlockId<IceBlock>()),
-            Tuple.Create(ItemID.OXYGEN_BACTERIA_FOSSIL, "O2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<OxygenBacteriaFossilBlock>()),
-            Tuple.Create(ItemID.NITROGEN_BACTERIA_FOSSIL, "N2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<NitrogenBacteriaFossilBlock>()),
-            Tuple.Create(ItemID.CARBON_DIOXIDE_BACTERIA_FOSSIL, "CO2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>()),
-            Tuple.Create(ItemID.GRASS_FOSSIL, "Grass Fossil", "itemGrassFossil", Game.GetBlockId<GrassFossilBlock>()),
-            Tuple.Create(ItemID.TREE_FOSSIL, "Tree Fossil", "itemTreeFossil", Game.GetBlockId<TreeFossilBlock>()),
-            Tuple.Create(ItemID.ANIMAL_FOSSIL, "Animal Fossil", "itemAnimalFossil", Game.GetBlockId<AnimalFossilBlock>())
+            Tuple.Create(RED_ROCK, "Red Rock", "itemRedRock", Game.GetBlockId<RedRock>()),
+            Tuple.Create(STONE_BLOCK, "Stone", "itemStone", Game.GetBlockId<Stone>()),
+            Tuple.Create(ICE, "Ice", "itemIce", Game.GetBlockId<IceBlock>()),
+            Tuple.Create(OXYGEN_BACTERIA_FOSSIL, "O2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<OxygenBacteriaFossilBlock>()),
+            Tuple.Create(NITROGEN_BACTERIA_FOSSIL, "N2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<NitrogenBacteriaFossilBlock>()),
+            Tuple.Create(CARBON_DIOXIDE_BACTERIA_FOSSIL, "CO2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>()),
+            Tuple.Create(GRASS_FOSSIL, "Grass Fossil", "itemGrassFossil", Game.GetBlockId<GrassFossilBlock>()),
+            Tuple.Create(TREE_FOSSIL, "Tree Fossil", "itemTreeFossil", Game.GetBlockId<TreeFossilBlock>()),
+            Tuple.Create(FROG_FOSSIL, "Frog Fossil", "itemAnimalFossil", Game.GetBlockId<FrogFossilBlock>()),
+            Tuple.Create(REGULAR_ANIMAL_FOSSIL, "Animal Fossil", "itemAnimalFossil", Game.GetBlockId<RegularAnimalFossilBlock>()),
+            Tuple.Create(BIG_ANIMAL_FOSSIL, "Giant Fossil", "itemAnimalFossil", Game.GetBlockId<BigAnimalFossilBlock>())
         };
 
         // arbitrary choice: consumables are not stackable
@@ -79,6 +84,15 @@ public class ItemStorage
             Tuple.Create(TREE, "Tree", "itemTree", PlantType.TREE, Game.GetBlockId<TreeBlock>(),  (ItemID?)null /* TODO: change to tree */)
         };
         
+        // arbitrary choice: eggs are not stackable
+        var eggInits = new List<Tuple<ItemID, string, string, string>>
+        {
+            Tuple.Create(FROG_EGG, "Frog egg", "itemFrogEgg", "frog"),
+            Tuple.Create(REGULAR_EGG, "Animal egg", "itemEgg", "animal"),
+            Tuple.Create(BIG_EGG, "Big animal egg", "itemBigEgg", "big")
+        };
+
+
         foreach (var data in itemBlockInits)
         {
             items[data.Item1] = new ItemBlock(data.Item1, data.Item2, GetTexture(data.Item3), data.Item4);
@@ -97,6 +111,11 @@ public class ItemStorage
         {
             items[data.Item1] = new ItemPlant(data.Item1, data.Item2, GetTexture(data.Item3), data.Item4, data.Item5, 
                 data.Item6.HasValue ? items[data.Item6.Value] : null);
+            items[data.Item1].Stackable = true;
+        }
+        foreach (var data in eggInits)
+        {
+            items[data.Item1] = new ItemSpawnEgg(data.Item1, data.Item2, GetTexture(data.Item3), data.Item4);
             items[data.Item1].Stackable = true;
         }
     }

@@ -17,7 +17,7 @@ class ItemBacteriaVial : Item
     public BacteriumType BType { get; private set; }
 
     public ItemBacteriaVial(ItemID id, String name, Texture tex, float bacteriaAmount = DEFAULT_VIAL_AMT) 
-        : base(id, name, tex, Item.ItemType.FOSSIL)
+        : base(id, name, tex, Item.ItemType.PROCESSED)
     {
         Amount = bacteriaAmount;
         BType = bacteriumVials[Id];

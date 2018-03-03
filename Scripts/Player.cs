@@ -93,7 +93,7 @@ public class Player : KinematicBody
 
         // OLD BoxShape collision 
         BoxShape b = new BoxShape();
-        b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
+        b.SetExtents(new Vector3(Block.SIZE / 2 - 0.05f, Block.SIZE - 0.05f, Block.SIZE / 2 - 0.05f));
         collisionShape.SetShape(b);
 
         // CapsuleShape c = new CapsuleShape();
@@ -113,7 +113,7 @@ public class Player : KinematicBody
         Inventories = new Dictionary<Item.ItemType, Inventory>
         {
             [Item.ItemType.CONSUMABLE] = new Inventory(Item.ItemType.CONSUMABLE, PLAYER_INVENTORY_COUNT),
-            [Item.ItemType.FOSSIL] = new Inventory(Item.ItemType.FOSSIL, PLAYER_INVENTORY_COUNT),
+            [Item.ItemType.PROCESSED] = new Inventory(Item.ItemType.PROCESSED, PLAYER_INVENTORY_COUNT),
             [Item.ItemType.BLOCK] = new Inventory(Item.ItemType.BLOCK, PLAYER_INVENTORY_COUNT)
         };
 
@@ -204,7 +204,7 @@ public class Player : KinematicBody
 
     public void ChangeStat(Stats stat, float v)
     {
-        statistics[stat] = Mathf.Min(1, Mathf.Max(0, statistics[stat] + v));
+        statistics[stat] = Mathf.Clamp(statistics[stat] + v, 0, 1);
     }
 
     public void Push(Vector3 v)
