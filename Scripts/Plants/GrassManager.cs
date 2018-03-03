@@ -109,12 +109,14 @@ public class GrassManager : PlantManager
 
         // remove blocks that are no longer grass
         List<IntVector3> blocksToRemove = (from block in blocks
-                                           where terrain.GetBlock(block) != grassBlock
+                                           where !physicsBodies[block].IsInGroup("alive")
                                            select block).ToList<IntVector3>();
 
-        blocks = new HashSet<IntVector3>(from block in blocks
-                                         where terrain.GetBlock(block) == grassBlock
-                                         select block);
+        blocks.ExceptWith(blocksToRemove);
+
+        List<Tuple<IntVector3, byte>> blocksToChange = new List<Tuple<IntVector3, byte>>();
+        foreach (IntVector3 block in blocksToRemove)
+            blocksToChange.Add(Tuple.create(block, redRock));
 
         // kill off some grass if there is too little gas
         float numberToDie = GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
@@ -124,25 +126,22 @@ public class GrassManager : PlantManager
             if (blocks.Count == 0)
                 break;
 
-            int idx = randGen.Next(blocks.Count);
-            IntVector3 block = blocks.ElementAt(idx);
-            blocks.Remove(block);
-            blocksToRemove.Add(block);
-
             if (numberToDie < 1 && randGen.NextDouble() > numberToDie)
                 break;
 
-            terrain.SetBlock(block, redRock);
-            numberToDie--;
-        }
-
-        Spread();
-
-        foreach (IntVector3 block in blocksToRemove)
-        {
+            int idx = randGen.Next(blocks.Count);
+            IntVector3 block = blocks.ElementAt(idx);
+            physicsBodies[block].RemoveFromGroup("alive");
             physicsBodies[block].QueueFree();
             physicsBodies.Remove(block);
+            blocks.Remove(block);
+
+            blocksToChange.Add(Tuple.create(block, redRock));
+            numberToDie--;
         }
+        terrain.SetBlocks(blocksToChange);
+
+        Spread();
 
     }
 
