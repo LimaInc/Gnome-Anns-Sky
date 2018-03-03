@@ -117,11 +117,7 @@ public class GrassManager : PlantManager
                                          select block);
 
         // kill off some grass if there is too little gas
-        double numberToDie = 5*Math.Max(0.01 - atmosphere.GetGasAmt(Gas.NITROGEN), 0) +
-                             5*Math.Max(0.01 - atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE), 0) +
-                             5*Math.Max(0.001 - atmosphere.GetGasAmt(Gas.OXYGEN), 0);
-
-        numberToDie = 0.0;
+        float numberToDie = GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
 
         while (numberToDie > 0)
         {
