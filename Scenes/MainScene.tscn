@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/World/Sun.cs" type="Script" id=2]
@@ -11,7 +11,6 @@
 [ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=9]
 [ext_resource path="res://Scripts/World/Base.cs" type="Script" id=10]
 [ext_resource path="res://Scripts/Animals/AnimalSpawner.cs" type="Script" id=11]
-
 
 [sub_resource type="ProceduralSky" id=1]
 
@@ -114,7 +113,7 @@ adjustment_contrast = 1.0
 adjustment_saturation = 1.0
 _sections_unfolded = [ "Background" ]
 
-[node name="Game" type="Node"]
+[node name="Game" type="Node" index="0"]
 
 script = ExtResource( 1 )
 _sections_unfolded = [ "Pause" ]

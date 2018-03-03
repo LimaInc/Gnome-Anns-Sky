@@ -22,7 +22,6 @@ public class EatStrategy : BaseStrategy
     {
         base.StartState(args);
         target = (PhysicsBody)args[0];
-        GD.Print("Food state started! Target: ", target.GetName());
     }
 
     public override void Ready()
@@ -121,9 +120,12 @@ public class EatStrategy : BaseStrategy
         float minDistanceSquared = 1000.0f * 1000.0f;
         PhysicsBody minTarget = null;
         bool found = false;
-        foreach (PhysicsBody b in foodInRange) //Could randomise this?
+        foreach (PhysicsBody b in foodInRange)
         {
-            if (b == null) continue;
+            if (b == null || !b.IsInGroup("alive"))
+            {
+                continue;
+            }
             // Identify whether we can see the target by raycasting
             PhysicsDirectSpaceState spaceState = component.Body.GetWorld().GetDirectSpaceState();
             var result = spaceState.IntersectRay(component.Body.GetTranslation(), b.GetTranslation(), new[] { component.Body, b });
@@ -163,7 +165,7 @@ public class EatStrategy : BaseStrategy
 
     public override void Process(float delta)
     {
-        foodInRange.RemoveAll(p => p == null);
+        foodInRange.RemoveAll(p => (p == null || !p.IsInGroup("alive")));
     }
 
     public override void PhysicsProcess(float delta)

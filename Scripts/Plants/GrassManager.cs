@@ -88,8 +88,16 @@ public class GrassManager : PlantManager
             PhysicsBody physicsBody = new StaticBody();
             physicsBody.AddToGroup("plants");
             physicsBody.AddToGroup("alive");
-            physicsBody.SetTranslation(blockPos * Chunk.BLOCK_SIZE + new Vector3(Chunk.BLOCK_SIZE, Chunk.BLOCK_SIZE, Chunk.BLOCK_SIZE) / 2.0f);
+            physicsBody.SetTranslation(blockPos * Block.SIZE + new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2.0f);
 
+            // Make sure player cannot collide with grass.
+            physicsBody.SetCollisionLayerBit(0, false);
+            physicsBody.SetCollisionMaskBit(0, false);
+
+            // Make sure plants can collide with areas for detection and animal bodies.
+            physicsBody.SetCollisionLayerBit(1, true);  
+            physicsBody.SetCollisionMaskBit(31, true);
+            
             physicsBody.AddChild(collisionShape);
 
             physicsBodies[blockPos] = physicsBody;
@@ -119,7 +127,7 @@ public class GrassManager : PlantManager
             time = 0;
 
             // kill off some grass if there is too little gas
-            float numberToDie = GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
+            float numberToDie = 0; //TEMP COMMENT GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
 
             while (numberToDie > 0)
             {

@@ -118,7 +118,7 @@ public class AnimalSpawner : Node
             (PackedScene)ResourceLoader.Load("res://Scenes/MaleBig.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Omnivore,
             100,
-            20,
+            70,
             "big"
         );
 
@@ -127,7 +127,7 @@ public class AnimalSpawner : Node
             (PackedScene)ResourceLoader.Load("res://Scenes/FemaleBig.tscn"),
             AnimalBehaviourComponent.AnimalDiet.Omnivore,
             100,
-            20,
+            70,
             "big"
         );
 
@@ -198,7 +198,7 @@ public class AnimalSpawner : Node
 
         if(time > 3.0f && !spawnedDemo)
         {
-            HollisticDemo();
+            //HollisticDemo();
             spawnedDemo = true;
         }
     }

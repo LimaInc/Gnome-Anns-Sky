@@ -56,7 +56,7 @@ public class AnimalBehaviourComponent : BaseComponent
     private const float breedingThreshold = 5.0f;
     private float breedingTimer = 0.0f;
 
-    private const float satiatedBreedThreshold = 50.0f;
+    private const float satiatedBreedThreshold = 80.0f;
 
     private const float co2Threshold = 0.5f;
     private const float oxygenThreshold = 0.5f;
@@ -104,6 +104,16 @@ public class AnimalBehaviourComponent : BaseComponent
     public override void Ready()
     {
         Body = (KinematicBody)parent.GetParent();
+
+        // Make body able to collide with grass.
+        Body.SetCollisionMaskBit(1, true);
+
+        Area area = (Area)Body.GetNode("Area");
+
+        // Body collides with layers 0 and 1. Having body's mask match area's layer when they overlap and the area gets removed causes a Godot bug,
+        // so disable that.
+        area.SetCollisionLayerBit(0, false);
+        area.SetCollisionLayerBit(31, true);
 
         strategies = new List<BaseStrategy>();
         eatStrategy = new EatStrategy(this);
@@ -160,7 +170,7 @@ public class AnimalBehaviourComponent : BaseComponent
         Atmosphere atmosphere = (Atmosphere)(Body.GetTree().GetRoot().GetNode(Game.ATMOSPHERE_PATH));
         if(!(atmosphere.GetGasProgress(Gas.OXYGEN) > oxygenThreshold && atmosphere.GetGasProgress(Gas.CARBON_DIOXIDE) > co2Threshold))
         {
-            //Kill(); 
+            Kill(); 
         }
         else
         {
@@ -220,6 +230,7 @@ public class AnimalBehaviourComponent : BaseComponent
                 {
                     breedStrategy.StartState(breedTarget);
                 }
+                breedingTimer = 0;
             }
             else if (Satiated < 80.0f)
             {

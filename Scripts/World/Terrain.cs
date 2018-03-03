@@ -64,7 +64,7 @@ public class Terrain : Spatial
     {
         Vector3 playerPos = player.GetTranslation();
 
-        Vector3 chunkCentre = (new Vector3(chunkIndex.x * Chunk.CHUNK_SIZE.x, Chunk.CHUNK_SIZE.y / 2.0f, chunkIndex.y * Chunk.CHUNK_SIZE.z) * Chunk.BLOCK_SIZE) + (new Vector3((Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE), 0, (Chunk.CHUNK_SIZE.y * Chunk.BLOCK_SIZE)) / 2.0f);      
+        Vector3 chunkCentre = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE) + (new Vector3((Chunk.SIZE.x * Block.SIZE), 0, (Chunk.SIZE.y * Block.SIZE)) / 2.0f);      
 
         Array bodies = ((Area)player.GetNode("AnimalArea")).GetOverlappingBodies();
 
@@ -124,7 +124,7 @@ public class Terrain : Spatial
             chunkNo = 0;
             // Spawn animals
             Vector3 playerPos = player.GetTranslation();
-            IntVector2 playerChunk = new IntVector2((int)(playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int)(playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
+            IntVector2 playerChunk = new IntVector2((int)(playerPos.x / (Chunk.SIZE.x * Block.SIZE)), (int)(playerPos.z / (Chunk.SIZE.z * Block.SIZE)));
             Dictionary<string, int> animalCount = CountAnimalsInChunk(playerChunk);
 
             Random rand = new Random();
@@ -144,8 +144,8 @@ public class Terrain : Spatial
                 {
                     double sexNum = rand.NextDouble();
                     AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
-                    Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.CHUNK_SIZE.x, Chunk.CHUNK_SIZE.y / 2.0f, chunkIndex.y * Chunk.CHUNK_SIZE.z) * Chunk.BLOCK_SIZE);
-                    Vector3 chunkSize = Chunk.CHUNK_SIZE * Chunk.BLOCK_SIZE;
+                    Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE);
+                    Vector3 chunkSize = Chunk.SIZE * Block.SIZE;
                     Vector3 randomPosition = new Vector3(rand.Next(0, (int)chunkSize.x), 100.0f, rand.Next(0, (int)chunkSize.z));
                     GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner").Call("SpawnAnimal", pair.Key, sex, chunkOrigin+randomPosition);
                 }

@@ -16,7 +16,7 @@ public class BreedStrategy : BaseStrategy
     private float waitingTimer = 0.0f;
     private const float waitingThreshold = 3.0f;
 
-    private const float satiatedThreshold = 50.0f;
+    private const float satiatedThreshold = 80.0f;
 
     public BreedStrategy(AnimalBehaviourComponent component) : base(component)
     {
@@ -106,9 +106,9 @@ public class BreedStrategy : BaseStrategy
                     {
                         if (component.Sex == AnimalBehaviourComponent.AnimalSex.Female)
                         {
-                            Node spawnNode = component.parent.GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner");
+                            Node spawnNode = component.parent.GetNode(Game.ANIMAL_SPAWNER_PATH);
                             int nextSex = BaseComponent.random.Next(0, 2);
-                            spawnNode.Call("SpawnAnimal", component.PresetName, (AnimalBehaviourComponent.AnimalSex)nextSex, component.Body.GetTranslation() + new Vector3(0.0f, 20.0f, 0.0f));
+                            spawnNode.Call("SpawnAnimal", component.PresetName, (AnimalBehaviourComponent.AnimalSex)nextSex, component.Body.GetTranslation() + new Vector3(0.0f, 2.0f, 0.0f));
                             component.Satiated -= 20.0f;
                         }
                         active = false;
@@ -160,7 +160,7 @@ public class BreedStrategy : BaseStrategy
 
     public override void Process(float delta)
     {
-        breedableTargets.RemoveAll(p => p == null);
+        breedableTargets.RemoveAll(p => (p == null || !p.IsInGroup("alive")));
     }
 
     public PhysicsBody ShouldBreedState()
@@ -172,7 +172,7 @@ public class BreedStrategy : BaseStrategy
 
             foreach (PhysicsBody body in breedableTargets)
             {
-                if (body == null) continue;
+                if (body == null || !body.IsInGroup("alive")) continue;
                 // Identify whether we can see the target by raycasting
                 PhysicsDirectSpaceState spaceState = body.GetWorld().GetDirectSpaceState();
                 var result = spaceState.IntersectRay(component.Body.GetTranslation(), body.GetTranslation(), new[] { component.Body, body });
