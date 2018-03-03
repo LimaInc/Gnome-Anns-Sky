@@ -7,6 +7,7 @@ public class GUIBox : GUIObject
 
     public const int REGION_SIZE = 16;
 
+    // TODO: extract 9 element scaling into separate class, use it also for bars
     public GUIBox(Vector2 pos, Vector2 size) : base(pos, size, GUI_SHEET, size / 16)
     {
         for (int x=0; x < 3; ++x)
