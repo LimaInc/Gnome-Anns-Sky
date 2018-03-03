@@ -38,7 +38,8 @@ public class ItemStorage
             "itemTree.png",
             "itemFrogEgg.png",
             "itemEgg.png",
-            "itemBigEgg.png"
+            "itemBigEgg.png",
+            "itemMeat.png"
         };
 
         // arbitrary choice: maps file name (without file extension) to texture
@@ -66,7 +67,8 @@ public class ItemStorage
         {
             Tuple.Create(CHOCOLATE, "Chocolate", "itemChocolate",Player.Stats.FOOD,0.2f),
             Tuple.Create(CAKE, "Cake", "itemCake",Player.Stats.FOOD,0.2f),
-            Tuple.Create(WATER, "Water", "itemWater",Player.Stats.WATER,0.2f)
+            Tuple.Create(WATER, "Water", "itemWater",Player.Stats.WATER,0.2f),
+            Tuple.Create(MEAT, "Meat", "itemMeat", Player.Stats.FOOD, 0.4f)
         };
 
         // arbitrary choice: vials are stackable
@@ -88,10 +90,9 @@ public class ItemStorage
         var eggInits = new List<Tuple<ItemID, string, string, string>>
         {
             Tuple.Create(FROG_EGG, "Frog egg", "itemFrogEgg", "frog"),
-            Tuple.Create(REGULAR_EGG, "Animal egg", "itemEgg", "animal"),
+            Tuple.Create(REGULAR_EGG, "Animal egg", "itemEgg", "animal0"),
             Tuple.Create(BIG_EGG, "Big animal egg", "itemBigEgg", "big")
         };
-
 
         foreach (var data in itemBlockInits)
         {

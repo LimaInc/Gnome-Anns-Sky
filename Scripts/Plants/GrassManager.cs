@@ -80,14 +80,24 @@ public class GrassManager : PlantManager
         {
             blocksToChange[idx++] = Tuple.Create(blockPos, GRASS_BLOCK_ID);
 
-            PhysicsBody physicsBody = new KinematicBody();
-            physicsBody.SetTranslation(blockPos);
-
             CollisionShape collisionShape = new CollisionShape();
             BoxShape b = new BoxShape();
-            b.SetExtents(new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2);
+            b.SetExtents(new Vector3(Block.SIZE, 0.2f, Block.SIZE) / 2.0f);
             collisionShape.SetShape(b);
 
+            PhysicsBody physicsBody = new StaticBody();
+            physicsBody.AddToGroup("plants");
+            physicsBody.AddToGroup("alive");
+            physicsBody.SetTranslation(blockPos * Block.SIZE + new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2.0f);
+
+            // Make sure player cannot collide with grass.
+            physicsBody.SetCollisionLayerBit(0, false);
+            physicsBody.SetCollisionMaskBit(0, false);
+
+            // Make sure plants can collide with areas for detection and animal bodies.
+            physicsBody.SetCollisionLayerBit(1, true);  
+            physicsBody.SetCollisionMaskBit(31, true);
+            
             physicsBody.AddChild(collisionShape);
 
             physicsBodies[blockPos] = physicsBody;
