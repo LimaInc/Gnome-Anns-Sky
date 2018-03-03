@@ -20,29 +20,32 @@ public class Game : Node
     public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
 
     // multiplicative factor for processes in the world (not directly affecting the player)
-    public const int SPEED = 20;
-    public const int PLANT_MAX_SPEED = 1; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
+    public const int FOSSIL_SPAWN_MULITPLIER = 20;
+    public const int SPEED = 10;
+    public const int PLANT_MAX_SPEED = 2; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
 
     public Game()
     {
         //Register blocks
-        Game.RegisterBlock(new Stone(), true);
-        Game.RegisterBlock(new RedRock(), true);
+        RegisterBlock(new Stone());
+        RegisterBlock(new RedRock());
 
-        Game.RegisterBlock(new OxygenBacteriaFossilBlock(), true);
-        Game.RegisterBlock(new NitrogenBacteriaFossilBlock(), true);
-        Game.RegisterBlock(new CarbonDioxideBacteriaFossilBlock(), true);
-        Game.RegisterBlock(new GrassFossilBlock(), true);
-        Game.RegisterBlock(new TreeFossilBlock(), true);
-        Game.RegisterBlock(new AnimalFossilBlock(), true);
+        RegisterBlock(new OxygenBacteriaFossilBlock());
+        RegisterBlock(new NitrogenBacteriaFossilBlock());
+        RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
+        RegisterBlock(new GrassFossilBlock());
+        RegisterBlock(new TreeFossilBlock());
+        RegisterBlock(new FrogFossilBlock());
+        RegisterBlock(new RegularAnimalFossilBlock());
+        RegisterBlock(new BigAnimalFossilBlock());
 
-        Game.RegisterBlock(new GrassBlock(), false);
-        Game.RegisterBlock(new TreeBlock(), false);
-        Game.RegisterBlock(new LeafBlock(), false);
-        Game.RegisterBlock(new IceBlock(), true);
+        RegisterBlock(new GrassBlock());
+        RegisterBlock(new TreeBlock());
+        RegisterBlock(new LeafBlock());
+        RegisterBlock(new IceBlock());
 
-        Game.RegisterBlock(new HabitationBlock(), false);
-        Game.RegisterBlock(new DefossiliserBlock(), false);
+        RegisterBlock(new HabitationBlock());
+        RegisterBlock(new DefossiliserBlock());
 
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();
@@ -54,8 +57,6 @@ public class Game : Node
     {
         { 0, null } //Air block (probably should be something more sensible than null)
     };
-
-    private static List<bool> breakables = new List<bool>();
 
     //UVs for all blocks
     private static Dictionary<byte, Rect2[]> blockUVs = new Dictionary<byte, Rect2[]>();
@@ -108,20 +109,14 @@ public class Game : Node
         }
     }
 
-    public static void RegisterBlock(Block block, bool breakable)
+    public static void RegisterBlock(Block block)
     {
-        breakables.Add(breakable);
         blocks[nextId++] = block;
     }
 
     public static Block GetBlock(byte id)
     {
         return blocks[id];
-    }
-
-    public static bool isBreakable(byte id)
-    {
-        return breakables[id];
     }
 
     public static byte GetBlockId<T>() where T : Block

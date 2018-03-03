@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class UniformFossilGenerator : IGenerator
+public class UniformRandomBlockGenerator : IGenerator
 {
     private readonly byte fossilID;
     private readonly int fossilDepth;
@@ -9,13 +9,13 @@ public class UniformFossilGenerator : IGenerator
 
     private Random random;
 
-    public UniformFossilGenerator(byte fossilID, int fossilDepth, float spawnChance)
+    public UniformRandomBlockGenerator(byte fossilID_, int fossilDepth_, float spawnChance_)
     {
-        this.fossilID = fossilID;
-        this.fossilDepth = fossilDepth;
-        this.spawnChance = spawnChance;
-        
-        this.i = MathUtil.GlobalRandom.Next();
+        fossilID = fossilID_;
+        fossilDepth = fossilDepth_;
+        spawnChance = spawnChance_;
+
+        i = MathUtil.GlobalRandom.Next();
     } 
 
     public void GenerateChunk(byte[,,] chunk, int[,] chunkTerrainHeight, IntVector2 chunkIndex, IntVector3 chunkSize)

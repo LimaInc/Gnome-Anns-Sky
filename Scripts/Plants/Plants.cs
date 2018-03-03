@@ -22,15 +22,15 @@ public class Plants : Node
 
     public bool Plant(ItemPlant plantItem, IntVector3 blockPos)
     {
-        if (plantManagers.ContainsKey(plantItem.PlantType))
-            return plantManagers[plantItem.PlantType].PlantOn(blockPos);
+        if (plantManagers.ContainsKey(plantItem.PType))
+            return plantManagers[plantItem.PType].PlantOn(blockPos);
         return false;
     }
 
     public override void _PhysicsProcess(float delta)
     {
         // TODO: fix plants so that there is no reasonable limit to speedup
-        delta *= Math.Min(Game.SPEED, Game.PLANT_MAX_SPEED);
+        delta *= Mathf.Min(Game.SPEED, Game.PLANT_MAX_SPEED);
         foreach (PlantManager plantManager in plantManagers.Values)
         {
             plantManager.LifeCycle(delta);

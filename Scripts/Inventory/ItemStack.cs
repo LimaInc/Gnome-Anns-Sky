@@ -1,39 +1,21 @@
-using System;
-using Godot;
-
 public class ItemStack
 {
-    public Item item;
-    public int count;
+    public Item Item { get; private set; }
+    public int Count { get; private set; }
 
     public ItemStack(Item item, int count)
     {
-        this.item = item;
-        this.count = count;
+        Item = item;
+        Count = count;
     }
 
-    public void AddToQuantity(int c)
+    public void ChangeQuantity(int c)
     {
-        this.count += c;
-    }
-
-    public Item GetItem()
-    {
-        return item;
-    }
-
-    public int GetCount()
-    {
-        return count;
-    }
-
-    public void SubtractCount(int n)
-    {
-        this.count -= n;
+        Count += c;
     }
 
     public override string ToString()
     {
-        return "ItemStack(" + item + ", " + count + ")";
+        return "ItemStack(" + Item + ", " + Count + ")";
     }
 }

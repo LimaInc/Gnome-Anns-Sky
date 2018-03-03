@@ -11,8 +11,8 @@ public class WorldGenerator
 
     public WorldGenerator()
     {
-        this.terrainModifiers = new List<ITerrainModifier>();
-        this.generators = new List<IGenerator>();
+        terrainModifiers = new List<ITerrainModifier>();
+        generators = new List<IGenerator>();
     }
 
     public byte[,,] GetChunk(IntVector2 chunkIndex, IntVector3 chunkSize)

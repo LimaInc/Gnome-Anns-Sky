@@ -43,11 +43,9 @@ public class Base : Node
         Generator = new BaseGenerator(this);
     }
 
-    private int n = 0;
-
     public bool IsGlobalPositionInside(Vector3 pos)
     {
-        Vector3 localPos = pos / Chunk.BLOCK_SIZE - position;
+        Vector3 localPos = pos / Block.SIZE - position;
         return localPos.y >= 0 &&
             (localPos + new Vector3(0, domeOffset, 0)).Length() <= radius &&
             localPos.x < radius - baseEntranceDepth;

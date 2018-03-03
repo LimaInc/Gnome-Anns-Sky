@@ -11,14 +11,18 @@ public class Terrain : Spatial
     public const int RED_ROCK_LAYER_NUM = 3;
     public const int FOSSIL_DEPTH = RED_ROCK_LAYER_NUM;
 
-    public readonly IList<UniformFossilGenerator> fossilGenerators = new List<UniformFossilGenerator>()
+    public const float BASE_FOSSIL_SPAWN_RATE = Game.FOSSIL_SPAWN_MULITPLIER * 0.0003f;
+
+    public readonly IList<UniformRandomBlockGenerator> fossilGenerators = new List<UniformRandomBlockGenerator>()
     {
-        new UniformFossilGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.001f),
-        new UniformFossilGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.0005f),
-        new UniformFossilGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.004f),
-        new UniformFossilGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
-        new UniformFossilGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
-        new UniformFossilGenerator(Game.GetBlockId<AnimalFossilBlock>(), FOSSIL_DEPTH, 0.0015f)
+        new UniformRandomBlockGenerator(Game.GetBlockId<FrogFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformRandomBlockGenerator(Game.GetBlockId<RegularAnimalFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE / 2),
+        new UniformRandomBlockGenerator(Game.GetBlockId<BigAnimalFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE),
+        new UniformRandomBlockGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 3),
+        new UniformRandomBlockGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 1.5f ),
+        new UniformRandomBlockGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 10),
+        new UniformRandomBlockGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 4),
+        new UniformRandomBlockGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE)
     };
 
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
@@ -32,9 +36,10 @@ public class Terrain : Spatial
 
         worldGenerator = new WorldGenerator();
         worldGenerator.terrainModifiers.Add(new HillLandscapeTM(AVERAGE_HEIGHT, HEIGHT_SPREAD));
+        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
         worldGenerator.generators.Add(new RockGenerator(RED_ROCK_LAYER_NUM));
 
-        foreach(UniformFossilGenerator g in fossilGenerators)
+        foreach (UniformRandomBlockGenerator g in fossilGenerators)
         {
             worldGenerator.generators.Add(g);
         }
@@ -46,7 +51,9 @@ public class Terrain : Spatial
         worldGenerator.terrainModifiers.Add(b.Smoothing);
         worldGenerator.generators.Add(b.Generator);
 
-        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
+        Vector2 playerPos = new Vector2(player.Translation.x, player.Translation.z) / Block.SIZE;
+        float terrainGraphicalHeight = worldGenerator.GetHeightAt(playerPos) * Block.SIZE;
+        player.Translation = new Vector3(playerPos.x, terrainGraphicalHeight + Player.INIT_REL_POS.y, playerPos.y);
     }
 
     public const float ANIMAL_CHUNK_RANGE = 16.0f;
@@ -100,7 +107,7 @@ public class Terrain : Spatial
         }
         else
         {
-            byte[,,] blocks = worldGenerator.GetChunk(chunkIndex, Chunk.CHUNK_SIZE);
+            byte[,,] blocks = worldGenerator.GetChunk(chunkIndex, Chunk.SIZE);
             Chunk chunk = new Chunk(this, chunkIndex, blocks);
             this.AddChild(chunk);
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
@@ -162,17 +169,18 @@ public class Terrain : Spatial
 
     public byte GetBlock(int x, int y, int z)
     {
-        //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
-        IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)x / Chunk.CHUNK_SIZE.x),
-                                               (int)Mathf.Floor((float)z / Chunk.CHUNK_SIZE.z));
+        IntVector2 chunkIndex = new IntVector2(MathUtil.RoundDownDiv(x, Chunk.SIZE.x),
+                                               MathUtil.RoundDownDiv(z, Chunk.SIZE.z));
 
-        IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.CHUNK_SIZE);
+        IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.SIZE);
 
         if (loadedChunks.TryGetValue(chunkIndex, out Tuple<Chunk, bool, bool> tuple))
-            return tuple.Item1.GetBlockInChunk(positionInChunk);
-        else //Should only happen when outside chunks are checking for adjacent blocks
         {
-            return 255;
+            return tuple.Item1.GetBlockInChunk(positionInChunk);
+        }
+        else // Should only happen when outside chunks are checking for adjacent blocks
+        {
+            return Byte.MaxValue;
         }
     }
 
@@ -211,14 +219,14 @@ public class Terrain : Spatial
             byte block = b.Item2;
 
             //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
-            IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.CHUNK_SIZE.x),
-                                                   (int)Mathf.Floor((float)pos.z / Chunk.CHUNK_SIZE.z));
+            IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.SIZE.x),
+                                                   (int)Mathf.Floor((float)pos.z / Chunk.SIZE.z));
 
             Chunk chunk = loadedChunks[chunkIndex].Item1;
 
-            IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.CHUNK_SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.CHUNK_SIZE.z);
+            IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.SIZE.z);
 
-            chunk.SetBlockInChunk(positionInChunk, block);
+            chunk.TrySetBlockInChunk(positionInChunk, block);
 
             IntVector2 right = chunkIndex + new IntVector2(1,0);
             IntVector2 left = chunkIndex + new IntVector2(-1,0);
@@ -227,13 +235,13 @@ public class Terrain : Spatial
 
             chunks.Add(chunkIndex);
 
-            if (positionInChunk.x == Chunk.CHUNK_SIZE.x - 1)
+            if (positionInChunk.x == Chunk.SIZE.x - 1)
                 chunks.Add(right);
 
             if (positionInChunk.x == 0)
                 chunks.Add(left);
 
-            if (positionInChunk.z == Chunk.CHUNK_SIZE.z - 1)
+            if (positionInChunk.z == Chunk.SIZE.z - 1)
                 chunks.Add(above);
 
             if (positionInChunk.z == 0)
@@ -247,14 +255,14 @@ public class Terrain : Spatial
     public void SetBlock(IntVector3 pos, byte block)
     {
         //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
-        IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.CHUNK_SIZE.x),
-                                               (int)Mathf.Floor((float)pos.z / Chunk.CHUNK_SIZE.z));
+        IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.SIZE.x),
+                                               (int)Mathf.Floor((float)pos.z / Chunk.SIZE.z));
 
         Chunk chunk = loadedChunks[chunkIndex].Item1;
 
-        IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.CHUNK_SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.CHUNK_SIZE.z);
+        IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.SIZE.z);
 
-        chunk.SetBlockInChunk(positionInChunk, block);
+        chunk.TrySetBlockInChunk(positionInChunk, block);
 
         IntVector2 right = chunkIndex + new IntVector2(1,0);
         IntVector2 left = chunkIndex + new IntVector2(-1,0);
@@ -263,22 +271,27 @@ public class Terrain : Spatial
 
         chunksToUpdate.Enqueue(chunkIndex);
 
-        if (positionInChunk.x == Chunk.CHUNK_SIZE.x - 1)
+        if (positionInChunk.x == Chunk.SIZE.x - 1)
             chunksToUpdate.Enqueue(right);
 
         if (positionInChunk.x == 0)
             chunksToUpdate.Enqueue(left);
 
-        if (positionInChunk.z == Chunk.CHUNK_SIZE.z - 1)
+        if (positionInChunk.z == Chunk.SIZE.z - 1)
             chunksToUpdate.Enqueue(above);
 
         if (positionInChunk.z == 0)
             chunksToUpdate.Enqueue(below);
     }
 
-    Queue<IntVector2> chunksToUpdate = new Queue<IntVector2>();
-    Queue<IntVector2> chunksToRemove = new Queue<IntVector2>();
+    //Queue<IntVector2> chunksToUpdate = new Queue<IntVector2>();
+    //Queue<IntVector2> chunksToRemove = new Queue<IntVector2>();
 
+    HashQueue<IntVector2> chunksToUpdate = new HashQueue<IntVector2>();
+    HashQueue<IntVector2> chunksToRemove = new HashQueue<IntVector2>();
+
+    // WTF ???
+    // TODO: fix, definitely, urgently
     IntVector2[][] chunkLoadIndices = new IntVector2[][]
     {
         new IntVector2[] { new IntVector2(0, 0), },
@@ -299,7 +312,7 @@ public class Terrain : Spatial
     {
         Vector3 playerPos = player.GetTranslation();
 
-        IntVector2 playerChunk = new IntVector2((int) (playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int) (playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
+        IntVector2 playerChunk = new IntVector2((int) (playerPos.x / (Chunk.SIZE.x * Block.SIZE)), (int) (playerPos.z / (Chunk.SIZE.z * Block.SIZE)));
 
         List<IntVector2> chunksLoadedThisUpdate = new List<IntVector2>();
 
@@ -324,6 +337,6 @@ public class Terrain : Spatial
             }
         }
 
-        chunksToRemove = new Queue<IntVector2>(loadedChunks.Keys.Except(chunksLoadedThisUpdate));
+        chunksToRemove = new HashQueue<IntVector2>(loadedChunks.Keys.Except(chunksLoadedThisUpdate));
     }
 }

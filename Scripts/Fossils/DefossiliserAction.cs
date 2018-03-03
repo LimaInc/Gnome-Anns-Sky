@@ -8,12 +8,12 @@
 
     public float ProcessingTime { get; private set; }
 
-    public DefossiliserAction(Item inItem, Item outItem, float processingTime = 10, int inItemCount=1, int outItemCount=1)
+    public DefossiliserAction(ItemID inItemID, ItemID outItemID, float processingTime = 10, int inItemCount=1, int outItemCount=1)
     {
-        this.inItem = inItem;
+        this.inItem = ItemStorage.items[inItemID];
         this.inItemCount = inItemCount;
         this.ProcessingTime = processingTime;
-        this.outItem = outItem;
+        this.outItem = ItemStorage.items[outItemID];
         this.outItemCount = outItemCount;
     }
 
@@ -25,7 +25,7 @@
             while (remaining > 0)
             {
                 int i = inv.TryGetStackIndex(inItem).Value;
-                int count = inv.GetItemStack(i).GetCount();
+                int count = inv.GetItemStack(i).Count;
                 if (remaining >= count)
                 {
                     inv.RemoveItemStack(i);
@@ -33,7 +33,7 @@
                 }
                 else
                 {
-                    inv.GetItemStack(i).AddToQuantity(-remaining);
+                    inv.GetItemStack(i).ChangeQuantity(-remaining);
                     remaining -= remaining;
                 }
             }

@@ -7,8 +7,17 @@ public class GUIVerticalBar : GUIObject
     public static float WIDTH = 64;
 
     private ColorRect cRect;
-    private float perc;
     protected float height;
+    private float perc;
+    public float Percentage
+    {
+        get => perc;
+        set {
+            perc = Mathf.Clamp(value, 0, 1);
+            cRect.SetPosition(rect.Position + new Vector2(0, (1 - perc) * height));
+            cRect.SetSize(new Vector2(WIDTH, perc * height));
+        }
+    }
 
     private Color color;
 
@@ -28,12 +37,5 @@ public class GUIVerticalBar : GUIObject
         this.RemoveChild(this.sprite);
         this.AddChild(cRect);
         this.AddChild(this.sprite);
-    }
-
-    public void SetPercentage(float f)
-    {
-        this.perc = Mathf.Min(1, Mathf.Max(0, f));
-        cRect.SetPosition(rect.Position + new Vector2(0, (1-perc)*height));
-        cRect.SetSize(new Vector2(WIDTH, perc * height));
     }
 }

@@ -110,10 +110,12 @@
     <Compile Include="Scripts\Interaction.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
+    <Compile Include="Scripts\Inventory\ItemSpawnEgg.cs" />
     <Compile Include="Scripts\Inventory\ItemBacteriaVial.cs" />
+    <Compile Include="Scripts\Inventory\ItemID.cs" />
+    <Compile Include="Scripts\Inventory\ItemStorage.cs" />
     <Compile Include="Scripts\Inventory\ItemBlock.cs" />
-    <Compile Include="Scripts\Inventory\ItemDrink.cs" />
-    <Compile Include="Scripts\Inventory\ItemFood.cs" />
+    <Compile Include="Scripts\Inventory\ItemConsumable.cs" />
     <Compile Include="Scripts\Inventory\ItemPlant.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
@@ -127,6 +129,12 @@
     <Compile Include="Scripts\Util\Colors.cs" />
     <Compile Include="Scripts\Util\Debug.cs" />
     <Compile Include="Scripts\Util\InputUtil.cs" />
+    <Compile Include="Scripts\Util\MathUtil.cs" />
+    <Compile Include="Scripts\Util\HashQueue.cs" />
+    <Compile Include="Scripts\World\Base.cs" />
+    <Compile Include="Scripts\World\Chunk.cs" />
+    <Compile Include="Scripts\Util\CMYKColor.cs" />
+    <Compile Include="Scripts\Util\Colors.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
     <Compile Include="Scripts\Util\MathUtil.cs" />
@@ -136,15 +144,17 @@
     <Compile Include="Scripts\World\Base.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\World\PlanetEnvironment.cs" />
+    <Compile Include="Scripts\World\Sun.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\IGenerator.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\World\WorldGeneration\BaseGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\HillLandscapeTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\IGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\ITerrainModifier.cs" />
     <Compile Include="Scripts\World\WorldGeneration\IceGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\RockGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\UniformRandomBlockGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\SmoothingTM.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\UniformFossilGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\RockGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\WorldGenerator.cs" />
   </ItemGroup>
   <ItemGroup>

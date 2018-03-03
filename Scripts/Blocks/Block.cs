@@ -4,6 +4,10 @@ using Godot;
 
 public abstract class Block
 {
+    public const float SIZE = 0.5f;
+
+    abstract public bool Breakable { get; }
+
     abstract public string[] TexturePaths { get; }
     
     abstract public int GetTextureIndex(BlockFace face);

@@ -17,42 +17,42 @@ public class InventoryGUI : GUI
     private static readonly Vector2 HAND_SLOT_OFFSET = new Vector2(-16.0f, 170.0f);
     private static readonly Vector2 LABEL_SHIFT = new Vector2(0, -16);
 
-    private IDictionary<Item.Type, Inventory> subInventories = new Dictionary<Item.Type, Inventory>
+    private IDictionary<Item.ItemType, Inventory> subInventories = new Dictionary<Item.ItemType, Inventory>
     {
-        [Item.Type.BLOCK] = null,
-        [Item.Type.CONSUMABLE] = null,
-        [Item.Type.FOSSIL] = null
+        [Item.ItemType.BLOCK] = null,
+        [Item.ItemType.CONSUMABLE] = null,
+        [Item.ItemType.PROCESSED] = null
     };
 
     // This follows the mouse to allow the player to move items around
     private GUIInventorySlot floatingSlot;
 
-    private IDictionary<Item.Type, GUILabeledSlotArray> subInvSlots = new Dictionary<Item.Type, GUILabeledSlotArray>
+    private IDictionary<Item.ItemType, GUILabeledSlotArray> subInvSlots = new Dictionary<Item.ItemType, GUILabeledSlotArray>
     {
-        [Item.Type.BLOCK] = null,
-        [Item.Type.CONSUMABLE] = null,
-        [Item.Type.FOSSIL] = null
+        [Item.ItemType.BLOCK] = null,
+        [Item.ItemType.CONSUMABLE] = null,
+        [Item.ItemType.PROCESSED] = null
     };
 
-    private static readonly IDictionary<Item.Type, String> subInventoryNames = new Dictionary<Item.Type, String>
+    private static readonly IDictionary<Item.ItemType, String> subInventoryNames = new Dictionary<Item.ItemType, String>
     {
-        [Item.Type.BLOCK] = "Blocks",
-        [Item.Type.CONSUMABLE] = "Consumables",
-        [Item.Type.FOSSIL] = "Fossils"
+        [Item.ItemType.BLOCK] = "Blocks",
+        [Item.ItemType.CONSUMABLE] = "Consumables",
+        [Item.ItemType.PROCESSED] = "Processed"
     };
 
-    private static readonly IDictionary<Item.Type, int> subInvIndices = new Dictionary<Item.Type, int>
+    private static readonly IDictionary<Item.ItemType, int> subInvIndices = new Dictionary<Item.ItemType, int>
     {
-        [Item.Type.CONSUMABLE] = 0,
-        [Item.Type.FOSSIL] = 1,
-        [Item.Type.BLOCK] = 2
+        [Item.ItemType.CONSUMABLE] = 0,
+        [Item.ItemType.PROCESSED] = 1,
+        [Item.ItemType.BLOCK] = 2
     };
 
-    private static readonly IDictionary<Item.Type, Label> subInvLabels = new Dictionary<Item.Type, Label>
+    private static readonly IDictionary<Item.ItemType, Label> subInvLabels = new Dictionary<Item.ItemType, Label>
     {
-        [Item.Type.BLOCK] = null,
-        [Item.Type.CONSUMABLE] = null,
-        [Item.Type.FOSSIL] = null
+        [Item.ItemType.BLOCK] = null,
+        [Item.ItemType.CONSUMABLE] = null,
+        [Item.ItemType.PROCESSED] = null
     };
 
     private GUIInventorySlot handSlot;
@@ -61,7 +61,7 @@ public class InventoryGUI : GUI
 
     private Player player;
 
-    public InventoryGUI(Player player, IDictionary<Item.Type,Inventory> inventories, Node vSource) : base(vSource)
+    public InventoryGUI(Player player, IDictionary<Item.ItemType,Inventory> inventories, Node vSource) : base(vSource)
     {
         this.player = player;
         this.subInventories = inventories;
@@ -84,7 +84,7 @@ public class InventoryGUI : GUI
         Vector2 offset = SLOT_OFFSET - BOX_SIZE / 2;
         Vector2 delta = new Vector2(sectionSize.x + sectionSpacing, 0.0f);
 
-        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subInvSlots)
+        foreach (KeyValuePair<Item.ItemType, GUILabeledSlotArray> kvPair in subInvSlots)
         {
             kvPair.Value.SetPosition(offset + delta * subInvIndices[kvPair.Key]);
             kvPair.Value.SetSize(SLOT_SPACING, LABEL_SHIFT);
@@ -101,11 +101,29 @@ public class InventoryGUI : GUI
             ZIndex = FLOATING_SLOT_Z
         };
 
-        foreach (Item.Type type in new List<Item.Type>(subInvSlots.Keys))
+        // this is rather ad-hoc and in general unsafe without thinking about how the slots are synchronized with the inventory
+        // TODO: short-term think of a better solution here
+        // TODO: long-term think of a better slot sync scheme
+        bool offerToMainInventory(ItemStack iStack)
+        {
+            SaveSlotState();
+            bool result = subInventories[iStack.Item.IType].TryAddItemStack(iStack);
+            UpdateSlots();
+            return result;
+        }
+        handSlot = new GUIInventorySlot(floatingSlot, Item.ItemType.ANY, -2, HAND_SLOT_OFFSET, offerToMainInventory)
+        {
+            ZAsRelative = true,
+            ZIndex = HAND_SLOT_Z
+        };
+        handSlot.AssignItemStack(player.ItemInHand);
+
+        foreach (Item.ItemType type in new List<Item.ItemType>(subInvSlots.Keys))
         {
             Vector2 empty = new Vector2();
+            
             subInvSlots[type] = new GUILabeledSlotArray(floatingSlot, type, subInventoryNames[type], SLOT_COUNT,
-                empty, empty)
+                empty, empty, iStack => handSlot.OfferItemStack(iStack) == null)
             {
                 ZAsRelative = true,
                 ZIndex = ARRAY_SLOT_Z
@@ -118,13 +136,6 @@ public class InventoryGUI : GUI
             ZIndex = BOX_Z
         };
 
-        handSlot = new GUIInventorySlot(floatingSlot, Item.Type.ANY, -2, HAND_SLOT_OFFSET)
-        {
-            ZAsRelative = true,
-            ZIndex = HAND_SLOT_Z
-        };
-        handSlot.AssignItemStack(player.ItemInHand);
-
         this.AddChild(box);
         foreach (GUILabeledSlotArray slotArr in subInvSlots.Values)
         {
@@ -136,7 +147,7 @@ public class InventoryGUI : GUI
 
     private void UpdateSlots()
     {
-        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subInvSlots)
+        foreach (KeyValuePair<Item.ItemType, GUILabeledSlotArray> kvPair in subInvSlots)
         {
             kvPair.Value.OverrideFromInventory(subInventories[kvPair.Key]);
         }
@@ -144,7 +155,7 @@ public class InventoryGUI : GUI
 
     private void SaveSlotState()
     {
-        foreach (KeyValuePair<Item.Type, GUILabeledSlotArray> kvPair in subInvSlots)
+        foreach (KeyValuePair<Item.ItemType, GUILabeledSlotArray> kvPair in subInvSlots)
         {
             kvPair.Value.SaveToInventory(subInventories[kvPair.Key]);
         }
@@ -153,8 +164,9 @@ public class InventoryGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
+        HandleResize();
         UpdateSlots();
-        this.Show();
+        Show();
         Input.SetMouseMode(Input.MouseMode.Visible);
     }
 
@@ -165,7 +177,7 @@ public class InventoryGUI : GUI
         ItemStack stack = floatingSlot.GetCurItemStack();
         if (stack != null)
         {
-            this.subInventories[stack.GetItem().GetType()].TryAddItemStack(stack);
+            this.subInventories[stack.Item.IType].TryAddItemStack(stack);
             floatingSlot.ClearItemStack();
         }
     }

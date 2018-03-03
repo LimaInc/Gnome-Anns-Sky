@@ -8,6 +8,20 @@ public class GrassManager : PlantManager
     private static byte grassBlock = Game.GetBlockId<GrassBlock>();
     private static byte redRock = Game.GetBlockId<RedRock>();
 
+    private const float BASE_GAS_PRODUCTION = 0.00000001f;
+    public static readonly IDictionary<Gas, float> GAS_PRODUCTION = new Dictionary<Gas, float>
+    {
+        [Gas.OXYGEN] = BASE_GAS_PRODUCTION,
+        [Gas.NITROGEN] = -BASE_GAS_PRODUCTION,
+        [Gas.CARBON_DIOXIDE] = -BASE_GAS_PRODUCTION,
+    };
+    public static readonly IDictionary<Gas, float> GAS_REQUIREMENTS = new Dictionary<Gas, float>
+    {
+        [Gas.OXYGEN] = 0.2f,
+        [Gas.NITROGEN] = 0.8f,
+        [Gas.CARBON_DIOXIDE] = 0.6f,
+    };
+
     private static IntVector3[] adjacentBlockVectors = new IntVector3[12] {
         new IntVector3(-1, -1, 0), new IntVector3(-1, 0, 0), new IntVector3(-1, 1, 0),
         new IntVector3(0, -1, -1), new IntVector3(0, 0, -1), new IntVector3(0, 1, -1),
@@ -24,15 +38,11 @@ public class GrassManager : PlantManager
     {
         this.plants = plants;
 
-        GAS_DELTAS = new Dictionary<Gas, float>
-        {
-            [Gas.OXYGEN] = 0.00000001f,
-            [Gas.NITROGEN] = -0.00000001f,
-            [Gas.CARBON_DIOXIDE] = -0.00000001f
-        };
-
-        SPREAD_CHANCE = 0.901;
+        SPREAD_CHANCE = 0.501;
         time = 0;
+
+        GAS_DELTAS = GAS_PRODUCTION;
+
 
         physicsBodies = new Dictionary<IntVector3, PhysicsBody>();
     }
@@ -47,8 +57,10 @@ public class GrassManager : PlantManager
 
     public override bool PlantOn(IntVector3 blockPos)
     {
-        List<IntVector3> blockPosList = new List<IntVector3>();
-        blockPosList.Add(blockPos);
+        List<IntVector3> blockPosList = new List<IntVector3>()
+        {
+            blockPos
+        };
         return PlantOn(blockPosList);
     }
 
@@ -70,8 +82,8 @@ public class GrassManager : PlantManager
 
             CollisionShape collisionShape = new CollisionShape();
             BoxShape b = new BoxShape();
-            b.SetExtents(new Vector3(Chunk.BLOCK_SIZE, 0.2f, Chunk.BLOCK_SIZE) / 2.0f);
-            collisionShape.SetShape(b); 
+            b.SetExtents(new Vector3(Block.SIZE, 0.2f, Block.SIZE) / 2.0f);
+            collisionShape.SetShape(b);
 
             PhysicsBody physicsBody = new StaticBody();
             physicsBody.AddToGroup("plants");
@@ -107,11 +119,7 @@ public class GrassManager : PlantManager
             time = 0;
 
             // kill off some grass if there is too little gas
-            double numberToDie = 5*Math.Max(0.01 - atmosphere.GetGasAmt(Gas.NITROGEN), 0) +
-                                 5*Math.Max(0.01 - atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE), 0) +
-                                 5*Math.Max(0.001 - atmosphere.GetGasAmt(Gas.OXYGEN), 0);
-
-            numberToDie = 0.0;
+            float numberToDie = GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
 
             while (numberToDie > 0)
             {
@@ -145,7 +153,7 @@ public class GrassManager : PlantManager
     {
         List<IntVector3> blocksToChange = new List<IntVector3>();
         // with small probability, pick random point and spread to adjacent block
-        for (double spreadNo = blocks.Count*SPREAD_CHANCE; spreadNo > 0; spreadNo--)
+        for (double spreadNo = blocks.Count * SPREAD_CHANCE; spreadNo > 0; spreadNo--)
         {
             if (spreadNo < 1 && randGen.NextDouble() > spreadNo)
                 return;
