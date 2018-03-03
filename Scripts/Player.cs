@@ -76,7 +76,7 @@ public class Player : KinematicBody
     private Plants plants;
     private BacterialState bacteria;
 
-    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 5, 0);
+    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 20, 0);
 
     public override void _Ready()
     {
@@ -222,12 +222,12 @@ public class Player : KinematicBody
         Dead = true;
 
         if (OpenedGUI != null)
-            this.CloseGUI();
+            CloseGUI();
         else
-            this.RemoveChild(playerGUI);
+            RemoveChild(playerGUI);
 
         DeadGUI dg = new DeadGUI(this);
-        this.AddChild(dg);
+        AddChild(dg);
     }
 
     public void HandleUseItem()
