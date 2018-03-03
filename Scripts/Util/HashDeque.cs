@@ -76,7 +76,7 @@ public class HashDeque<T> : ICollection, IEnumerable<T>, IEnumerable, IReadOnlyC
     public T RemoveLast()
     {
         T item = deque.Last.Value;
-        deque.RemoveFirst();
+        deque.RemoveLast();
         if (!hashSet.Remove(item))
         {
             throw new Exception("HashDeque in inconsistent state");
