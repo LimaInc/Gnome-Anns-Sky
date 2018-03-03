@@ -19,6 +19,8 @@ public class Chunk : Spatial
     SurfaceTool surfaceTool = new SurfaceTool();
     SpatialMaterial material = new SpatialMaterial();
 
+    System.Threading.Thread generationThread;
+
     public byte GetBlockInChunk(IntVector3 position)
     {
         return GetBlockInChunk(position.x, position.y, position.z);
@@ -71,18 +73,21 @@ public class Chunk : Spatial
             meshInstance.SetMesh(mesh);
         }
     }
-
     public void UpdateMesh()
     {
-        System.Threading.Thread thread = new System.Threading.Thread(() =>
+        if(generationThread != null && generationThread.ThreadState == System.Threading.ThreadState.Running)
+            generationThread.Abort();
+        
+        generationThread = new System.Threading.Thread(() =>
         {
             GenerateSurface();
             generationFinished = true;
         })
         {
-            Priority = System.Threading.ThreadPriority.Lowest
+            Priority = System.Threading.ThreadPriority.Highest
         };
-        thread.Start();
+        
+        generationThread.Start();
     }
 
     private void GenerateSurface()
