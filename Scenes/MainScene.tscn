@@ -11,9 +11,6 @@
 [ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=9]
 [ext_resource path="res://Scripts/World/Base.cs" type="Script" id=10]
 
-
-
-
 [sub_resource type="ProceduralSky" id=1]
 
 radiance_size = 4

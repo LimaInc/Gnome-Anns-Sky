@@ -116,7 +116,7 @@ public class GrassManager : PlantManager
 
         List<Tuple<IntVector3, byte>> blocksToChange = new List<Tuple<IntVector3, byte>>();
         foreach (IntVector3 block in blocksToRemove)
-            blocksToChange.Add(Tuple.create(block, redRock));
+            blocksToChange.Add(Tuple.Create(block, redRock));
 
         // kill off some grass if there is too little gas
         float numberToDie = GAS_REQUIREMENTS.Sum(kvPair => 5 * Mathf.Max(kvPair.Value - atmosphere.GetGasAmt(kvPair.Key), 0));
@@ -136,7 +136,7 @@ public class GrassManager : PlantManager
             physicsBodies.Remove(block);
             blocks.Remove(block);
 
-            blocksToChange.Add(Tuple.create(block, redRock));
+            blocksToChange.Add(Tuple.Create(block, redRock));
             numberToDie--;
         }
         terrain.SetBlocks(blocksToChange);

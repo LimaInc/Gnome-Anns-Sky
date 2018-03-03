@@ -140,7 +140,7 @@ public class Terrain : Spatial
         }
     }
 
-    public void SetBlocks(Tuple<IntVector3, byte>[] blocks)
+    public void SetBlocks(IEnumerable<Tuple<IntVector3, byte>> blocks)
     {
         HashSet<IntVector2> chunks = new HashSet<IntVector2>();
         foreach (Tuple<IntVector3, byte> b in blocks)
