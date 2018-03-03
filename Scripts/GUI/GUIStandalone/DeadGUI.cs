@@ -3,39 +3,55 @@ using Godot;
 
 public class DeadGUI : GUI
 {
-    private Color bgCol = new Color(0.8f, 0.0f, 0.0f, 0.5f);
+    private static readonly Color BACKGROUND_COLOR = new Color(0.8f, 0.0f, 0.0f, 0.5f);
 
-    private float textScale = 0.8f;
+    private const float BASE_TEXT_SCALE = 0.8f;
+
+    private float textScale;
     private Sprite youAreDead;
+    private ColorRect background;
+    float time;
 
     private static Texture DEAD_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "youAreDead.png") as Texture;
+    
+    public DeadGUI(Node vs) : base(vs)
+    {
+        time = 0;
 
-    public DeadGUI(Node vs) : base(vs) { }
+        background = new ColorRect
+        {
+            Color = BACKGROUND_COLOR
+        };
+        AddChild(background);
+
+        youAreDead = new Sprite();
+        youAreDead.SetTexture(DEAD_TEX);
+        AddChild(youAreDead);
+    }
 
     public override void HandleResize()
     {
-        ColorRect cr = new ColorRect
-        {
-            Color = bgCol
-        };
-        cr.SetSize(this.GetViewportDimensions());
-        this.AddChild(cr);
+        background.SetSize(GetViewportDimensions());
 
-        youAreDead = new Sprite();
-        youAreDead.SetPosition(this.GetViewportDimensions() / 2.0f);
-        youAreDead.SetTexture(DEAD_TEX);
-        youAreDead.SetScale(new Vector2(textScale, textScale));
-        this.AddChild(youAreDead);
+        youAreDead.SetPosition(GetViewportDimensions() / 2);
+        textScale = BASE_TEXT_SCALE;
     }
 
-    float time = 0.0f;
+    public override void HandleOpen(Node parent)
+    {
+        HandleResize();
+        _Process(0);
+        Show();
+        Input.SetMouseMode(Input.MouseMode.Visible);
+    }
+
     public override void _Process(float delta)
     {
         base._Process(delta);
 
         time += delta;
-        textScale = 0.8f + (float) Math.Sin(time * 2.0f) * 0.2f;
-        youAreDead.SetScale(new Vector2(textScale, textScale));
-        youAreDead.SetRotation((float) Math.Cos(time * 1.0f) * 0.1f);
+        textScale = BASE_TEXT_SCALE + Mathf.Sin(time * 2) * 0.2f;
+        youAreDead.Scale = new Vector2(textScale, textScale);
+        youAreDead.Rotation = Mathf.Cos(time) * 0.1f;
     }
 }
