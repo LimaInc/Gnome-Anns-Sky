@@ -96,7 +96,7 @@ public class Terrain : Spatial
 
         Vector3 chunkCentre = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE) + (new Vector3((Chunk.SIZE.x * Block.SIZE), 0, (Chunk.SIZE.y * Block.SIZE)) / 2.0f);      
 
-        Array bodies = ((Area)player.GetNode("AnimalArea")).GetOverlappingBodies();
+        Array bodies = (player.GetNode("AnimalArea") as Area).GetOverlappingBodies();
 
         Dictionary<string, int> count = new Dictionary<string, int>();
 
@@ -171,13 +171,14 @@ public class Terrain : Spatial
 
                     for (int i = 0; i < number; i++)
                     {
-                        GD.Print("Spawning animal in chunk create");
+                        // GD.Print("Spawning animal in chunk create");
                         double sexNum = rand.NextDouble();
                         AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
                         Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE);
                         Vector3 chunkSize = Chunk.SIZE * Block.SIZE;
                         Vector3 randomPosition = new Vector3(rand.Next(0, (int)chunkSize.x), 100.0f, rand.Next(0, (int)chunkSize.z));
-                        GetTree().GetRoot().GetNode("Game").GetNode("AnimalSpawner").Call("SpawnAnimal", pair.Key, sex, chunkOrigin + randomPosition);
+                        // ugly, TODO: fix
+                        GetNode(Game.GAME_PATH).GetNode("AnimalSpawner").Call("SpawnAnimal", pair.Key, sex, chunkOrigin + randomPosition);
                     }
                 }
             }

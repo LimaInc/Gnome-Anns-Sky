@@ -24,16 +24,16 @@ public class GUIVerticalBar : GUIObject
     }
 
     private Color color;
-    private Func<float> percSupplier;
+    private Func<float> percentageSupplier;
 
     public virtual Vector2 Size { get => new Vector2(WIDTH, height); }
 
-    public GUIVerticalBar(Vector2 pos, float height_, Color color_, Func<float> percSupplier_ = null)
+    public GUIVerticalBar(Vector2 pos, float height_, Color color_, Func<float> percentageSupplier_ = null)
         : base(pos, new Vector2(WIDTH,height_), TEX)
     {   
         height = height_;
         color = color_;
-        percSupplier = percSupplier_;
+        percentageSupplier = percentageSupplier_;
 
         cRect = new ColorRect
         {
@@ -48,9 +48,9 @@ public class GUIVerticalBar : GUIObject
     public override void _Process(float delta)
     {
         base._Process(delta);
-        if (percSupplier != null)
+        if (percentageSupplier != null)
         {
-            perc = percSupplier();
+            Percentage = percentageSupplier();
         }
     }
 }

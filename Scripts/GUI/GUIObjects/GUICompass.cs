@@ -40,9 +40,6 @@ class GUICompass : GUIObject
         base._Process(delta);
 
         Vector2 toPole = northPole - posSupplier();
-        Vector2 viewDir = viewDirSupplier();
-        Debug.PrintPlaceOccasionally("toPole: " + toPole);
-        Debug.PrintPlaceOccasionallyEnd("viewDir: " + viewDir);
-        sprite.Rotation = viewDir.AngleTo(toPole);
+        sprite.Rotation = viewDirSupplier().AngleTo(toPole);
     }
 }
