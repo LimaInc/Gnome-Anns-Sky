@@ -2,17 +2,19 @@
 
 public class UniformRandomBlockGenerator : IGenerator
 {
-    private readonly byte fossilID;
-    private readonly int fossilDepth;
+    private readonly byte blockID;
+    private readonly int depthMin;
+    private readonly int depthMax;
     private readonly float spawnChance;
     private readonly int i;
 
     private Random random;
 
-    public UniformRandomBlockGenerator(byte fossilID_, int fossilDepth_, float spawnChance_)
+    public UniformRandomBlockGenerator(byte blockID_, int depthMin_, int depthMax_, float spawnChance_)
     {
-        fossilID = fossilID_;
-        fossilDepth = fossilDepth_;
+        blockID = blockID_;
+        depthMin = depthMin_;
+        depthMax = depthMax_;
         spawnChance = spawnChance_;
 
         i = MathUtil.GlobalRandom.Next();
@@ -26,11 +28,11 @@ public class UniformRandomBlockGenerator : IGenerator
         {
             for (int k = 0; k < chunkSize.z; k++)
             {
-                for (int j = 0; j < fossilDepth; j++)
+                for (int j = depthMin; j < depthMax; j++)
                 {
                     if (random.NextDouble() < spawnChance)
                     {
-                        chunk[i, chunkTerrainHeight[i,k] - j, k] = fossilID;
+                        chunk[i, chunkTerrainHeight[i,k] - j, k] = blockID;
                     }
                 }
             }

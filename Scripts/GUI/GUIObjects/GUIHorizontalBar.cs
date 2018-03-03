@@ -7,6 +7,6 @@ public class GUIHorizontalBar : GUIVerticalBar
 
     public GUIHorizontalBar(Vector2 pos, float height, Color c, Func<float> percSupplier = null) : base(pos, height, c, percSupplier)
     {
-        SetRotation(Mathf.PI / 2);
+        Rotation = Mathf.PI / 2;
     }
 }

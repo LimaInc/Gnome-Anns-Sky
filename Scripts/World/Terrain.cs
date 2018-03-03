@@ -9,20 +9,21 @@ public class Terrain : Spatial
     public const int HEIGHT_SPREAD = 128;
     public const int SEA_LEVEL = 30;
     public const int RED_ROCK_LAYER_NUM = 3;
-    public const int FOSSIL_DEPTH = RED_ROCK_LAYER_NUM;
+    public const int FOSSIL_DEPTH_MIN = 1;
+    public const int FOSSIL_DEPTH_MAX = RED_ROCK_LAYER_NUM;
 
-    public const float BASE_FOSSIL_SPAWN_RATE = Game.FOSSIL_SPAWN_MULITPLIER * 0.0003f;
+    public const float BASE_FOSSIL_SPAWN_RATE = Game.FOSSIL_SPAWN_MULITPLIER * 0.0005f;
 
     public readonly IList<UniformRandomBlockGenerator> fossilGenerators = new List<UniformRandomBlockGenerator>()
     {
-        new UniformRandomBlockGenerator(Game.GetBlockId<FrogFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 2),
-        new UniformRandomBlockGenerator(Game.GetBlockId<RegularAnimalFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE / 2),
-        new UniformRandomBlockGenerator(Game.GetBlockId<BigAnimalFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE),
-        new UniformRandomBlockGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 3),
-        new UniformRandomBlockGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 1.5f ),
-        new UniformRandomBlockGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 10),
-        new UniformRandomBlockGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE * 4),
-        new UniformRandomBlockGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, BASE_FOSSIL_SPAWN_RATE)
+        new UniformRandomBlockGenerator(Game.GetBlockId<FrogFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformRandomBlockGenerator(Game.GetBlockId<RegularAnimalFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE / 2),
+        new UniformRandomBlockGenerator(Game.GetBlockId<BigAnimalFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE),
+        new UniformRandomBlockGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 3),
+        new UniformRandomBlockGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 1.5f ),
+        new UniformRandomBlockGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 10),
+        new UniformRandomBlockGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 4),
+        new UniformRandomBlockGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE)
     };
 
     public WorldGenerator worldGenerator;
@@ -54,7 +55,7 @@ public class Terrain : Spatial
         }
     }
 
-    private HashQueue<IntVector2> chunksToUpdate = new HashQueue<IntVector2>();
+    private HashDeque<IntVector2> chunksToUpdate = new HashDeque<IntVector2>();
     private HashQueue<IntVector2> chunksToRemove = new HashQueue<IntVector2>();
 
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
@@ -127,7 +128,7 @@ public class Terrain : Spatial
             if (buildMesh && !tuple.Item2) //But maybe we need to build a mesh for it?
             {
                 loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(tuple.Item1, true, tuple.Item3);
-                chunksToUpdate.Enqueue(chunkIndex);
+                chunksToUpdate.AddLast(chunkIndex);
             }
 
             if (!tuple.Item3) // If node not created, but it is in memory
@@ -142,7 +143,9 @@ public class Terrain : Spatial
             this.AddChild(chunk);
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
             if (buildMesh)
-                chunksToUpdate.Enqueue(chunkIndex);
+            {
+                chunksToUpdate.AddLast(chunkIndex);
+            }
 
 
             chunkNo++;
@@ -228,7 +231,7 @@ public class Terrain : Spatial
 
         if(chunksToUpdate.Count > 0)
         {
-            loadedChunks[chunksToUpdate.Dequeue()].Item1.UpdateMesh();
+            loadedChunks[chunksToUpdate.RemoveFirst()].Item1.UpdateMesh();
         }
         else if(chunksToRemove.Count > 0)
         {
@@ -275,7 +278,9 @@ public class Terrain : Spatial
         }
 
         foreach (IntVector2 chunk in chunks)
-            chunksToUpdate.Enqueue(chunk);
+        {
+            chunksToUpdate.AddLast(chunk);
+        }
     }
 
     public void SetBlock(IntVector3 pos, byte block)
@@ -295,19 +300,25 @@ public class Terrain : Spatial
         IntVector2 above = chunkIndex + new IntVector2(0,1);
         IntVector2 below = chunkIndex + new IntVector2(0,-1);
 
-        chunksToUpdate.Enqueue(chunkIndex);
-
+        // assumes Chunk.SIZE > 1
         if (positionInChunk.x == Chunk.SIZE.x - 1)
-            chunksToUpdate.Enqueue(right);
-
-        if (positionInChunk.x == 0)
-            chunksToUpdate.Enqueue(left);
-
+        {
+            chunksToUpdate.AddFirst(right);
+        }
+        else if (positionInChunk.x == 0)
+        {
+            chunksToUpdate.AddFirst(left);
+        }
         if (positionInChunk.z == Chunk.SIZE.z - 1)
-            chunksToUpdate.Enqueue(above);
+        {
+            chunksToUpdate.AddFirst(above);
+        }
+        else if (positionInChunk.z == 0)
+        {
+            chunksToUpdate.AddFirst(below);
+        }
 
-        if (positionInChunk.z == 0)
-            chunksToUpdate.Enqueue(below);
+        chunksToUpdate.AddFirst(chunkIndex);
     }
     
     private void UpdateVisibleChunks()
