@@ -90,6 +90,7 @@
     <Compile Include="Scripts\GUI\GUIObjects\Label2D.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
+    <Compile Include="Scripts\Inventory\ItemSpawnEgg.cs" />
     <Compile Include="Scripts\Inventory\ItemBacteriaVial.cs" />
     <Compile Include="Scripts\Inventory\ItemID.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
@@ -134,7 +135,7 @@
     <Compile Include="Scripts\World\WorldGeneration\ITerrainModifier.cs" />
     <Compile Include="Scripts\World\WorldGeneration\HillLandscapeTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\IceGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\UniformFossilGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\UniformRandomBlockGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\SmoothingTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\RockGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\WorldGenerator.cs" />

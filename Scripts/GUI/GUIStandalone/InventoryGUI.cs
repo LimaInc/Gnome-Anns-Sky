@@ -21,7 +21,7 @@ public class InventoryGUI : GUI
     {
         [Item.ItemType.BLOCK] = null,
         [Item.ItemType.CONSUMABLE] = null,
-        [Item.ItemType.FOSSIL] = null
+        [Item.ItemType.PROCESSED] = null
     };
 
     // This follows the mouse to allow the player to move items around
@@ -31,20 +31,20 @@ public class InventoryGUI : GUI
     {
         [Item.ItemType.BLOCK] = null,
         [Item.ItemType.CONSUMABLE] = null,
-        [Item.ItemType.FOSSIL] = null
+        [Item.ItemType.PROCESSED] = null
     };
 
     private static readonly IDictionary<Item.ItemType, String> subInventoryNames = new Dictionary<Item.ItemType, String>
     {
         [Item.ItemType.BLOCK] = "Blocks",
         [Item.ItemType.CONSUMABLE] = "Consumables",
-        [Item.ItemType.FOSSIL] = "Processed"
+        [Item.ItemType.PROCESSED] = "Processed"
     };
 
     private static readonly IDictionary<Item.ItemType, int> subInvIndices = new Dictionary<Item.ItemType, int>
     {
         [Item.ItemType.CONSUMABLE] = 0,
-        [Item.ItemType.FOSSIL] = 1,
+        [Item.ItemType.PROCESSED] = 1,
         [Item.ItemType.BLOCK] = 2
     };
 
@@ -52,7 +52,7 @@ public class InventoryGUI : GUI
     {
         [Item.ItemType.BLOCK] = null,
         [Item.ItemType.CONSUMABLE] = null,
-        [Item.ItemType.FOSSIL] = null
+        [Item.ItemType.PROCESSED] = null
     };
 
     private GUIInventorySlot handSlot;
@@ -164,8 +164,9 @@ public class InventoryGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
+        HandleResize();
         UpdateSlots();
-        this.Show();
+        Show();
         Input.SetMouseMode(Input.MouseMode.Visible);
     }
 

@@ -52,7 +52,7 @@ public class Atmosphere : Node
 
     public float GetGasProgress(Gas gas)
     {
-        return Math.Min(gases[gas]/gasGoals[gas],1);
+        return Mathf.Clamp(gases[gas]/gasGoals[gas],0,1);
     }
 
     public override void _PhysicsProcess(float delta)

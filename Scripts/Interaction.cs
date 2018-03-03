@@ -26,26 +26,17 @@ public class Interaction : Camera
 
     public bool PlaceBlock(byte b)
     {
-        Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
+        var hitInfo = GetHitInfo();
 
-        Vector3 from = this.ProjectRayOrigin(midScreenPoint);
-        Node[] exc = { this };
-        Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
-
-        foreach(KeyValuePair<object, object> entry in hitInfo)
+        if (hitInfo != null)
         {
-            // do something with entry.Value or entry.Key
-        }
+            Vector3 pos = (Vector3)hitInfo["position"] + (Vector3)hitInfo["normal"] * 0.5f * Block.SIZE;
+            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
 
-        if(hitInfo.Count != 0) //Hit something
-        {
-            Vector3 pos = (Vector3)hitInfo["position"] + (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
-            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
-
-            Vector3 blockCollisionPos = new Vector3(blockPos.x, blockPos.y, blockPos.z) * Chunk.BLOCK_SIZE;
+            Vector3 blockCollisionPos = new Vector3(blockPos.x, blockPos.y, blockPos.z) * Block.SIZE;
 
             BoxShape bs = new BoxShape();
-            bs.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f));
+            bs.SetExtents(new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2);
 
             PhysicsShapeQueryParameters psqp = new PhysicsShapeQueryParameters();
             psqp.SetShape(bs);
@@ -62,7 +53,7 @@ public class Interaction : Camera
 
                     if (info["collider"] is KinematicBody)
                     {
-                        //A moving body (player, animal etc.) is in the way
+                        // A moving body (player, animal etc.) is in the way
                         return false;
                     }
                 }
@@ -74,18 +65,25 @@ public class Interaction : Camera
         return false;
     }
 
-    public IntVector3? GetBlockPositionUnderCursor()
+    public Dictionary<object, object> GetHitInfo()
     {
         Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
 
-        Vector3 from = this.ProjectRayOrigin(midScreenPoint);
+        Vector3 from = ProjectRayOrigin(midScreenPoint);
         Node[] exc = { this };
-        Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
+        Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + ProjectRayNormal(midScreenPoint) * rayLength, exc);
 
-        if(hitInfo.Count != 0) //Hit something
+        return hitInfo.Count > 0 ? hitInfo : null;
+    }
+
+    public IntVector3? GetBlockPositionUnderCursor()
+    {
+        var hitInfo = GetHitInfo();
+
+        if(hitInfo != null) //Hit something
         {
-            Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
-            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
+            Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Block.SIZE;
+            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
             return blockPos;
         }
         return null;

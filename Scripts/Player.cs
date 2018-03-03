@@ -93,7 +93,7 @@ public class Player : KinematicBody
 
         // OLD BoxShape collision 
         BoxShape b = new BoxShape();
-        b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f - 0.05f, Chunk.BLOCK_SIZE - 0.05f,Chunk.BLOCK_SIZE / 2.0f - 0.05f));
+        b.SetExtents(new Vector3(Block.SIZE / 2 - 0.05f, Block.SIZE - 0.05f, Block.SIZE / 2 - 0.05f));
         collisionShape.SetShape(b);
 
         // CapsuleShape c = new CapsuleShape();
@@ -113,7 +113,7 @@ public class Player : KinematicBody
         Inventories = new Dictionary<Item.ItemType, Inventory>
         {
             [Item.ItemType.CONSUMABLE] = new Inventory(Item.ItemType.CONSUMABLE, PLAYER_INVENTORY_COUNT),
-            [Item.ItemType.FOSSIL] = new Inventory(Item.ItemType.FOSSIL, PLAYER_INVENTORY_COUNT),
+            [Item.ItemType.PROCESSED] = new Inventory(Item.ItemType.PROCESSED, PLAYER_INVENTORY_COUNT),
             [Item.ItemType.BLOCK] = new Inventory(Item.ItemType.BLOCK, PLAYER_INVENTORY_COUNT)
         };
 
@@ -204,7 +204,7 @@ public class Player : KinematicBody
 
     public void ChangeStat(Stats stat, float v)
     {
-        statistics[stat] = Mathf.Min(1, Mathf.Max(0, statistics[stat] + v));
+        statistics[stat] = Mathf.Clamp(statistics[stat] + v, 0, 1);
     }
 
     public void Push(Vector3 v)
@@ -222,17 +222,17 @@ public class Player : KinematicBody
         Dead = true;
 
         if (OpenedGUI != null)
-            this.CloseGUI();
+            CloseGUI();
         else
-            this.RemoveChild(playerGUI);
+            RemoveChild(playerGUI);
 
         DeadGUI dg = new DeadGUI(this);
-        this.AddChild(dg);
+        AddChild(dg);
     }
 
     public void HandleUseItem()
     {
-        if (this.ItemInHand == null)
+        if (ItemInHand == null)
             return;
 
         Item i = this.ItemInHand.Item;
@@ -240,7 +240,7 @@ public class Player : KinematicBody
         bool success = false;
         if (i is ItemBlock b)
         {
-            success = this.interaction.PlaceBlock(b.Block);
+            success = interaction.PlaceBlock(b.Block);
         }
         else if (i is ItemConsumable d)
         {
@@ -248,26 +248,41 @@ public class Player : KinematicBody
 
             success = true;
         }
-        else if (i is ItemPlant p)
-        {
-            IntVector3? blockPos = this.interaction.GetBlockPositionUnderCursor();
-            if (blockPos.HasValue)
-                success = plants.Plant(p, blockPos.Value);
-        }
         else if (i is ItemBacteriaVial vial)
         {
             success = bacteria.TryGetBacteria(vial.BType, out Bacteria bacterium);
             bacterium?.AddAmt(vial.Amount);
         }
+        else if (i is ItemPlant p)
+        {
+            IntVector3? blockPos = interaction.GetBlockPositionUnderCursor();
+            if (blockPos.HasValue)
+                success = plants.Plant(p, blockPos.Value);
+        }
+        else if (i is ItemSpawnEgg egg)
+        {
+            Vector3? graphicalPosition = (Vector3?)interaction.GetHitInfo()?["position"];
+            if (graphicalPosition.HasValue)
+            {
+                string animal = egg.Preset;
+                // SPAWN ANIMAL HERE
+                // something like
+                // SpawnAnimal(animal, randomSex, graphicalPosition.Value);
+                // set success to true if spawn successful
+                // otherwise success should be left unset (or set to false)
+                success = true;
+            }
+                
+        }
 
         if (success)
         {
-            this.ItemInHand.ChangeQuantity(-1);
-            if (this.ItemInHand.Count == 0)
+            ItemInHand.ChangeQuantity(-1);
+            if (ItemInHand.Count == 0)
             {
-                this.ItemInHand = null;
+                ItemInHand = null;
             }
-            this.InventoryGUI.UpdateHandSlot();
+            InventoryGUI.UpdateHandSlot();
         }
     }
 
@@ -377,9 +392,9 @@ public class Player : KinematicBody
 
     public void OpenGUI(GUI gui)
     {
-        this.CloseGUI();
+        CloseGUI();
         gui.HandleOpen(this);
-        this.AddChild(gui);
+        AddChild(gui);
         OpenedGUI = gui;
         playerGUI.BackgroundMode = true;
     }

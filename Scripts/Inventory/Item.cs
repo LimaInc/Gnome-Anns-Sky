@@ -8,10 +8,10 @@ public class Item
     public enum ItemType
     {
         CONSUMABLE = 0x1,
-        FOSSIL = 0x2,
+        PROCESSED = 0x2,
         BLOCK = 0x4,
         // should be an OR of all other values
-        ANY = CONSUMABLE | FOSSIL | BLOCK
+        ANY = CONSUMABLE | PROCESSED | BLOCK
     }
 
     // checks whether t2 is a superset of types in t1

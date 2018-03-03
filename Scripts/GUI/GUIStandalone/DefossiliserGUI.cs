@@ -29,26 +29,26 @@ public class DefossiliserGUI : GUI
     {
         [Item.ItemType.BLOCK] = null,
         [Item.ItemType.CONSUMABLE] = null,
-        [Item.ItemType.FOSSIL] = null
+        [Item.ItemType.PROCESSED] = null
     };
 
     private static readonly IDictionary<Item.ItemType, String> subInventoryNames = new Dictionary<Item.ItemType, String>
     {
         [Item.ItemType.BLOCK] = "Blocks",
         [Item.ItemType.CONSUMABLE] = "Consumables",
-        [Item.ItemType.FOSSIL] = "Processed"
+        [Item.ItemType.PROCESSED] = "Processed"
     };
     private static readonly IDictionary<Item.ItemType, int> subInvIndices = new Dictionary<Item.ItemType, int>
     {
         [Item.ItemType.CONSUMABLE] = 0,
-        [Item.ItemType.FOSSIL] = 1,
+        [Item.ItemType.PROCESSED] = 1,
         [Item.ItemType.BLOCK] = 2
     };
     private static readonly IDictionary<Item.ItemType, Label> subInvLabels = new Dictionary<Item.ItemType, Label>
     {
         [Item.ItemType.BLOCK] = null,
         [Item.ItemType.CONSUMABLE] = null,
-        [Item.ItemType.FOSSIL] = null
+        [Item.ItemType.PROCESSED] = null
     };
 
     public DefossiliserGUI(Defossiliser defossiliserMachine, Player p, 
@@ -176,7 +176,8 @@ public class DefossiliserGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
-        this.Show();
+        HandleResize();
+        Show();
         Input.SetMouseMode(Input.MouseMode.Visible);
         UpdateSlots();
         defossiliser.Callback = UpdateDefossiliserSlotState;
