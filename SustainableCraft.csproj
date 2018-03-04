@@ -126,11 +126,13 @@
     <Compile Include="Scripts\GUI\GUIObjects\GUIVerticalBar.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DeadGUI.cs" />
     <Compile Include="Scripts\Interaction.cs" />
+    <Compile Include="Scripts\Plants\PlantBody.cs" />
     <Compile Include="Scripts\Plants\Plants.cs" />
     <Compile Include="Scripts\Plants\PlantManager.cs" />
     <Compile Include="Scripts\Plants\GrassManager.cs" />
     <Compile Include="Scripts\Plants\TreeManager.cs" />
     <Compile Include="Scripts\Plants\PlantType.cs" />
+    <Compile Include="Scripts\Plants\WheatManager.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\Util\Debug.cs" />
     <Compile Include="Scripts\Util\HashDeque.cs" />
