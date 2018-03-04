@@ -12,9 +12,10 @@ public class AnimalPreset
     public float oxygenConsumption;
     public float co2Production;
     public int foodDrop;
+    public float birthDrop;
 
     public AnimalPreset(AnimalBehaviourComponent.AnimalSex sex, PackedScene scene, AnimalBehaviourComponent.AnimalDiet diet, int foodChainLevel, int breedability, string presetName, int foodDrop = 1,
-        float oxygenConsumption = 0.0001f, float co2Production = 0.0001f)
+        float birthDrop = 20.0f, float oxygenConsumption = 0.0001f, float co2Production = 0.0001f)
     {
         this.sex = sex;
         this.scene = scene;
@@ -25,5 +26,6 @@ public class AnimalPreset
         this.oxygenConsumption = oxygenConsumption;
         this.co2Production = co2Production;
         this.foodDrop = foodDrop;
+        this.birthDrop = birthDrop;
     }
 }
