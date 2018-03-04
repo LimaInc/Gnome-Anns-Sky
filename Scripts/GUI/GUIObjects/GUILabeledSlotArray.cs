@@ -3,22 +3,22 @@ using Godot;
 
 public class GUILabeledSlotArray : GUIInventorySlotArray
 {
-    private Label2D header;
+    private GUILabel header;
 
     public Vector2 LabelShift { get; private set; }
 
     public GUILabeledSlotArray(GUIInventorySlot exchangeSlot, Item.ItemType type, String labelText,
         IntVector2 size, Vector2 slotSpacing, Vector2 labelShift, 
-        Func<ItemStack,bool> quickMove = null, Action invUpdate = null)
-        : base(exchangeSlot, type, size, slotSpacing, quickMove, invUpdate)
+        Func<ItemStack,bool> quickMove = null, Action invUpdate = null, Func<bool> shouldShow = null)
+        : base(exchangeSlot, type, size, slotSpacing, quickMove, invUpdate, shouldShow)
     {
-        this.LabelShift = labelShift;
+        LabelShift = labelShift;
 
-        header = new Label2D
+        header = new GUILabel
         {
             Text = labelText
         };
-        this.AddChild(header);
+        AddChild(header);
     }
 
     public override void HandleResize()
@@ -29,12 +29,12 @@ public class GUILabeledSlotArray : GUIInventorySlotArray
 
     private void PositionHeader()
     {
-        header.SetPosition(this.LabelShift);
+        header.SetPosition(LabelShift);
     }
 
     public void SetSize(Vector2 slotSpacing, Vector2 labelShift)
     {
-        this.LabelShift = labelShift;
-        base.SetSize(slotSpacing);
+        LabelShift = labelShift;
+        SetSize(slotSpacing);
     }
 }

@@ -1,12 +1,12 @@
 ﻿public class FrogFossilBlock : FossilBlock
 {
-    public FrogFossilBlock() : base("animalFossilBlock.png") { }
+    public FrogFossilBlock() : base("animalFossilBlock") { }
 }
 public class RegularAnimalFossilBlock : FossilBlock
 {
-    public RegularAnimalFossilBlock() : base("animalFossilBlock.png") { }
+    public RegularAnimalFossilBlock() : base("animalFossilBlock") { }
 }
 public class BigAnimalFossilBlock : FossilBlock
 {
-    public BigAnimalFossilBlock() : base("animalFossilBlock.png") { }
+    public BigAnimalFossilBlock() : base("animalFossilBlock") { }
 }

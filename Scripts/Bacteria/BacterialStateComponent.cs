@@ -9,7 +9,6 @@ public abstract class BacterialStateComponent : Node
 
     public override void _Ready()
     {
-        base._Ready();
         bs = GetNode(Game.BACTERIAL_STATE_PATH) as BacterialState;
     }
 }

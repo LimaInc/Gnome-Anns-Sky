@@ -9,12 +9,12 @@ public abstract class GUI : GUIComplexObject
 
     public GUI(Node vdSource)
     {
-        this.viewportSource = vdSource;
+        viewportSource = vdSource;
     }
 
     public Vector2 GetViewportDimensions()
     {
-        return this.viewportSource.GetViewport().GetSize();
+        return viewportSource.GetViewport().Size;
     }
 
     public override void _Process(float delta)

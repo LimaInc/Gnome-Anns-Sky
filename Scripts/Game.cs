@@ -16,14 +16,37 @@ public class Game : Node
     public const string BACTERIAL_STATE_PATH = WORLD_ENVIRO_PATH + "/BacterialState";
     public const string ANIMAL_SPAWNER_PATH = GAME_PATH + "/AnimalSpawner";
 
-    public const string GUI_TEXTURE_PATH = "res://Images/GUI/";
-    public const string BLOCK_TEXTURE_PATH = "res://Images/Blocks/";
-    public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
+    public const string RESOURCE_LOADER_PATH = GAME_PATH + "/ResourceLoaders";
+    public const string BLOCK_RESOURCE_LOADER_PATH = RESOURCE_LOADER_PATH + "/BlockResourceLoader";
+    public const string GUI_RESOURCE_LOADER = RESOURCE_LOADER_PATH + "/GUIResourceLoader";
+    public const string ANIMAL_RESOURCE_LOADER = RESOURCE_LOADER_PATH + "/AnimalResourceLoader";
+    public const string ITEM_RESOURCE_LOADER = RESOURCE_LOADER_PATH + "/ItemResourceLoader";
+
+    public const string SCENES_PATH = "res://Scenes";
+    public const string ANIMAL_SCENES_PATH = SCENES_PATH + "/Animals";
+
+    public const string SCRIPTS_PATH = "res://Scripts";
+
+    public const string TEXTURES_PATH = "res://Images";
+    public const string GUI_TEXTURES_DIR_PATH = TEXTURES_PATH + "/GUI/";
+    public const string BLOCK_TEXTURES_DIR_PATH = TEXTURES_PATH + "/Blocks/";
+    public const string ITEM_TEXTURES_DIR_PATH = TEXTURES_PATH + "/Items/";
 
     // multiplicative factor for processes in the world (not directly affecting the player)
     public const int FOSSIL_SPAWN_MULITPLIER = 30;
     public const int SPEED = 30;
     public const int PLANT_MAX_SPEED = 2; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
+    
+    public static Texture TextureAtlas { get; private set; }
+    private static byte nextId = 1;
+    private static Dictionary<byte, Block> blocks = new Dictionary<byte, Block>()
+    {
+        { 0, null } //Air block (probably should be something more sensible than null)
+    };
+    private static ResourcePreloader blockResourceLoader;
+    // this does not belong here, but couldn't find a proper home for it
+    // TODO: fix
+    public static ResourcePreloader guiResourceLoader;
 
     public Game()
     {
@@ -47,17 +70,30 @@ public class Game : Node
 
         RegisterBlock(new HabitationBlock());
         RegisterBlock(new DefossiliserBlock());
+    }
 
-        //Generate texture atlas once all blocks are registered
+    public override void _Ready()
+    {
+        blockResourceLoader = GetNode(BLOCK_RESOURCE_LOADER_PATH) as ResourcePreloader;
+        guiResourceLoader  = GetNode(GUI_RESOURCE_LOADER) as ResourcePreloader;
+
+        //Generate texture atlas once resource loaders initialized
         GenerateTextureMap();
     }
 
-    public static Texture TextureAtlas { get; private set; }
-    private static byte nextId = 1;
-    private static Dictionary<byte, Block> blocks = new Dictionary<byte, Block>()
+
+    // VERY hacky
+    // TODO: fix
+    public bool Running { get; private set; }
+
+    public override void _Process(float delta)
     {
-        { 0, null } //Air block (probably should be something more sensible than null)
-    };
+        if (!Running)
+        {
+            Running = true;
+            (GetNode(Menu.LOADING_SCREEN_PATH) as LoadingScreen).Visible = false;
+        }
+    }
 
     //UVs for all blocks
     private static Dictionary<byte, Rect2[]> blockUVs = new Dictionary<byte, Rect2[]>();
@@ -78,12 +114,12 @@ public class Game : Node
         List<Texture> textures = new List<Texture>();
         for(int i = 0; i < texturedBlocks.Count; i++)
         {
-            string[] blockTexturePaths = blocks[texturedBlocks[i]].TexturePaths;
+            string[] blockTexturePaths = blocks[texturedBlocks[i]].TextureNames;
             Texture[] blockTextures = new Texture[blockTexturePaths.Length];
 
             for(int j = 0; j < blockTexturePaths.Length; j++)
             {
-                blockTextures[j] = GD.Load(blockTexturePaths[j]) as Texture;
+                blockTextures[j] = blockResourceLoader.GetResource(blockTexturePaths[j]) as Texture;
                 if(blockTextures[j] == null)
                 {
                     GD.Printerr("Block texture could not be loaded");
@@ -101,7 +137,7 @@ public class Game : Node
 
         for(int i = 0; i < texturedBlocks.Count; i++)
         {
-            Rect2[] uvsArr = new Rect2[blocks[texturedBlocks[i]].TexturePaths.Length];
+            Rect2[] uvsArr = new Rect2[blocks[texturedBlocks[i]].TextureNames.Length];
             for(int j = 0; j < uvsArr.Length; j++)
             {
                 uvsArr[j] = uvs[index++];

@@ -7,12 +7,12 @@ class DefossiliserBlock : CubeBlock
     public override bool Breakable { get { return false; } }
     public Defossiliser Machine { private set; get; }
 
-    private static readonly string[] texturePaths = 
-        new[] { Game.BLOCK_TEXTURE_PATH + "defossiliser_front.png",
-                Game.BLOCK_TEXTURE_PATH + "defossiliser_top.png",
-                Game.BLOCK_TEXTURE_PATH + "defossiliser_side.png" };
+    private static readonly string[] textureNames = 
+        new[] { "defossiliser_front",
+                "defossiliser_top",
+                "defossiliser_side" };
 
-    public override string[] TexturePaths { get => texturePaths; }
+    public override string[] TextureNames { get => textureNames; }
 
     public override int GetTextureIndex(BlockFace face)
     {

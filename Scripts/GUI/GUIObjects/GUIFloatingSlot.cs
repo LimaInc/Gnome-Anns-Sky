@@ -3,9 +3,9 @@ using Godot;
 
 public class GUIFloatingSlot : GUIInventorySlot
 {
-    public GUIFloatingSlot() : base(null, Item.ItemType.ANY, -1, new Vector2())
+    public GUIFloatingSlot(Func<bool> shouldShow = null) : base(null, Item.ItemType.ANY, -1, new Vector2(), shouldShow: shouldShow)
     {
-        this.sprite.SetTexture(new ImageTexture());
+        sprite.SetTexture(new ImageTexture());
     }
 
     public override void OnLeftPress()

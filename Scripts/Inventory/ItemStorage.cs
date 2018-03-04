@@ -4,47 +4,41 @@ using System.Collections.Generic;
 using System.Linq;
 using static ItemID;
 
-public class ItemStorage
+// total hack, a weird hybrid between a static class, singleton and a regular class
+// TODO: fix
+public class ItemStorage : Node
 {
     private static Dictionary<byte, Item> blockItems = new Dictionary<byte, Item>();
 
-    public static readonly IDictionary<ItemID, Item> items = new Dictionary<ItemID, Item>();
+    private static readonly IDictionary<ItemID, Item> items = new Dictionary<ItemID, Item>();
 
-    private static readonly IDictionary<string, Texture> texDict;
-
-    static ItemStorage()
+    public Item this[ItemID id]
     {
-        // so far that's tradeoff between number of lines needed to add new item type
-        // and number of lines needed to add new item of existing type
-        // this version is left here with hope of further refactoring 
-        // (ideally up to the point where item data is loaded from files)
-        // TODO :: still ugly, fix (somehow)
-        IList<string> texFileNames = new List<string>
+        get
         {
-            "itemRedRock.png",
-            "itemIce.png",
-            "itemChocolate.png",
-            "itemCake.png",
-            "itemStone.png",
-            "itemWater.png",
-            "itemBacteriaFossil.png",
-            "itemGrassFossil.png",
-            "itemTreeFossil.png",
-            "itemAnimalFossil.png",
-            "itemOxygenBacteriaVial.png",
-            "itemNitrogenBacteriaVial.png",
-            "itemCarbonDioxideBacteriaVial.png",
-            "itemGrass.png",
-            "itemTree.png",
-            "itemFrogEgg.png",
-            "itemEgg.png",
-            "itemBigEgg.png",
-            "itemMeat.png"
-        };
+            return itemResourceLoader != null ? items[id] : throw new Exception("items are not initialized yet");
+        }
+    }
 
-        // arbitrary choice: maps file name (without file extension) to texture
-        texDict = texFileNames.ToDictionary(k => k.Split('.')[0],
-            k => ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + k) as Texture);
+    public static ItemStorage Instance { get; private set; }
+
+    private static ResourcePreloader itemResourceLoader;
+
+    public ItemStorage()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            throw new Exception("Tried creating a second ItemStorage, THERE SHALL BE ONLY ONE!");
+        }
+    }
+
+    public override void _Ready()
+    {
+        itemResourceLoader = GetNode(Game.ITEM_RESOURCE_LOADER) as ResourcePreloader;
 
         // arbitrary choice: blocks are stackable
         var itemBlockInits = new List<Tuple<ItemID, string, string, byte>>
@@ -123,15 +117,7 @@ public class ItemStorage
 
     private static Texture GetTexture(string name)
     {
-        bool found = texDict.TryGetValue(name, out Texture tex);
-        if (found)
-        {
-            return tex;
-        }
-        else
-        {
-            throw new ArgumentException("'" + name + "' is not a name of any known texture");
-        }
+        return itemResourceLoader.GetResource(name) as Texture;
     }
 
     public static void RegisterBlockItem(byte id, Item item)
