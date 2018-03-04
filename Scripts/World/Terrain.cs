@@ -94,26 +94,29 @@ public class Terrain : Spatial
 
     private Dictionary<string,int> CountAnimalsInChunk(IntVector2 chunkIndex)
     {
-        Vector3 playerPos = player.GetTranslation();
-
-        Vector3 chunkCentre = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE) + (new Vector3((Chunk.SIZE.x * Block.SIZE), 0, (Chunk.SIZE.y * Block.SIZE)) / 2.0f);      
-
-        Array bodies = (player.GetNode("AnimalArea") as Area).GetOverlappingBodies();
-
         Dictionary<string, int> count = new Dictionary<string, int>();
 
-        foreach (PhysicsBody body in bodies)
+        if (player.HasNode("AnimalArea"))
         {
-            if (body.IsInGroup("animals"))
+
+            Vector3 playerPos = player.GetTranslation();
+        Array bodies = (player.GetNode("AnimalArea") as Area).GetOverlappingBodies();
+
+            Vector3 chunkCentre = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE) + (new Vector3((Chunk.SIZE.x * Block.SIZE), 0, (Chunk.SIZE.y * Block.SIZE)) / 2.0f);
+
+            foreach (PhysicsBody body in bodies)
             {
-                AnimalBehaviourComponent behaviour = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
-                if (!count.ContainsKey(behaviour.PresetName))
+                if (body.IsInGroup("animals"))
                 {
-                    count.Add(behaviour.PresetName,1);
-                }
-                else
-                {
-                    count[behaviour.PresetName]++;
+                    AnimalBehaviourComponent behaviour = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+                    if (!count.ContainsKey(behaviour.PresetName))
+                    {
+                        count.Add(behaviour.PresetName, 1);
+                    }
+                    else
+                    {
+                        count[behaviour.PresetName]++;
+                    }
                 }
             }
         }
@@ -175,7 +178,6 @@ public class Terrain : Spatial
 
                     for (int i = 0; i < number; i++)
                     {
-                        // GD.Print("Spawning animal in chunk create");
                         double sexNum = rand.NextDouble();
                         AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
                         Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE);

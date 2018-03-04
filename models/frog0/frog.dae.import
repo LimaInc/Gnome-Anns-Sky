@@ -7,7 +7,7 @@ path="res://.import/frog.dae-b067ad300c4408bbac6b5ac85608561b.scn"
 [deps]
 
 source_file="res://models/frog0/frog.dae"
-source_md5="897e7970569ce6dd6822f093f3bdae86"
+source_md5="00af6c9b3ae9f0b5f89c2411cd87143e"
 
 dest_files=[ "res://.import/frog.dae-b067ad300c4408bbac6b5ac85608561b.scn" ]
 dest_md5="2518dc3fc0caf5630b9b08e0c001830f"

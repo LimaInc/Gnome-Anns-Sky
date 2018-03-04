@@ -30,18 +30,13 @@ public class GrassManager : PlantManager
         new IntVector3(1, -1, 0), new IntVector3(1, 0, 0), new IntVector3(1, 1, 0)
     };
 
-    private const double SPREAD_CHANCE = 0.501f;
+    private const double SPREAD_CHANCE = 0.65f;
 
     private float time;
 
-    private Plants plants;
-    private Dictionary<IntVector3, PhysicsBody> physicsBodies;
-
     public GrassManager(Plants plants_) : base(plants_, SPREAD_CHANCE, GAS_PRODUCTION)
     {
-        plants = plants_;
         time = 0;
-        physicsBodies = new Dictionary<IntVector3, PhysicsBody>();
     }
 
     protected override bool Valid(IntVector3 blockPos)
@@ -75,29 +70,6 @@ public class GrassManager : PlantManager
         foreach (IntVector3 blockPos in blockPosList)
         {
             blocksToChange[idx++] = Tuple.Create(blockPos, GRASS_BLOCK_ID);
-
-            CollisionShape collisionShape = new CollisionShape();
-            BoxShape b = new BoxShape();
-            b.SetExtents(new Vector3(Block.SIZE, 0.2f, Block.SIZE) / 2.0f);
-            collisionShape.SetShape(b);
-
-            PhysicsBody physicsBody = new StaticBody();
-            physicsBody.AddToGroup("plants");
-            physicsBody.AddToGroup("alive");
-            physicsBody.SetTranslation(blockPos * Block.SIZE + new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2.0f);
-
-            // Make sure player cannot collide with grass.
-            physicsBody.SetCollisionLayerBit(0, false);
-            physicsBody.SetCollisionMaskBit(0, false);
-
-            // Make sure plants can collide with areas for detection and animal bodies.
-            physicsBody.SetCollisionLayerBit(1, true);  
-            physicsBody.SetCollisionMaskBit(31, true);
-            
-            physicsBody.AddChild(collisionShape);
-
-            physicsBodies[blockPos] = physicsBody;
-            plants.AddChild(physicsBody);
         }
 
         terrain.SetBlocks(blocksToChange);
@@ -113,16 +85,8 @@ public class GrassManager : PlantManager
             return;
         time = 0;
 
-        // remove blocks that are no longer grass
-        List<IntVector3> blocksToRemove = (from block in blocks
-                                           where !physicsBodies[block].IsInGroup("alive")
-                                           select block).ToList();
-
-        blocks.ExceptWith(blocksToRemove);
 
         List<Tuple<IntVector3, byte>> blocksToChange = new List<Tuple<IntVector3, byte>>();
-        foreach (IntVector3 block in blocksToRemove)
-            blocksToChange.Add(Tuple.Create(block, RED_ROCK_ID));
 
         // kill off some grass if there is too little gas
         float numberToDie = 5 * GAS_REQUIREMENTS.Sum(kvPair => Mathf.Max(kvPair.Value - atmosphere.GetGasProgress(kvPair.Key), 0));
@@ -137,9 +101,6 @@ public class GrassManager : PlantManager
 
             int idx = randGen.Next(blocks.Count);
             IntVector3 block = blocks.ElementAt(idx);
-            physicsBodies[block].RemoveFromGroup("alive");
-            physicsBodies[block].QueueFree();
-            physicsBodies.Remove(block);
             blocks.Remove(block);
 
             blocksToChange.Add(Tuple.Create(block, RED_ROCK_ID));

@@ -23,6 +23,7 @@ axis_lock_angular_x = false
 axis_lock_angular_y = false
 axis_lock_angular_z = false
 collision/safe_margin = 0.001
+_sections_unfolded = [ "Collision", "collision" ]
 
 [node name="Model" parent="." index="0" instance=ExtResource( 1 )]
 

@@ -7,7 +7,7 @@ path="res://.import/pig1.dae-0e3b3a2f0623a635d1f9c850de9e906f.scn"
 [deps]
 
 source_file="res://models/pig1/pig1.dae"
-source_md5="8492e6f739bd47c49c247fd5686cc1af"
+source_md5="c089a96a0cacc9f64a85fac7042365a1"
 
 dest_files=[ "res://.import/pig1.dae-0e3b3a2f0623a635d1f9c850de9e906f.scn" ]
 dest_md5="90f9c3121db26ba31de22295ec9ed209"

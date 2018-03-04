@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using ST = System.Threading;
 
 public class Chunk : Spatial
 {
@@ -15,9 +16,11 @@ public class Chunk : Spatial
     private Terrain terrain;
     private IntVector2 chunkCoords;
 
-    bool generationFinished = false;
-    SurfaceTool surfaceTool = new SurfaceTool();
-    SpatialMaterial material = new SpatialMaterial();
+    private bool generationFinished = false;
+    private SurfaceTool surfaceTool = new SurfaceTool();
+    private SpatialMaterial material = new SpatialMaterial();
+
+    private ST.Thread generationThread;
 
     public byte GetBlockInChunk(IntVector3 position)
     {
@@ -71,18 +74,21 @@ public class Chunk : Spatial
             meshInstance.SetMesh(mesh);
         }
     }
-
     public void UpdateMesh()
     {
-        System.Threading.Thread thread = new System.Threading.Thread(() =>
+        if(generationThread != null && generationThread.ThreadState == ST.ThreadState.Running)
+            generationThread.Abort();
+        
+        generationThread = new ST.Thread(() =>
         {
             GenerateSurface();
             generationFinished = true;
         })
         {
-            Priority = System.Threading.ThreadPriority.Lowest
+            Priority = ST.ThreadPriority.Highest
         };
-        thread.Start();
+        
+        generationThread.Start();
     }
 
     private void GenerateSurface()

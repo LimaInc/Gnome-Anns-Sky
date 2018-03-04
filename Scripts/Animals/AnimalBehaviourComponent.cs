@@ -4,8 +4,14 @@ using System.Collections.Generic;
 
 public class AnimalBehaviourComponent : BaseComponent
 {
+    private static readonly byte RED_ROCK_ID = Game.GetBlockId<RedRock>();
+    private static readonly byte GRASS_BLOCK_ID = Game.GetBlockId<GrassBlock>();
+
+
+    Terrain terrain; 
+
     public AnimalBehaviourComponent(Entity parent, AnimalSex sex, AnimalDiet diet, int foodChainLevel,
-        int breedability, string presetName, float oxygenConsumption, float co2Production, int foodDrop) : base(parent)
+        int breedability, string presetName, float oxygenConsumption, float co2Production, int foodDrop, float birthDrop) : base(parent)
     {
         this.Sex = sex;
         this.Diet = diet;
@@ -16,6 +22,7 @@ public class AnimalBehaviourComponent : BaseComponent
         this.oxygenConsumption = oxygenConsumption;
         this.co2Production = co2Production;
         this.FoodDrop = foodDrop;
+        this.BirthDrop = birthDrop;
     }
 
     public enum AnimalSex
@@ -71,6 +78,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
     public KinematicBody Body { get; private set; }
 
+    public float BirthDrop { get; private set; }
     public int FoodDrop { get; private set; }
     public AnimalSex Sex { get; private set; }
     public AnimalDiet Diet { get; private set; }
@@ -134,6 +142,8 @@ public class AnimalBehaviourComponent : BaseComponent
         {
             strategy.Ready();
         }
+
+        terrain = parent.GetNode(Game.TERRAIN_PATH) as Terrain;
     }
 
     protected void SetupInitialisationSignals()
@@ -158,6 +168,7 @@ public class AnimalBehaviourComponent : BaseComponent
         if(Satiated <= 0.0f)
         {
             Kill();
+
         }
     }
 
@@ -214,6 +225,11 @@ public class AnimalBehaviourComponent : BaseComponent
                 SetRandomDirection();
             }           
         }
+
+        if(Body.GetTranslation().y <= 0)
+        {
+            Kill();
+        }
     }
 
     public override void PhysicsProcess(float delta)
@@ -236,10 +252,26 @@ public class AnimalBehaviourComponent : BaseComponent
             }
             else if (Satiated < 80.0f)
             {
-                PhysicsBody eatTarget = eatStrategy.ShouldEatState();
-                if (eatTarget != null)
+                if (Diet == AnimalDiet.Herbivore)
                 {
-                    eatStrategy.StartState(eatTarget);
+                    //just try to eat whatever block is below
+                    Vector3 pos = Body.GetTranslation();
+                    IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
+                    blockPos.y--;
+                    byte block = terrain.GetBlock(blockPos);
+                    if(block == GRASS_BLOCK_ID)
+                    {
+                        Satiated = Math.Max(100.0f, Satiated + 20.0f);
+                        terrain.SetBlock(blockPos,RED_ROCK_ID);
+                    }
+                }
+                else
+                {
+                    PhysicsBody eatTarget = eatStrategy.ShouldEatState();
+                    if (eatTarget != null)
+                    {
+                        eatStrategy.StartState(eatTarget);
+                    }
                 }
             }
         }
