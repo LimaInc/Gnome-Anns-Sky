@@ -135,7 +135,7 @@ public class Player : KinematicBody
         // no idea about the trig of camera rotation, TODO: figure it out
         playerGUI = new PlayerGUI(this, 
             () => new Vector2(Mathf.Sin(myCam.Rotation.y), Mathf.Cos(myCam.Rotation.y)),
-            new Vector2(planetBase.position.x, planetBase.position.z));
+            planetBase.position);
         AddChild(playerGUI);
 
         Inventories = new Dictionary<Item.ItemType, Inventory>
@@ -311,16 +311,6 @@ public class Player : KinematicBody
             Dead = true;
             return;
         }
-        
-        if (planetBase.IsGlobalPositionInside(Translation))
-        {
-            ChangeStat(Stats.AIR, BASE_AIR_REGEN * delta);
-        }
-        ChangeStat(Stats.AIR, ATMOSPHERE_AIR_REGEN * delta * Mathf.Pow(atmosphere.GetGasProgress(Gas.OXYGEN),2));
-        foreach(KeyValuePair<Stats,float> kvPair in DEFAULT_STAT_CHANGE)
-        {
-            ChangeStat(kvPair.Key, delta * kvPair.Value);
-        }
 
         if (Input.IsActionJustPressed("inventory"))
         {
@@ -334,7 +324,19 @@ public class Player : KinematicBody
             }
         }
 
+        // arbitrary choice to decrease stat values before regenerating
+        // but this allows for stat value < 1 check to be meaningful
         DoMovement(delta);
+
+        foreach (KeyValuePair<Stats, float> kvPair in DEFAULT_STAT_CHANGE)
+        {
+            ChangeStat(kvPair.Key, delta * kvPair.Value);
+        }
+        if (planetBase.IsGlobalPositionInside(Translation))
+        {
+            ChangeStat(Stats.AIR, BASE_AIR_REGEN * delta);
+        }
+        ChangeStat(Stats.AIR, ATMOSPHERE_AIR_REGEN * delta * Mathf.Pow(atmosphere.GetGasProgress(Gas.OXYGEN), 2));
 
         CheckIfStillAlive();
     }
@@ -423,7 +425,7 @@ public class Player : KinematicBody
         if (OpenedGUI != null)
         {
             OpenedGUI.HandleClose();
-            this.RemoveChild(OpenedGUI);
+            RemoveChild(OpenedGUI);
             OpenedGUI = null;
             playerGUI.BackgroundMode = false;
         }

@@ -92,12 +92,14 @@
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUICompass.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUIElement.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DefossiliserGUI.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIComplexObject.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIFloatingSlot.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUILabeledSlotArray.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIInventorySlotArray.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\Label2D.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUILabel.cs" />
+    <Compile Include="Scripts\GUI\Menus\StartGameButton.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemSpawnEgg.cs" />
