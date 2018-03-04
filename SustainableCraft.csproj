@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,10 +8,9 @@
     <OutputPath>.mono/temp/bin/$(Configuration)</OutputPath>
     <RootNamespace>SustainableCraft</RootNamespace>
     <AssemblyName>SustainableCraft</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>.mono/temp/obj</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)/$(Configuration)</IntermediateOutputPath>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,7 +50,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\Animals\AnimalBehaviourComponent.cs" />
     <Compile Include="Scripts\Animals\AnimalPreset.cs" />
     <Compile Include="Scripts\Animals\AnimalSpawner.cs" />
@@ -61,54 +59,45 @@
     <Compile Include="Scripts\Animals\EatStrategy.cs" />
     <Compile Include="Scripts\Animals\Entity.cs" />
     <Compile Include="Scripts\Animals\PhysicsComponent.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\Atmosphere\Atmosphere.cs" />
     <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
     <Compile Include="Scripts\Atmosphere\ColorMixingAC.cs" />
     <Compile Include="Scripts\Atmosphere\Gas.cs" />
     <Compile Include="Scripts\Atmosphere\GasEscapingAC.cs" />
     <Compile Include="Scripts\Atmosphere\GasMolecule.cs" />
+    <Compile Include="Scripts\Bacteria\ProductionBSC.cs" />
     <Compile Include="Scripts\Bacteria\AsymptoticGrowthBSC.cs" />
     <Compile Include="Scripts\Bacteria\Bacteria.cs" />
     <Compile Include="Scripts\Bacteria\BacterialState.cs" />
-    <Compile Include="Scripts\Bacteria\BacterialStateComponent.cs" />
     <Compile Include="Scripts\Bacteria\BacteriumType.cs" />
-    <Compile Include="Scripts\Bacteria\ProductionBSC.cs" />
+    <Compile Include="Scripts\Bacteria\BacterialStateComponent.cs" />
     <Compile Include="Scripts\Bacteria\StaticBSC.cs" />
     <Compile Include="Scripts\Blocks\AnimalFossilBlocks.cs" />
-    <Compile Include="Scripts\Blocks\BacteriaFossilBlocks.cs" />
+    <Compile Include="Scripts\Blocks\PlantFossilBlocks.cs" />
     <Compile Include="Scripts\Blocks\Block.cs" />
     <Compile Include="Scripts\Blocks\BlockFace.cs" />
+    <Compile Include="Scripts\Blocks\BacteriaFossilBlocks.cs" />
     <Compile Include="Scripts\Blocks\CubeBlock.cs" />
     <Compile Include="Scripts\Blocks\DefossiliserBlock.cs" />
     <Compile Include="Scripts\Blocks\FossilBlock.cs" />
     <Compile Include="Scripts\Blocks\GrassBlock.cs" />
     <Compile Include="Scripts\Blocks\HabitationBlock.cs" />
-    <Compile Include="Scripts\Blocks\IceBlock.cs" />
     <Compile Include="Scripts\Blocks\LeafBlock.cs" />
-    <Compile Include="Scripts\Blocks\PlantFossilBlocks.cs" />
     <Compile Include="Scripts\Blocks\RedRock.cs" />
-    <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Blocks\TreeBlock.cs" />
+    <Compile Include="Scripts\Blocks\Stone.cs" />
+    <Compile Include="Scripts\Blocks\IceBlock.cs" />
     <Compile Include="Scripts\Fossils\Defossiliser.cs" />
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\GUIBox.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\Compass.cs" />
+    <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUICompass.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DefossiliserGUI.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIComplexObject.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIFloatingSlot.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\GUIHorizontalBar.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\GUIInventorySlot.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\GUIInventorySlotArray.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUILabeledSlotArray.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\GUIObject.cs" />
-    <Compile Include="Scripts\GUI\GUIObjects\GUIVerticalBar.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUIInventorySlotArray.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\Label2D.cs" />
-    <Compile Include="Scripts\GUI\GUIStandalone\DeadGUI.cs" />
-    <Compile Include="Scripts\GUI\GUIStandalone\GUI.cs" />
-    <Compile Include="Scripts\GUI\GUIStandalone\InventoryGUI.cs" />
-    <Compile Include="Scripts\GUI\GUIStandalone\PlayerGUI.cs" />
-    <Compile Include="Scripts\Game.cs" />
-    <Compile Include="Scripts\Interaction.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
     <Compile Include="Scripts\Inventory\ItemSpawnEgg.cs" />
@@ -119,20 +108,31 @@
     <Compile Include="Scripts\Inventory\ItemConsumable.cs" />
     <Compile Include="Scripts\Inventory\ItemPlant.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
-    <Compile Include="Scripts\Plants\GrassManager.cs" />
-    <Compile Include="Scripts\Plants\PlantManager.cs" />
-    <Compile Include="Scripts\Plants\PlantType.cs" />
+    <Compile Include="Scripts\GUI\GUIStandalone\PlayerGUI.cs" />
+    <Compile Include="Scripts\GUI\GUIStandalone\GUI.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUIBox.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUIInventorySlot.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUIObject.cs" />
+    <Compile Include="Scripts\GUI\GUIStandalone\InventoryGUI.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUIHorizontalBar.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUIVerticalBar.cs" />
+    <Compile Include="Scripts\GUI\GUIStandalone\DeadGUI.cs" />
+    <Compile Include="Scripts\Interaction.cs" />
     <Compile Include="Scripts\Plants\Plants.cs" />
+    <Compile Include="Scripts\Plants\PlantManager.cs" />
+    <Compile Include="Scripts\Plants\GrassManager.cs" />
     <Compile Include="Scripts\Plants\TreeManager.cs" />
+    <Compile Include="Scripts\Plants\PlantType.cs" />
     <Compile Include="Scripts\Player.cs" />
-    <Compile Include="Scripts\Util\Colors.cs" />
     <Compile Include="Scripts\Util\Debug.cs" />
+    <Compile Include="Scripts\Util\HashDeque.cs" />
     <Compile Include="Scripts\Util\InputUtil.cs" />
     <Compile Include="Scripts\Util\MathUtil.cs" />
     <Compile Include="Scripts\Util\HashQueue.cs" />
     <Compile Include="Scripts\World\Base.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Util\CMYKColor.cs" />
+    <Compile Include="Scripts\Util\Colors.cs" />
     <Compile Include="Scripts\Util\IntVector2.cs" />
     <Compile Include="Scripts\Util\IntVector3.cs" />
     <Compile Include="Scripts\Util\Noise.cs" />
@@ -140,24 +140,16 @@
     <Compile Include="Scripts\Util\TextureManager.cs" />
     <Compile Include="Scripts\World\PlanetEnvironment.cs" />
     <Compile Include="Scripts\World\Sun.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\IGenerator.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\World\WorldGeneration\BaseGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\HillLandscapeTM.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\IGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\ITerrainModifier.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\HillLandscapeTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\IceGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\UniformRandomBlockGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\SmoothingTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\RockGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\WorldGenerator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include=".mono\assemblies\GodotSharp.dll" />
-    <Content Include=".mono\assemblies\GodotSharp.pdb" />
-    <Content Include=".mono\assemblies\GodotSharp.xml" />
-    <Content Include=".mono\assemblies\GodotSharpEditor.dll" />
-    <Content Include=".mono\assemblies\GodotSharpEditor.pdb" />
-    <Content Include=".mono\assemblies\GodotSharpEditor.xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".mono\assemblies\GodotSharp.dll" />

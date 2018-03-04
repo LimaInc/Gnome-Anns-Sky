@@ -14,7 +14,7 @@ public class GUIBox : GUIObject
         {
             for (int y=0; y < 3; ++y)
             {
-                Sprite s = (x==1 && y==1) ? this.sprite : new Sprite();
+                Sprite s = (x==1 && y==1) ? sprite : new Sprite();
                 s.Texture = GUI_SHEET;
                 s.RegionEnabled = true;
                 s.RegionRect = new Rect2(x * REGION_SIZE, y * REGION_SIZE, REGION_SIZE, REGION_SIZE);
@@ -29,7 +29,7 @@ public class GUIBox : GUIObject
                     {
                         s.SetScale(new Vector2(1, size.y / REGION_SIZE));
                     }
-                    this.AddChild(s);
+                    AddChild(s);
                 }
             }
         }

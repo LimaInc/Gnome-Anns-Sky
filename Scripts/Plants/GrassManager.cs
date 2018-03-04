@@ -18,9 +18,9 @@ public class GrassManager : PlantManager
     };
     public static readonly IDictionary<Gas, float> GAS_REQUIREMENTS = new Dictionary<Gas, float>
     {
-        [Gas.OXYGEN] = 0.0f,
-        [Gas.NITROGEN] = 0.0f,
-        [Gas.CARBON_DIOXIDE] = 0.0f,
+        [Gas.OXYGEN] = 0.2f,
+        [Gas.NITROGEN] = 0.8f,
+        [Gas.CARBON_DIOXIDE] = 0.5f,
     };
 
     private static IntVector3[] adjacentBlockVectors = new IntVector3[12] {
@@ -30,13 +30,16 @@ public class GrassManager : PlantManager
         new IntVector3(1, -1, 0), new IntVector3(1, 0, 0), new IntVector3(1, 1, 0)
     };
 
+    private const double SPREAD_CHANCE = 0.501f;
+
     private float time;
 
     public static int grassCount = 0;
 
-    public GrassManager(Plants plants) : base(plants)
+    public GrassManager(Plants plants_) : base(plants_, SPREAD_CHANCE, GAS_PRODUCTION)
     {
         SPREAD_CHANCE = 0.65;
+        plants = plants_;
         time = 0;
 
         GAS_DELTAS = GAS_PRODUCTION;
@@ -62,7 +65,7 @@ public class GrassManager : PlantManager
     {
         List<IntVector3> validBlocks = (from blockPos in blockPosList
                                         where Valid(blockPos)
-                                        select blockPos).ToList<IntVector3>();
+                                        select blockPos).ToList();
 
         if (validBlocks.Count == 0)
             return false;
@@ -123,7 +126,7 @@ public class GrassManager : PlantManager
     {
         List<IntVector3> blocksToChange = new List<IntVector3>();
         // with small probability, pick random point and spread to adjacent block
-        for (double spreadNo = blocks.Count * SPREAD_CHANCE; spreadNo > 0; spreadNo--)
+        for (double spreadNo = blocks.Count * spreadChance; spreadNo > 0; spreadNo--)
         {
             if (spreadNo < 1 && randGen.NextDouble() > spreadNo)
                 return;

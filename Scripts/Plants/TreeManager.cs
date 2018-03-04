@@ -14,16 +14,26 @@ public class TreeManager : PlantManager
     private static Tuple<IntVector3, byte>[] treeBlockVectors = new Tuple<IntVector3, byte>[48];
 
     private static int GRID_SIZE = 10;
-    private static double MIN_DISTANCE = 10*Math.Sqrt(2);
+    private static double MIN_DISTANCE = 10 * Math.Sqrt(2);
     private static double MIN_VERTICAL_DISTANCE = 5;
 
     private Dictionary<Tuple<int, int>, List<IntVector3>> grid;
+
+    private const float BASE_GAS_PRODUCTION = 0.00005f;
+    public static readonly IDictionary<Gas, float> GAS_PRODUCTION = new Dictionary<Gas, float>
+    {
+        [Gas.OXYGEN] = BASE_GAS_PRODUCTION,
+        [Gas.NITROGEN] = -BASE_GAS_PRODUCTION,
+        [Gas.CARBON_DIOXIDE] = -BASE_GAS_PRODUCTION,
+    };
+
+    private const double SPREAD_CHANCE = 0.001;
 
     private float time;
     private Dictionary<IntVector3, PhysicsBody> physicsBodies;
     private Plants plants;
 
-    public TreeManager(Plants plants) : base(plants)
+    public TreeManager(Plants plants) : base(plants, SPREAD_CHANCE, GAS_PRODUCTION)
     {
         this.plants = plants;
 
@@ -165,7 +175,7 @@ public class TreeManager : PlantManager
     {
         // Bridson’s algorithm for Poisson-disc sampling
         // https://bost.ocks.org/mike/algorithms/
-        for (double spreadNo = blocks.Count*SPREAD_CHANCE; spreadNo > 0; spreadNo--)
+        for (double spreadNo = blocks.Count*spreadChance; spreadNo > 0; spreadNo--)
         {
             if (spreadNo < 1 && randGen.NextDouble() > spreadNo)
                 return;

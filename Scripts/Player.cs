@@ -100,23 +100,27 @@ public class Player : KinematicBody
         Input.SetCustomMouseCursor(CURSOR);
         Input.SetMouseMode(Input.MouseMode.Captured);
 
-        Area area = new Area();
-        area.SetName("AnimalArea");
-        CollisionShape collisionShape = new CollisionShape();
-
-        BoxShape bs = new BoxShape();
-        bs.SetExtents((Chunk.SIZE * Block.SIZE /  2.0f) * Terrain.ANIMAL_CHUNK_RANGE);
-        collisionShape.SetShape(bs);
-        area.AddChild(collisionShape);
+        Area area = new Area
+        {
+            Name = "AnimalArea"
+        };
+        area.AddChild(new CollisionShape
+        {
+            Shape = new BoxShape
+            {
+                Extents = (Chunk.SIZE * Block.SIZE / 2) * Terrain.ANIMAL_CHUNK_RANGE
+            }
+        });
         AddChild(area);
 
-        collisionShape = new CollisionShape();
-
         // OLD BoxShape collision 
-        BoxShape b = new BoxShape();
-        b.SetExtents(new Vector3(Block.SIZE / 2 - 0.05f, Block.SIZE - 0.05f, Block.SIZE / 2 - 0.05f));
-        collisionShape.SetShape(b);
-
+        collisionShape = new CollisionShape
+        {
+            Shape = new BoxShape
+            {
+                Extents = new Vector3(Block.SIZE / 2 - 0.05f, Block.SIZE - 0.05f, Block.SIZE / 2 - 0.05f)
+            }
+        };
         // CapsuleShape c = new CapsuleShape();
         // c.SetRadius(Block.SIZE / 2.0f - 0.05f);
         // c.SetHeight( Block.SIZE - 0.05f);
@@ -126,10 +130,13 @@ public class Player : KinematicBody
         AddChild(collisionShape);
 
         myCam = GetNode(Game.CAMERA_PATH) as Camera;
-        myCam.SetTranslation(CAM_OFFSET);
+        myCam.Translation = CAM_OFFSET;
         
-        playerGUI = new PlayerGUI(this);
-        this.AddChild(playerGUI);
+        // no idea about the trig of camera rotation, TODO: figure it out
+        playerGUI = new PlayerGUI(this, 
+            () => new Vector2(Mathf.Sin(myCam.Rotation.y), Mathf.Cos(myCam.Rotation.y)),
+            new Vector2(planetBase.position.x, planetBase.position.z));
+        AddChild(playerGUI);
 
         Inventories = new Dictionary<Item.ItemType, Inventory>
         {
@@ -162,14 +169,12 @@ public class Player : KinematicBody
         Inventories[i.IType].TryAddItem(i, n);
     }
 
-    public CollisionShape GetCollisionShape()
-    {
-        return this.collisionShape;
-    }
-
     public override void _Input(InputEvent e)
     {
-        if (Dead) return;
+        if (Dead)
+        {
+            return;
+        }
 
         if(OpenedGUI == null)
         {
@@ -179,17 +184,18 @@ public class Player : KinematicBody
                     new Vector3(-emm.Relative.y * CAM_ROT_SPEED, -emm.Relative.x * CAM_ROT_SPEED, 0.0f);
 
                 //Clamp x rotation between -180 and 180 degrees
-                float xRot = targetRotation.x;
-                xRot = Mathf.Clamp(xRot, -Mathf.PI / 2, Mathf.PI / 2);
-                targetRotation = new Vector3(xRot, targetRotation.y, targetRotation.z);
+                targetRotation = new Vector3(
+                    Mathf.Clamp(targetRotation.x, -Mathf.PI / 2, Mathf.PI / 2),
+                    targetRotation.y,
+                    targetRotation.z);
 
-                myCam.SetRotation(targetRotation);
+                myCam.Rotation = targetRotation;
             }
             else if (e is InputEventMouseButton iemb)
             {
                 if (InputUtil.IsRighPress(iemb))
                 {
-                    if (this.ItemInHand == null)
+                    if (ItemInHand == null)
                     {
                         byte b = interaction.GetBlock(interaction.GetHitInfo());
                         Block block = Game.GetBlock(b);
@@ -200,7 +206,7 @@ public class Player : KinematicBody
                     }
                     else
                     {
-                        this.HandleUseItem();
+                        HandleUseItem();
                     }
                 }
                 else if (InputUtil.IsLeftPress(iemb))
@@ -210,23 +216,28 @@ public class Player : KinematicBody
 
                     if (ib != null)
                     {
-                        bool addedToHand = false;
-
-                        if (this.ItemInHand != null)
+                        if (ItemInHand == null)
                         {
-                            Item i = this.ItemInHand.Item;
+                            ItemInHand = new ItemStack(ItemStorage.GetItemFromBlock(b), 1);
+                        }
+                        else
+                        {
+                            Item i = ItemInHand.Item;
                             if (i is ItemBlock curBlock)
                             {
                                 if (curBlock.Block == b)
                                 {
-                                    this.ItemInHand.ChangeQuantity(1);
-                                    addedToHand = true;
+                                    ItemInHand.ChangeQuantity(1);
+                                }
+                                else
+                                {
+                                    AddItem(ib, 1);
                                 }
                             }
-                        }
-                        if (!addedToHand)
-                        {
-                            this.AddItem(ib, 1);
+                            else
+                            {
+                                AddItem(ib, 1);
+                            }
                         }
                     }
                 }
@@ -293,7 +304,6 @@ public class Player : KinematicBody
             {
                 ItemInHand = null;
             }
-            InventoryGUI.UpdateHandSlot();
         }
     }
 
