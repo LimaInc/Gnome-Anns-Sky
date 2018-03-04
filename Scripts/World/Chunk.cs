@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using ST = System.Threading;
 
 public class Chunk : Spatial
 {
@@ -19,7 +20,7 @@ public class Chunk : Spatial
     SurfaceTool surfaceTool = new SurfaceTool();
     SpatialMaterial material = new SpatialMaterial();
 
-    System.Threading.Thread generationThread;
+    ST.Thread generationThread;
 
     public byte GetBlockInChunk(IntVector3 position)
     {
@@ -75,16 +76,16 @@ public class Chunk : Spatial
     }
     public void UpdateMesh()
     {
-        if(generationThread != null && generationThread.ThreadState == System.Threading.ThreadState.Running)
+        if(generationThread != null && generationThread.ThreadState == ST.ThreadState.Running)
             generationThread.Abort();
         
-        generationThread = new System.Threading.Thread(() =>
+        generationThread = new ST.Thread(() =>
         {
             GenerateSurface();
             generationFinished = true;
         })
         {
-            Priority = System.Threading.ThreadPriority.Highest
+            Priority = ST.ThreadPriority.Highest
         };
         
         generationThread.Start();
