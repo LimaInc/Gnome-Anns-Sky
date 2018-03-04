@@ -61,17 +61,16 @@ public class InventoryGUI : GUI
 
     private Player player;
 
-    public InventoryGUI(Player player, IDictionary<Item.ItemType,Inventory> inventories, Node vSource) : base(vSource)
+    public InventoryGUI(Player player_, IDictionary<Item.ItemType,Inventory> inventories, Node vSource) : base(vSource)
     {
-        this.player = player;
-        this.subInventories = inventories;
+        player = player_;
+        subInventories = inventories;
 
-        this.Initialize();
+        Initialize();
     }
 
     public void UpdateHandSlot()
     {
-        this.handSlot.AssignItemStack(player.ItemInHand);
     }
 
     public override void HandleResize()
@@ -93,7 +92,7 @@ public class InventoryGUI : GUI
 
     private void Initialize()
     {
-        this.Hide();
+        Hide();
 
         floatingSlot = new GUIFloatingSlot
         {
@@ -116,7 +115,6 @@ public class InventoryGUI : GUI
             ZAsRelative = true,
             ZIndex = HAND_SLOT_Z
         };
-        handSlot.AssignItemStack(player.ItemInHand);
 
         foreach (Item.ItemType type in new List<Item.ItemType>(subInvSlots.Keys))
         {
@@ -130,19 +128,19 @@ public class InventoryGUI : GUI
             };
         }
 
-        box = new GUIBox(this.GetViewportDimensions() / 2, BOX_SIZE)
+        box = new GUIBox(GetViewportDimensions() / 2, BOX_SIZE)
         {
             ZAsRelative = true,
             ZIndex = BOX_Z
         };
 
-        this.AddChild(box);
+        AddChild(box);
         foreach (GUILabeledSlotArray slotArr in subInvSlots.Values)
         {
-            this.box.AddChild(slotArr);
+            box.AddChild(slotArr);
         }
-        this.box.AddChild(handSlot);
-        this.AddChild(floatingSlot);
+        box.AddChild(handSlot);
+        AddChild(floatingSlot);
     }
 
     private void UpdateSlots()
@@ -151,6 +149,7 @@ public class InventoryGUI : GUI
         {
             kvPair.Value.OverrideFromInventory(subInventories[kvPair.Key]);
         }
+        handSlot.AssignItemStack(player.ItemInHand);
     }
 
     private void SaveSlotState()
@@ -172,7 +171,7 @@ public class InventoryGUI : GUI
 
     public override void HandleClose()
     {
-        this.Hide();
+        Hide();
         SaveSlotState();
         ItemStack stack = floatingSlot.GetCurItemStack();
         if (stack != null)

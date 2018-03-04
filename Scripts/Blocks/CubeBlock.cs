@@ -21,10 +21,7 @@ public abstract class CubeBlock : Block
         }
     }
 
-    private Vector3 this[int x, int y, int z]
-    {
-        get => corners[(x + 1) >> 1, (y + 1) >> 1, (z + 1) >> 1];
-    }
+    private Vector3 this[int x, int y, int z] => corners[(x + 1) >> 1, (y + 1) >> 1, (z + 1) >> 1];
 
     // TODO: spend some time to actually properly refactor that (the first step is 25% done)
     public override void AddPosXFace(ref SurfaceTool surfaceTool, Vector3 origin, byte blockType)
