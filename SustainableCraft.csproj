@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -100,6 +100,8 @@
     <Compile Include="Scripts\GUI\GUIObjects\GUILabeledSlotArray.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIInventorySlotArray.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUILabel.cs" />
+    <Compile Include="Scripts\GUI\Menus\Menu.cs" />
+    <Compile Include="Scripts\GUI\Menus\ExitButton.cs" />
     <Compile Include="Scripts\GUI\Menus\StartGameButton.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />

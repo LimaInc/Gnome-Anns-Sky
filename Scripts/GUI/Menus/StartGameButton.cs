@@ -1,12 +1,9 @@
 ﻿using Godot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 class StartGameButton : Button
 {
-    public override void _Input(InputEvent e)
+    public override void _Pressed()
     {
-
+        GetTree().ChangeScene(Menu.GAMEPLAY_SCENE_PATH);
     }
 }

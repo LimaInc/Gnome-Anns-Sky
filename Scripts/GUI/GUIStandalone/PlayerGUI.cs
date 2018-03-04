@@ -70,7 +70,7 @@ public class PlayerGUI : GUI
 
     private GUILabel inHandLabel;
 
-    private Sprite crosshair;
+    private GUIObject crosshair;
 
     private Atmosphere atm;
     private Vector3 northMonopole;
@@ -83,11 +83,7 @@ public class PlayerGUI : GUI
         {
             if (backgroundMode && !value)
             {
-                ChangeToForegroundMode();
-            }
-            else if (!backgroundMode && value)
-            {
-                ChangeToBackgroundMode();
+                Input.SetMouseMode(Input.MouseMode.Captured);
             }
             backgroundMode = value;
         }
@@ -105,17 +101,6 @@ public class PlayerGUI : GUI
         northMonopole = northMonopole_;
         Initialize(viewDirSupplier, new Vector2(northMonopole.x, northMonopole.z));
         BackgroundMode = false;
-    }
-
-    private void ChangeToBackgroundMode()
-    {
-        crosshair.Hide();
-    }
-
-    private void ChangeToForegroundMode()
-    {
-        crosshair.Show();
-        Input.SetMouseMode(Input.MouseMode.Captured);
     }
 
     public void Initialize(Func<Vector2> viewDirSupplier, Vector2 northPole)
@@ -161,10 +146,7 @@ public class PlayerGUI : GUI
             });
         AddChild(inHandLabel);
 
-        crosshair = new Sprite()
-        {
-            Texture = CROSSHAIR_TEX
-        };
+        crosshair = new GUIObject(empty, CROSSHAIR_TEX.GetSize(), CROSSHAIR_TEX, () => !BackgroundMode);
         AddChild(crosshair);
     }
 
