@@ -12,8 +12,8 @@ class GUICompass : GUIObject
     private readonly Func<Vector2> viewDirSupplier;
 
     public GUICompass(Vector2 pos, Vector2 size, Vector2 northPole_, 
-        Func<Vector2> posSupplier_, Func<Vector2> viewDirSuppier_) : 
-            base(pos, size, COMPASS_ARROW, BaseScale(size))
+        Func<Vector2> posSupplier_, Func<Vector2> viewDirSuppier_, Func<bool> shouldShow = null) : 
+            base(pos, size, COMPASS_ARROW, BaseScale(size), shouldShow)
     {
         northPole = northPole_;
         posSupplier = posSupplier_;

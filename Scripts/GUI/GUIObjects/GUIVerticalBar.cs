@@ -28,8 +28,8 @@ public class GUIVerticalBar : GUIObject
 
     public virtual Vector2 Size { get => new Vector2(WIDTH, height); }
 
-    public GUIVerticalBar(Vector2 pos, float height_, Color color_, Func<float> percentageSupplier_ = null)
-        : base(pos, new Vector2(WIDTH,height_), TEX)
+    public GUIVerticalBar(Vector2 pos, float height_, Color color_, Func<float> percentageSupplier_ = null, Func<bool> shouldShow = null)
+        : base(pos, new Vector2(WIDTH,height_), TEX, shouldShow)
     {   
         height = height_;
         color = color_;
