@@ -66,7 +66,6 @@ public class Interaction : Camera
         return false;
     }
 
-
     public Dictionary<object, object> GetHitInfo()
     {
         Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
@@ -111,15 +110,11 @@ public class Interaction : Camera
 
     public byte RemoveBlock()
     {
-<<<<<<< HEAD
-        IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
-        if (blockPossible.HasValue)
-=======
         var hitInfo = GetHitInfo();
 
         Node animal = HitAnimal(hitInfo);
         if (animal != null)
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
+
         {
             KillAnimal(animal);   
         }
@@ -146,11 +141,7 @@ public class Interaction : Camera
 
     public byte GetBlock(Dictionary<object, object> hitInfo)
     {
-<<<<<<< HEAD
-        IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
-=======
         IntVector3? blockPossible = this.GetBlockPositionUnderCursor(hitInfo);
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
         if (blockPossible.HasValue)
         {
             IntVector3 blockPos = blockPossible.Value;

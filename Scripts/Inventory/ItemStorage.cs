@@ -121,10 +121,6 @@ public class ItemStorage
         }
     }
 
-<<<<<<< HEAD
-    private static Texture TREE_TEX = ResourceLoader.Load(Game.ITEM_TEXTURE_PATH + "itemTree.png") as Texture;
-    public static Item tree = new ItemPlant((byte) ItemID.TREE, "Tree", TREE_TEX, PlantType.TREE, Game.GetBlockId<TreeBlock>(), null /* TODO: change to tree */).SetStackable(true);
-=======
     private static Texture GetTexture(string name)
     {
         bool found = texDict.TryGetValue(name, out Texture tex);
@@ -137,7 +133,6 @@ public class ItemStorage
             throw new ArgumentException("'" + name + "' is not a name of any known texture");
         }
     }
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
 
     public static void RegisterBlockItem(byte id, Item item)
     {

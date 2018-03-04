@@ -33,16 +33,10 @@ public class TreeManager : PlantManager
     private Dictionary<IntVector3, PhysicsBody> physicsBodies;
     private Plants plants;
 
-    public TreeManager(Plants plants) : base(plants)
+    public TreeManager(Plants plants) : base(plants, SPREAD_CHANCE, GAS_PRODUCTION)
     {
-        GAS_DELTAS = new Dictionary<Gas, float>
-        {
-            [Gas.OXYGEN] = 0.00005f,
-            [Gas.NITROGEN] = -0.00005f,
-            [Gas.CARBON_DIOXIDE] = -0.00005f
-        };
+        this.plants = plants;
 
-        SPREAD_CHANCE = 0.001;
         time = 0;
         grid = new Dictionary<Tuple<int, int>, List<IntVector3>>();
 
@@ -147,6 +141,23 @@ public class TreeManager : PlantManager
             return;
 
         time = 0;
+        List<IntVector3> blocksToRemove = (from block in blocks
+                                           where !physicsBodies[block].IsInGroup("alive")
+                                           select block).ToList();
+
+        blocks.ExceptWith(blocksToRemove);
+
+        List<Tuple<IntVector3, byte>> blocksToChange = new List<Tuple<IntVector3, byte>>();
+        foreach (IntVector3 position in blocksToRemove)
+        {
+            for (int i = 0; i < 48; i++)
+            {
+                blocksToChange.Add(Tuple.Create(position + treeBlockVectors[i].Item1, airBlock));
+            }
+        }
+
+        terrain.SetBlocks(blocksToChange);
+
         List<IntVector3> blocksToRemove = (from block in blocks
                                            where !physicsBodies[block].IsInGroup("alive")
                                            select block).ToList();

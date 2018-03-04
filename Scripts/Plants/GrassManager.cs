@@ -34,26 +34,8 @@ public class GrassManager : PlantManager
 
     private float time;
 
-<<<<<<< HEAD
-    private Plants plants;
-    private Dictionary<IntVector3, PhysicsBody> physicsBodies;
-
-    public GrassManager(Plants plants) : base(plants)
-    {
-        this.plants = plants;
-
-        GAS_DELTAS = new Dictionary<Gas, float>
-        {
-            [Gas.OXYGEN] = 0.00000001f,
-            [Gas.NITROGEN] = -0.00000001f,
-            [Gas.CARBON_DIOXIDE] = -0.00000001f
-        };
-
-        SPREAD_CHANCE = 0.901;
-=======
     public GrassManager(Plants plants_) : base(plants_, SPREAD_CHANCE, GAS_PRODUCTION)
     {
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
         time = 0;
 
         physicsBodies = new Dictionary<IntVector3, PhysicsBody>();
@@ -61,29 +43,17 @@ public class GrassManager : PlantManager
 
     protected override bool Valid(IntVector3 blockPos)
     {
-<<<<<<< HEAD
-        return terrain.GetBlock(blockPos) == redRock &&
-               terrain.GetBlock(blockPos + new IntVector3(0, 1, 0)) == 0 &&
-               atmosphere.GetGasAmt(Gas.NITROGEN) > 0.01 &&
-               atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE) > 0.01;
-=======
         return terrain.GetBlock(blockPos) == RED_ROCK_ID &&
                terrain.GetBlock(blockPos + new IntVector3(0, 1, 0)) == AIR_ID &&
                GAS_REQUIREMENTS.All(kvPair => atmosphere.GetGasProgress(kvPair.Key) >= kvPair.Value);
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
     }
 
     public override bool PlantOn(IntVector3 blockPos)
     {
-<<<<<<< HEAD
-        List<IntVector3> blockPosList = new List<IntVector3>();
-        blockPosList.Add(blockPos);
-=======
         List<IntVector3> blockPosList = new List<IntVector3>()
         {
             blockPos
         };
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
         return PlantOn(blockPosList);
     }
 
@@ -91,11 +61,7 @@ public class GrassManager : PlantManager
     {
         List<IntVector3> validBlocks = (from blockPos in blockPosList
                                         where Valid(blockPos)
-<<<<<<< HEAD
-                                        select blockPos).ToList<IntVector3>();
-=======
                                         select blockPos).ToList();
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
 
         if (validBlocks.Count == 0)
             return false;
@@ -105,32 +71,11 @@ public class GrassManager : PlantManager
         int idx = 0;
         foreach (IntVector3 blockPos in blockPosList)
         {
-<<<<<<< HEAD
-            blocksToChange[idx++] = Tuple.Create(blockPos, grassBlock);
-
-            PhysicsBody physicsBody = new KinematicBody();
-            physicsBody.SetTranslation(blockPos);
-
-            CollisionShape collisionShape = new CollisionShape();
-            BoxShape b = new BoxShape();
-            b.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f));
-            collisionShape.SetShape(b);
-
-            physicsBody.AddChild(collisionShape);
-
-            physicsBodies[blockPos] = physicsBody;
-            plants.AddChild(physicsBody);
-        }
-
-        terrain.SetBlocks(blocksToChange);
-        blocks.AddRange(validBlocks);
-=======
             blocksToChange[idx++] = Tuple.Create(blockPos, GRASS_BLOCK_ID);
         }
 
         terrain.SetBlocks(blocksToChange);
         blocks.UnionWith(validBlocks);
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
         time = 0;
         return true;
     }
@@ -147,55 +92,7 @@ public class GrassManager : PlantManager
                   select block).ToList<IntVector3>();
 
         time += delta;
-<<<<<<< HEAD
-        if (time > LIFECYCLE_TICK_TIME && blocks.Count != 0)
-        {
-            time = 0;
 
-            // kill off some grass if there is too little gas
-            double numberToDie = 5*Math.Max(0.01 - atmosphere.GetGasAmt(Gas.NITROGEN), 0) +
-                                 5*Math.Max(0.01 - atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE), 0) +
-                                 5*Math.Max(0.001 - atmosphere.GetGasAmt(Gas.OXYGEN), 0);
-
-            numberToDie = 0.0;
-
-            while (numberToDie > 0)
-            {
-                if (blocks.Count == 0)
-                    break;
-
-                int idx = randGen.Next(blocks.Count);
-                IntVector3 block = blocks[idx];
-                blocks.RemoveAt(idx);
-                blocksToRemove.Add(block);
-
-                if (numberToDie < 1 && randGen.NextDouble() > numberToDie)
-                    break;
-
-                terrain.SetBlock(block, redRock);
-                numberToDie--;
-            }
-
-            Spread();
-        }
-
-        foreach (IntVector3 block in blocksToRemove)
-        {
-            physicsBodies[block].QueueFree();
-            physicsBodies.Remove(block);
-        }
-
-    }
-
-    protected override void Spread()
-    {
-        List<IntVector3> blocksToChange = new List<IntVector3>();
-        // with small probability, pick random point and spread to adjacent block
-        for (double spreadNo = blocks.Count*SPREAD_CHANCE; spreadNo > 0; spreadNo--)
-        {
-            if (spreadNo < 1 && randGen.NextDouble() > spreadNo)
-                return;
-=======
         if (time < LIFECYCLE_TICK_TIME || blocks.Count == 0)
             return;
         time = 0;
@@ -213,12 +110,8 @@ public class GrassManager : PlantManager
 
             if (numberToDie < 1 && randGen.NextDouble() > numberToDie)
                 break;
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
 
             int idx = randGen.Next(blocks.Count);
-<<<<<<< HEAD
-            IntVector3 block = blocks[idx];
-=======
             IntVector3 block = blocks.ElementAt(idx);
             blocks.Remove(block);
 
@@ -243,7 +136,6 @@ public class GrassManager : PlantManager
             // find a grass block that still exists
             int idx = randGen.Next(blocks.Count);
             IntVector3 block = blocks.ElementAt(idx);
->>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
 
             // get adjacent blocks
             List<IntVector3> adjacentBlocks = new List<IntVector3>();
