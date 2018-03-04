@@ -51,6 +51,7 @@ public class ItemStorage : Node
             Tuple.Create(CARBON_DIOXIDE_BACTERIA_FOSSIL, "CO2 Bacteria Fossil", "itemBacteriaFossil", Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>()),
             Tuple.Create(GRASS_FOSSIL, "Grass Fossil", "itemGrassFossil", Game.GetBlockId<GrassFossilBlock>()),
             Tuple.Create(TREE_FOSSIL, "Tree Fossil", "itemTreeFossil", Game.GetBlockId<TreeFossilBlock>()),
+            Tuple.Create(WHEAT_FOSSIL, "Wheat Fossil", "itemWheatFossil", Game.GetBlockId<WheatFossilBlock>()),
             Tuple.Create(FROG_FOSSIL, "Frog Fossil", "itemAnimalFossil", Game.GetBlockId<FrogFossilBlock>()),
             Tuple.Create(REGULAR_ANIMAL_FOSSIL, "Animal Fossil", "itemAnimalFossil", Game.GetBlockId<RegularAnimalFossilBlock>()),
             Tuple.Create(BIG_ANIMAL_FOSSIL, "Giant Fossil", "itemAnimalFossil", Game.GetBlockId<BigAnimalFossilBlock>())
@@ -77,7 +78,8 @@ public class ItemStorage : Node
         var plantInits = new List<Tuple<ItemID, string, string, PlantType, byte, ItemID?>>
         {
             Tuple.Create(GRASS, "Grass", "itemGrass", PlantType.GRASS, Game.GetBlockId<GrassBlock>(), (ItemID?)RED_ROCK),
-            Tuple.Create(TREE, "Tree", "itemTree", PlantType.TREE, Game.GetBlockId<TreeBlock>(),  (ItemID?)null /* TODO: change to tree */)
+            Tuple.Create(TREE, "Tree", "itemTree", PlantType.TREE, Game.GetBlockId<TreeBlock>(),  (ItemID?)null /* TODO: change to tree */),
+            Tuple.Create(WHEAT, "Wheat", "itemWheat", PlantType.WHEAT, Game.GetBlockId<WheatBlock>(), (ItemID?)null)
         };
         
         // arbitrary choice: eggs are not stackable

@@ -87,6 +87,7 @@
     <Compile Include="Scripts\Blocks\LeafBlock.cs" />
     <Compile Include="Scripts\Blocks\RedRock.cs" />
     <Compile Include="Scripts\Blocks\TreeBlock.cs" />
+    <Compile Include="Scripts\Blocks\WheatBlock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Blocks\IceBlock.cs" />
     <Compile Include="Scripts\Fossils\Defossiliser.cs" />
