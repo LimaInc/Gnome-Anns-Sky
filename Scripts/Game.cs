@@ -21,8 +21,8 @@ public class Game : Node
     public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
 
     // multiplicative factor for processes in the world (not directly affecting the player)
-    public const int FOSSIL_SPAWN_MULITPLIER = 20;
-    public const int SPEED = 2;
+    public const int FOSSIL_SPAWN_MULITPLIER = 30;
+    public const int SPEED = 30;
     public const int PLANT_MAX_SPEED = 2; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
 
     public Game()

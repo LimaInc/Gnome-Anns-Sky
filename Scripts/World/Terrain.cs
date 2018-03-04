@@ -11,6 +11,7 @@ public class Terrain : Spatial
     public const int RED_ROCK_LAYER_NUM = 3;
     public const int FOSSIL_DEPTH_MIN = 1;
     public const int FOSSIL_DEPTH_MAX = RED_ROCK_LAYER_NUM;
+    public const int BACTERIA_FOSSIL_DEPTH_MIN = 0;
 
     public const float BASE_FOSSIL_SPAWN_RATE = Game.FOSSIL_SPAWN_MULITPLIER * 0.0005f;
 
@@ -21,9 +22,9 @@ public class Terrain : Spatial
         new UniformRandomBlockGenerator(Game.GetBlockId<BigAnimalFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE),
         new UniformRandomBlockGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 3),
         new UniformRandomBlockGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 1.5f ),
-        new UniformRandomBlockGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 10),
-        new UniformRandomBlockGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 4),
-        new UniformRandomBlockGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE)
+        new UniformRandomBlockGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), BACTERIA_FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 10),
+        new UniformRandomBlockGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), BACTERIA_FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 4),
+        new UniformRandomBlockGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), BACTERIA_FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE)
     };
 
     public WorldGenerator worldGenerator;

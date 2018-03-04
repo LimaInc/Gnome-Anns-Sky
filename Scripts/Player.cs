@@ -150,6 +150,14 @@ public class Player : KinematicBody
         AddItem(ItemStorage.items[ItemID.CAKE], 3);
         AddItem(ItemStorage.items[ItemID.CHOCOLATE], 10);
         AddItem(ItemStorage.items[ItemID.WATER], 5);
+
+
+        AddItem(ItemStorage.items[ItemID.NITROGEN_BACTERIA_VIAL], 5);
+        AddItem(ItemStorage.items[ItemID.OXYGEN_BACTERIA_VIAL], 5);
+        AddItem(ItemStorage.items[ItemID.CARBON_DIOXIDE_BACTERIA_VIAL], 5);
+
+
+        AddItem(ItemStorage.items[ItemID.GRASS], 5);
     }
 
     // maybe a bit hacky, TODO: think about it
@@ -195,7 +203,7 @@ public class Player : KinematicBody
                     }
                     else
                     {
-                        this.HandleUseItem();
+                        HandleUseItem();
                     }
                 }
                 else if (InputUtil.IsLeftPress(iemb))
@@ -205,23 +213,28 @@ public class Player : KinematicBody
 
                     if (ib != null)
                     {
-                        bool addedToHand = false;
-
-                        if (this.ItemInHand != null)
+                        if (ItemInHand == null)
                         {
-                            Item i = this.ItemInHand.Item;
+                            ItemInHand = new ItemStack(ItemStorage.GetItemFromBlock(b), 1);
+                        }
+                        else
+                        {
+                            Item i = ItemInHand.Item;
                             if (i is ItemBlock curBlock)
                             {
                                 if (curBlock.Block == b)
                                 {
-                                    this.ItemInHand.ChangeQuantity(1);
-                                    addedToHand = true;
+                                    ItemInHand.ChangeQuantity(1);
+                                }
+                                else
+                                {
+                                    AddItem(ib, 1);
                                 }
                             }
-                        }
-                        if (!addedToHand)
-                        {
-                            this.AddItem(ib, 1);
+                            else
+                            {
+                                AddItem(ib, 1);
+                            }
                         }
                     }
                 }
@@ -288,7 +301,6 @@ public class Player : KinematicBody
             {
                 ItemInHand = null;
             }
-            InventoryGUI.UpdateHandSlot();
         }
     }
 
