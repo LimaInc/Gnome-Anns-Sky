@@ -51,7 +51,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlantBody.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\Animals\AnimalBehaviourComponent.cs" />
     <Compile Include="Scripts\Animals\AnimalPreset.cs" />
@@ -121,7 +120,6 @@
     <Compile Include="Scripts\Inventory\ItemPlant.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
     <Compile Include="Scripts\Plants\GrassManager.cs" />
-    <Compile Include="Scripts\Plants\PlantBody.cs" />
     <Compile Include="Scripts\Plants\PlantManager.cs" />
     <Compile Include="Scripts\Plants\PlantType.cs" />
     <Compile Include="Scripts\Plants\Plants.cs" />

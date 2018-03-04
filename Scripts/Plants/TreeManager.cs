@@ -9,6 +9,7 @@ public class TreeManager : PlantManager
     private static byte leafBlock = Game.GetBlockId<LeafBlock>();
     private static byte redRock = Game.GetBlockId<RedRock>();
     private static byte treeBlock = Game.GetBlockId<TreeBlock>();
+    private static byte airBlock = WorldGenerator.AIR_ID;
 
     private static Tuple<IntVector3, byte>[] treeBlockVectors = new Tuple<IntVector3, byte>[48];
 
@@ -100,21 +101,28 @@ public class TreeManager : PlantManager
 
         CollisionShape collisionShape = new CollisionShape();
         BoxShape b = new BoxShape();
-        b.SetExtents(new Vector3(Block.SIZE, 0.2f, Block.SIZE) / 2.0f);
+        b.SetExtents(new Vector3(Block.SIZE*3.0f, 4.0f*Block.SIZE, Block.SIZE*3.0f)); //trees are 8ish blocks tall
         collisionShape.SetShape(b);
 
         PhysicsBody physicsBody = new StaticBody();
         physicsBody.AddToGroup("plants");
         physicsBody.AddToGroup("alive");
-        physicsBody.SetTranslation((blockPos + new Vector3(0, 1, 0)) * Block.SIZE + new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2.0f);
 
-        // Make sure player cannot collide with trees.
+        
+        //Don't collide with player
         physicsBody.SetCollisionLayerBit(0, false);
         physicsBody.SetCollisionMaskBit(0, false);
 
-        // Make sure plants can collide with areas for detection and animal bodies.
-        physicsBody.SetCollisionLayerBit(1, true);
+        //But still collide with giants
+        physicsBody.SetCollisionLayerBit(2, true);
+
+        //And still get picked up by the giant areas
         physicsBody.SetCollisionMaskBit(31, true);
+
+        Vector3 position = (blockPos + new Vector3(0, 5, 0)) * Block.SIZE + new Vector3(0,5,0); //the plus 5 to make it actually seen
+        physicsBody.SetTranslation(position);
+        GD.Print("Player position: ", ((PhysicsBody)plants.GetTree().GetRoot().GetNode("Game").GetNode("Player")).GetTranslation().ToString());
+        GD.Print("Planted position: ", position);
 
         physicsBody.AddChild(collisionShape);
 
@@ -131,6 +139,23 @@ public class TreeManager : PlantManager
             return;
 
         time = 0;
+
+        List<IntVector3> blocksToRemove = (from block in blocks
+                                           where !physicsBodies[block].IsInGroup("alive")
+                                           select block).ToList();
+
+        blocks.ExceptWith(blocksToRemove);
+
+        List<Tuple<IntVector3, byte>> blocksToChange = new List<Tuple<IntVector3, byte>>();
+        foreach (IntVector3 position in blocksToRemove)
+        {
+            for (int i = 0; i < 48; i++)
+            {
+                blocksToChange.Add(Tuple.Create(position + treeBlockVectors[i].Item1, airBlock));
+            }
+        }
+
+        terrain.SetBlocks(blocksToChange);
 
         // in a full game, this would manage the tree growing from a sapling and then dying after some time
         Spread();

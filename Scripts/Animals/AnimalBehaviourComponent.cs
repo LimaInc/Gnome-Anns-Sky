@@ -222,6 +222,11 @@ public class AnimalBehaviourComponent : BaseComponent
                 SetRandomDirection();
             }           
         }
+
+        if(Body.GetTranslation().y <= 0)
+        {
+            Kill();
+        }
     }
 
     public override void PhysicsProcess(float delta)
@@ -247,7 +252,6 @@ public class AnimalBehaviourComponent : BaseComponent
                 if (Diet == AnimalDiet.Herbivore)
                 {
                     //just try to eat whatever block is below
-
                     Vector3 pos = Body.GetTranslation();
                     IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
                     blockPos.y--;
