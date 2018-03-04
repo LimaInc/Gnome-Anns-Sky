@@ -27,7 +27,7 @@ public class TreeManager : PlantManager
         [Gas.CARBON_DIOXIDE] = -BASE_GAS_PRODUCTION,
     };
 
-    private const double SPREAD_CHANCE = 0.001;
+    private const double SPREAD_CHANCE = 0.01;
 
     private float time;
     private Dictionary<IntVector3, PhysicsBody> physicsBodies;
@@ -37,14 +37,6 @@ public class TreeManager : PlantManager
     {
         this.plants = plants;
 
-        GAS_DELTAS = new Dictionary<Gas, float>
-        {
-            [Gas.OXYGEN] = 0.00005f,
-            [Gas.NITROGEN] = -0.00005f,
-            [Gas.CARBON_DIOXIDE] = -0.00005f
-        };
-
-        SPREAD_CHANCE = 0.01;
         time = 0;
         grid = new Dictionary<Tuple<int, int>, List<IntVector3>>();
 

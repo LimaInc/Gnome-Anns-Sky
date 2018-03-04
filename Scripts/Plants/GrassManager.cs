@@ -30,7 +30,7 @@ public class GrassManager : PlantManager
         new IntVector3(1, -1, 0), new IntVector3(1, 0, 0), new IntVector3(1, 1, 0)
     };
 
-    private const double SPREAD_CHANCE = 0.501f;
+    private const double SPREAD_CHANCE = 0.65f;
 
     private float time;
 
@@ -38,11 +38,7 @@ public class GrassManager : PlantManager
 
     public GrassManager(Plants plants_) : base(plants_, SPREAD_CHANCE, GAS_PRODUCTION)
     {
-        SPREAD_CHANCE = 0.65;
-        plants = plants_;
         time = 0;
-
-        GAS_DELTAS = GAS_PRODUCTION;
     }
 
     protected override bool Valid(IntVector3 blockPos)
