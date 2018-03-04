@@ -5,7 +5,7 @@ public class DisasterPropertiesSandstorm : DisasterProperties
 {
 	
 	public DisasterPropertiesSandstorm() : base() {
-		WarningTime = 20;
+		WarningTime = 10;
 		Likelihood = 0.005;
 	}
 
