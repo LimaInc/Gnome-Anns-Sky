@@ -41,8 +41,6 @@ public class GUIObject : GUIElement
 
     public override void _Input(InputEvent e)
     {
-        if (e is InputEventKey && this is GUICompass)
-
         if (e is InputEventMouseButton iemb)
         {
             Vector2 pos = ToLocal(iemb.GetPosition());

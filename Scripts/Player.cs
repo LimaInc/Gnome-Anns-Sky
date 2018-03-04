@@ -38,7 +38,7 @@ public class Player : KinematicBody
 
     public ItemStack ItemInHand { get; set; }
 
-    public static Texture CURSOR = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "cursor.png") as Texture;
+    public static Texture CURSOR = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "cursor.png") as Texture;
 
     private const float STATS_REFERENCE = 0.0015f;
     public static IDictionary<Stats, float> DEFAULT_STAT_CHANGE = new Dictionary<Stats, float>

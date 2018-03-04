@@ -12,7 +12,7 @@ public class DeadGUI : VisibleMouseGUI
     private ColorRect background;
     float time;
 
-    private static Texture DEAD_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "youAreDead.png") as Texture;
+    private static Texture DEAD_TEX = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "youAreDead.png") as Texture;
     
     public DeadGUI(Node vs) : base(vs)
     {

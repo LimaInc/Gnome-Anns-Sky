@@ -3,7 +3,7 @@ using Godot;
 
 class GUICompass : GUIObject
 {
-    public static readonly Texture COMPASS_ARROW = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "greenArrow.png") as Texture;
+    public static readonly Texture COMPASS_ARROW = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "greenArrow.png") as Texture;
 
     private readonly Vector2 northPole;
     private readonly Func<Vector2> posSupplier;

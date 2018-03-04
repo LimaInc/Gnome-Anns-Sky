@@ -113,7 +113,7 @@ adjustment_contrast = 1.0
 adjustment_saturation = 1.0
 _sections_unfolded = [ "Background" ]
 
-[node name="Game" type="Node"]
+[node name="Game" type="Node" index="0"]
 
 script = ExtResource( 1 )
 _sections_unfolded = [ "Pause" ]
@@ -187,7 +187,6 @@ _sections_unfolded = [ "Transform" ]
 
 [node name="PlanetEnvironment" type="WorldEnvironment" parent="." index="3"]
 
-editor/display_folded = true
 environment = SubResource( 2 )
 script = ExtResource( 6 )
 

@@ -7,7 +7,7 @@
 
     public FossilBlock(string texture)
     {
-        texturePaths = new[] { Game.BLOCK_TEXTURE_PATH + texture };
+        texturePaths = new[] { Game.BLOCK_TEXTURES_DIR_PATH + texture };
     }
 
     public override int GetTextureIndex(BlockFace face) => 0;

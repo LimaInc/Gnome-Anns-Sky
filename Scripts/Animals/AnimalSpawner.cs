@@ -4,8 +4,11 @@ using System.Collections.Generic;
 
 public class AnimalSpawner : Node
 {
+    public const string ANIMALS_SCRIPT_PATH = Game.SCRIPTS_PATH + "/Animals";
+    public const string ENTITY_SCRIPT_PATH = ANIMALS_SCRIPT_PATH + "/Entity.cs";
+
     private List<AnimalPreset> presets;
-    Script entityScript = (Script)ResourceLoader.Load("res://Scripts/Animals/Entity.cs");
+    Script entityScript = ResourceLoader.Load(ENTITY_SCRIPT_PATH) as Script;
 
     private void HollisticDemo()
     {

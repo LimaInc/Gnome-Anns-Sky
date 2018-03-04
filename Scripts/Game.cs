@@ -19,9 +19,12 @@ public class Game : Node
     public const string SCENES_PATH = "res://Scenes";
     public const string ANIMAL_SCENES_PATH = SCENES_PATH + "/Animals";
 
-    public const string GUI_TEXTURE_PATH = "res://Images/GUI/";
-    public const string BLOCK_TEXTURE_PATH = "res://Images/Blocks/";
-    public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
+    public const string SCRIPTS_PATH = "res://Scripts";
+
+    public const string TEXTURES_PATH = "res://Images";
+    public const string GUI_TEXTURES_DIR_PATH = TEXTURES_PATH + "/GUI/";
+    public const string BLOCK_TEXTURES_DIR_PATH = TEXTURES_PATH + "/Blocks/";
+    public const string ITEM_TEXTURES_DIR_PATH = TEXTURES_PATH + "/Items/";
 
     // multiplicative factor for processes in the world (not directly affecting the player)
     public const int FOSSIL_SPAWN_MULITPLIER = 30;

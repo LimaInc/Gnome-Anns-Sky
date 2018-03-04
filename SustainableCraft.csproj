@@ -100,6 +100,7 @@
     <Compile Include="Scripts\GUI\GUIObjects\GUILabeledSlotArray.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIInventorySlotArray.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUILabel.cs" />
+    <Compile Include="Scripts\GUI\Menus\LoadingScreen.cs" />
     <Compile Include="Scripts\GUI\Menus\Menu.cs" />
     <Compile Include="Scripts\GUI\Menus\ExitButton.cs" />
     <Compile Include="Scripts\GUI\Menus\StartGameButton.cs" />

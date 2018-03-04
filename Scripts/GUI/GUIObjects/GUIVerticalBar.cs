@@ -3,7 +3,7 @@ using System;
 
 public class GUIVerticalBar : GUIObject
 {
-    public static Texture TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "bar.png") as Texture;
+    public static Texture TEX = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "bar.png") as Texture;
     public static float WIDTH = 64;
 
     private ColorRect cRect;

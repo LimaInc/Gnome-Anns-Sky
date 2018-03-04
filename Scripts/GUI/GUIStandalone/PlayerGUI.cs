@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class PlayerGUI : GUI
 {
-    private static Texture AIR_ICON_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "airIcon.png") as Texture;
-    public static Texture CROSSHAIR_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "crosshairWhite.png") as Texture;
+    private static Texture AIR_ICON_TEX = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "airIcon.png") as Texture;
+    public static Texture CROSSHAIR_TEX = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "crosshairWhite.png") as Texture;
 
     private readonly static IDictionary<Gas, Color> GAS_BAR_COLORS = new Dictionary<Gas, Color>
     {

@@ -8,6 +8,10 @@
 
 config_version=3
 
+[Scene]
+
+=false
+
 [application]
 
 config/name="SustainableCraft"
