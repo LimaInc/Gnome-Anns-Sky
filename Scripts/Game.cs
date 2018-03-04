@@ -16,35 +16,39 @@ public class Game : Node
     public const string PLANTS_PATH = WORLD_ENVIRO_PATH + "/Plants";
     public const string ATMOSPHERE_PATH = WORLD_ENVIRO_PATH + "/Atmosphere";
     public const string BACTERIAL_STATE_PATH = WORLD_ENVIRO_PATH + "/BacterialState";
+    public const string ANIMAL_SPAWNER_PATH = GAME_PATH + "/AnimalSpawner";
 
     public const string GUI_TEXTURE_PATH = "res://Images/GUI/";
     public const string BLOCK_TEXTURE_PATH = "res://Images/Blocks/";
     public const string ITEM_TEXTURE_PATH = "res://Images/Items/";
 
     // multiplicative factor for processes in the world (not directly affecting the player)
-    public const int SPEED = 20;
-    public const int PLANT_MAX_SPEED = 1; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
+    public const int FOSSIL_SPAWN_MULITPLIER = 30;
+    public const int SPEED = 30;
+    public const int PLANT_MAX_SPEED = 2; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
 
     public Game()
     {
         //Register blocks
-        Game.RegisterBlock(new Stone());
-        Game.RegisterBlock(new RedRock());
+        RegisterBlock(new Stone());
+        RegisterBlock(new RedRock());
 
-        Game.RegisterBlock(new OxygenBacteriaFossilBlock());
-        Game.RegisterBlock(new NitrogenBacteriaFossilBlock());
-        Game.RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
-        Game.RegisterBlock(new GrassFossilBlock());
-        Game.RegisterBlock(new TreeFossilBlock());
-        Game.RegisterBlock(new AnimalFossilBlock());
+        RegisterBlock(new OxygenBacteriaFossilBlock());
+        RegisterBlock(new NitrogenBacteriaFossilBlock());
+        RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
+        RegisterBlock(new GrassFossilBlock());
+        RegisterBlock(new TreeFossilBlock());
+        RegisterBlock(new FrogFossilBlock());
+        RegisterBlock(new RegularAnimalFossilBlock());
+        RegisterBlock(new BigAnimalFossilBlock());
 
-        Game.RegisterBlock(new GrassBlock());
-        Game.RegisterBlock(new TreeBlock());
-        Game.RegisterBlock(new LeafBlock());
-        Game.RegisterBlock(new IceBlock());
+        RegisterBlock(new GrassBlock());
+        RegisterBlock(new TreeBlock());
+        RegisterBlock(new LeafBlock());
+        RegisterBlock(new IceBlock());
 
-        Game.RegisterBlock(new HabitationBlock());
-        Game.RegisterBlock(new DefossiliserBlock());
+        RegisterBlock(new HabitationBlock());
+        RegisterBlock(new DefossiliserBlock());
 
         //Generate texture atlas once all blocks are registered
         GenerateTextureMap();

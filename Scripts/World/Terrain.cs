@@ -9,22 +9,58 @@ public class Terrain : Spatial
     public const int HEIGHT_SPREAD = 128;
     public const int SEA_LEVEL = 30;
     public const int RED_ROCK_LAYER_NUM = 3;
-    public const int FOSSIL_DEPTH = RED_ROCK_LAYER_NUM;
+    public const int FOSSIL_DEPTH_MIN = 1;
+    public const int FOSSIL_DEPTH_MAX = RED_ROCK_LAYER_NUM;
+    public const int BACTERIA_FOSSIL_DEPTH_MIN = 0;
 
-    public readonly IList<UniformFossilGenerator> fossilGenerators = new List<UniformFossilGenerator>()
+    public const float BASE_FOSSIL_SPAWN_RATE = Game.FOSSIL_SPAWN_MULITPLIER * 0.0005f;
+
+    public readonly IList<UniformRandomBlockGenerator> fossilGenerators = new List<UniformRandomBlockGenerator>()
     {
-        new UniformFossilGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.001f),
-        new UniformFossilGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.0005f),
-        new UniformFossilGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), FOSSIL_DEPTH, 0.004f),
-        new UniformFossilGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
-        new UniformFossilGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH, 0.0015f),
-        new UniformFossilGenerator(Game.GetBlockId<AnimalFossilBlock>(), FOSSIL_DEPTH, 0.0015f)
+        new UniformRandomBlockGenerator(Game.GetBlockId<FrogFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 2),
+        new UniformRandomBlockGenerator(Game.GetBlockId<RegularAnimalFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE / 2),
+        new UniformRandomBlockGenerator(Game.GetBlockId<BigAnimalFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE),
+        new UniformRandomBlockGenerator(Game.GetBlockId<GrassFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 3),
+        new UniformRandomBlockGenerator(Game.GetBlockId<TreeFossilBlock>(), FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 1.5f ),
+        new UniformRandomBlockGenerator(Game.GetBlockId<CarbonDioxideBacteriaFossilBlock>(), BACTERIA_FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 10),
+        new UniformRandomBlockGenerator(Game.GetBlockId<OxygenBacteriaFossilBlock>(), BACTERIA_FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE * 4),
+        new UniformRandomBlockGenerator(Game.GetBlockId<NitrogenBacteriaFossilBlock>(), BACTERIA_FOSSIL_DEPTH_MIN, FOSSIL_DEPTH_MAX, BASE_FOSSIL_SPAWN_RATE)
     };
+
+    public WorldGenerator worldGenerator;
+
+    public const int CHUNK_LOAD_RADIUS = 14;
+    public const float UPDATE_DISTANCE = 10;
+
+    private const int CHUNK_INDICES_SIZE = 3 * CHUNK_LOAD_RADIUS / 2;
+
+    Player player;
+    Vector3 playerPosLastUpdate = new Vector3(-50, -50, -50); // Forces update on first frame
+
+    private static readonly IntVector2[][] chunkLoadIndices;
+
+    static Terrain()
+    {
+        chunkLoadIndices = new IntVector2[CHUNK_INDICES_SIZE][];
+        chunkLoadIndices[0] = new IntVector2[] { new IntVector2(0, 0) };
+        for (int i = 1; i < CHUNK_INDICES_SIZE; i++)
+        {
+            chunkLoadIndices[i] = new IntVector2[4*i];
+            for (int j = 0; j < i; j++)
+            {
+                chunkLoadIndices[i][0 * i + j] = new IntVector2(j, i - j);
+                chunkLoadIndices[i][1 * i + j] = new IntVector2(i - j, - j);
+                chunkLoadIndices[i][2 * i + j] = new IntVector2(- j, - (i - j));
+                chunkLoadIndices[i][3 * i + j] = new IntVector2(-(i - j), j);
+            }
+        }
+    }
+
+    private HashDeque<IntVector2> chunksToUpdate = new HashDeque<IntVector2>();
+    private HashQueue<IntVector2> chunksToRemove = new HashQueue<IntVector2>();
 
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
     private IDictionary<IntVector2, Tuple<Chunk, bool, bool>> loadedChunks = new Dictionary<IntVector2, Tuple<Chunk, bool, bool>>();
-
-    public WorldGenerator worldGenerator;
 
     public override void _Ready()
     {
@@ -32,9 +68,10 @@ public class Terrain : Spatial
 
         worldGenerator = new WorldGenerator();
         worldGenerator.terrainModifiers.Add(new HillLandscapeTM(AVERAGE_HEIGHT, HEIGHT_SPREAD));
+        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
         worldGenerator.generators.Add(new RockGenerator(RED_ROCK_LAYER_NUM));
 
-        foreach(UniformFossilGenerator g in fossilGenerators)
+        foreach (UniformRandomBlockGenerator g in fossilGenerators)
         {
             worldGenerator.generators.Add(g);
         }
@@ -46,7 +83,45 @@ public class Terrain : Spatial
         worldGenerator.terrainModifiers.Add(b.Smoothing);
         worldGenerator.generators.Add(b.Generator);
 
-        worldGenerator.generators.Add(new IceGenerator(SEA_LEVEL));
+        Vector2 playerPos = new Vector2(player.Translation.x, player.Translation.z) / Block.SIZE;
+        float terrainGraphicalHeight = worldGenerator.GetHeightAt(playerPos) * Block.SIZE;
+        player.Translation = new Vector3(playerPos.x, terrainGraphicalHeight + Player.INIT_REL_POS.y, playerPos.y);
+    }
+
+    public const float ANIMAL_CHUNK_RANGE = 16.0f;
+
+    private int chunkNo = 0;
+
+    private Dictionary<string,int> CountAnimalsInChunk(IntVector2 chunkIndex)
+    {
+        Dictionary<string, int> count = new Dictionary<string, int>();
+
+        if (player.HasNode("AnimalArea"))
+        {
+
+            Vector3 playerPos = player.GetTranslation();
+        Array bodies = (player.GetNode("AnimalArea") as Area).GetOverlappingBodies();
+
+            Vector3 chunkCentre = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE) + (new Vector3((Chunk.SIZE.x * Block.SIZE), 0, (Chunk.SIZE.y * Block.SIZE)) / 2.0f);
+
+            foreach (PhysicsBody body in bodies)
+            {
+                if (body.IsInGroup("animals"))
+                {
+                    AnimalBehaviourComponent behaviour = ((Entity)body.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+                    if (!count.ContainsKey(behaviour.PresetName))
+                    {
+                        count.Add(behaviour.PresetName, 1);
+                    }
+                    else
+                    {
+                        count[behaviour.PresetName]++;
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 
     //Creates a chunk at specified index, note that the chunk's position will be chunkIndex * chunkSize
@@ -57,7 +132,7 @@ public class Terrain : Spatial
             if (buildMesh && !tuple.Item2) //But maybe we need to build a mesh for it?
             {
                 loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(tuple.Item1, true, tuple.Item3);
-                chunksToUpdate.Enqueue(chunkIndex);
+                chunksToUpdate.AddLast(chunkIndex);
             }
 
             if (!tuple.Item3) // If node not created, but it is in memory
@@ -67,12 +142,52 @@ public class Terrain : Spatial
         }
         else
         {
-            byte[,,] blocks = worldGenerator.GetChunk(chunkIndex, Chunk.CHUNK_SIZE);
+            byte[,,] blocks = worldGenerator.GetChunk(chunkIndex, Chunk.SIZE);
             Chunk chunk = new Chunk(this, chunkIndex, blocks);
             this.AddChild(chunk);
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
             if (buildMesh)
-                chunksToUpdate.Enqueue(chunkIndex);
+            {
+                chunksToUpdate.AddLast(chunkIndex);
+            }
+
+
+            chunkNo++;
+
+            //We take data from ANIMAL_CHUNK_RANGE closest chunks to player, throw it in a normal distribution, and generate animals from the dist.
+            if (chunkNo == (int)ANIMAL_CHUNK_RANGE)
+            {
+                chunkNo = 0;
+                // Spawn animals
+                Vector3 playerPos = player.GetTranslation();
+                IntVector2 playerChunk = new IntVector2((int)(playerPos.x / (Chunk.SIZE.x * Block.SIZE)), (int)(playerPos.z / (Chunk.SIZE.z * Block.SIZE)));
+                Dictionary<string, int> animalCount = CountAnimalsInChunk(playerChunk);
+
+                Random rand = new Random();
+
+                foreach (KeyValuePair<string, int> pair in animalCount)
+                {
+                    //number to spawn
+                    double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
+                    double u2 = 1.0 - rand.NextDouble();
+                    double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                                 Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+                    double randNormal = (pair.Value + (pair.Value / 4.0f) * randStdNormal);
+
+                    int number = (int)(Math.Max(0, Math.Round(randNormal / ANIMAL_CHUNK_RANGE)));
+
+                    for (int i = 0; i < number; i++)
+                    {
+                        double sexNum = rand.NextDouble();
+                        AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
+                        Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE);
+                        Vector3 chunkSize = Chunk.SIZE * Block.SIZE;
+                        Vector3 randomPosition = new Vector3(rand.Next(0, (int)chunkSize.x), 100.0f, rand.Next(0, (int)chunkSize.z));
+                        // ugly, TODO: fix
+                        GetNode(Game.GAME_PATH).GetNode("AnimalSpawner").Call("SpawnAnimal", pair.Key, sex, chunkOrigin + randomPosition);
+                    }
+                }
+            }
         }
     }
 
@@ -92,31 +207,26 @@ public class Terrain : Spatial
 
     public byte GetBlock(int x, int y, int z)
     {
-        //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
-        IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)x / Chunk.CHUNK_SIZE.x),
-                                               (int)Mathf.Floor((float)z / Chunk.CHUNK_SIZE.z));
+        IntVector2 chunkIndex = new IntVector2(MathUtil.RoundDownDiv(x, Chunk.SIZE.x),
+                                               MathUtil.RoundDownDiv(z, Chunk.SIZE.z));
 
-        IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.CHUNK_SIZE);
+        IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.SIZE);
 
         if (loadedChunks.TryGetValue(chunkIndex, out Tuple<Chunk, bool, bool> tuple))
-            return tuple.Item1.GetBlockInChunk(positionInChunk);
-        else //Should only happen when outside chunks are checking for adjacent blocks
         {
-            return 255;
+            return tuple.Item1.GetBlockInChunk(positionInChunk);
+        }
+        else // Should only happen when outside chunks are checking for adjacent blocks
+        {
+            return Byte.MaxValue;
         }
     }
-
-    Player player;
-    int chunkLoadRadius = 8;
-
-    Vector3 playerPosLastUpdate = new Vector3(-50, -50, -50); //Forces update on first frame
-    float updateDistance = 10;
 
     public override void _Process(float delta)
     {
         //Update visible chunks only when the player has moved a certain distance
         Vector3 playerPos = player.GetTranslation();
-        if((playerPos - playerPosLastUpdate).LengthSquared() > (updateDistance * updateDistance))
+        if((playerPos - playerPosLastUpdate).LengthSquared() > UPDATE_DISTANCE * UPDATE_DISTANCE)
         {
             playerPosLastUpdate = playerPos;
             UpdateVisibleChunks();
@@ -124,7 +234,7 @@ public class Terrain : Spatial
 
         if(chunksToUpdate.Count > 0)
         {
-            loadedChunks[chunksToUpdate.Dequeue()].Item1.UpdateMesh();
+            loadedChunks[chunksToUpdate.RemoveFirst()].Item1.UpdateMesh();
         }
         else if(chunksToRemove.Count > 0)
         {
@@ -132,7 +242,7 @@ public class Terrain : Spatial
         }
     }
 
-    public void SetBlocks(Tuple<IntVector3, byte>[] blocks)
+    public void SetBlocks(IEnumerable<Tuple<IntVector3, byte>> blocks)
     {
         HashSet<IntVector2> chunks = new HashSet<IntVector2>();
         foreach (Tuple<IntVector3, byte> b in blocks)
@@ -141,14 +251,14 @@ public class Terrain : Spatial
             byte block = b.Item2;
 
             //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
-            IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.CHUNK_SIZE.x),
-                                                   (int)Mathf.Floor((float)pos.z / Chunk.CHUNK_SIZE.z));
+            IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.SIZE.x),
+                                                   (int)Mathf.Floor((float)pos.z / Chunk.SIZE.z));
 
             Chunk chunk = loadedChunks[chunkIndex].Item1;
 
-            IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.CHUNK_SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.CHUNK_SIZE.z);
+            IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.SIZE.z);
 
-            chunk.SetBlockInChunk(positionInChunk, block);
+            chunk.TrySetBlockInChunk(positionInChunk, block);
 
             IntVector2 right = chunkIndex + new IntVector2(1,0);
             IntVector2 left = chunkIndex + new IntVector2(-1,0);
@@ -157,13 +267,13 @@ public class Terrain : Spatial
 
             chunks.Add(chunkIndex);
 
-            if (positionInChunk.x == Chunk.CHUNK_SIZE.x - 1)
+            if (positionInChunk.x == Chunk.SIZE.x - 1)
                 chunks.Add(right);
 
             if (positionInChunk.x == 0)
                 chunks.Add(left);
 
-            if (positionInChunk.z == Chunk.CHUNK_SIZE.z - 1)
+            if (positionInChunk.z == Chunk.SIZE.z - 1)
                 chunks.Add(above);
 
             if (positionInChunk.z == 0)
@@ -171,69 +281,58 @@ public class Terrain : Spatial
         }
 
         foreach (IntVector2 chunk in chunks)
-            chunksToUpdate.Enqueue(chunk);
+        {
+            chunksToUpdate.AddLast(chunk);
+        }
     }
 
     public void SetBlock(IntVector3 pos, byte block)
     {
         //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
-        IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.CHUNK_SIZE.x),
-                                               (int)Mathf.Floor((float)pos.z / Chunk.CHUNK_SIZE.z));
+        IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.SIZE.x),
+                                               (int)Mathf.Floor((float)pos.z / Chunk.SIZE.z));
 
         Chunk chunk = loadedChunks[chunkIndex].Item1;
 
-        IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.CHUNK_SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.CHUNK_SIZE.z);
+        IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.SIZE.z);
 
-        chunk.SetBlockInChunk(positionInChunk, block);
+        chunk.TrySetBlockInChunk(positionInChunk, block);
 
         IntVector2 right = chunkIndex + new IntVector2(1,0);
         IntVector2 left = chunkIndex + new IntVector2(-1,0);
         IntVector2 above = chunkIndex + new IntVector2(0,1);
         IntVector2 below = chunkIndex + new IntVector2(0,-1);
 
-        chunksToUpdate.Enqueue(chunkIndex);
+        // assumes Chunk.SIZE > 1
+        if (positionInChunk.x == Chunk.SIZE.x - 1)
+        {
+            chunksToUpdate.AddFirst(right);
+        }
+        else if (positionInChunk.x == 0)
+        {
+            chunksToUpdate.AddFirst(left);
+        }
+        if (positionInChunk.z == Chunk.SIZE.z - 1)
+        {
+            chunksToUpdate.AddFirst(above);
+        }
+        else if (positionInChunk.z == 0)
+        {
+            chunksToUpdate.AddFirst(below);
+        }
 
-        if (positionInChunk.x == Chunk.CHUNK_SIZE.x - 1)
-            chunksToUpdate.Enqueue(right);
-
-        if (positionInChunk.x == 0)
-            chunksToUpdate.Enqueue(left);
-
-        if (positionInChunk.z == Chunk.CHUNK_SIZE.z - 1)
-            chunksToUpdate.Enqueue(above);
-
-        if (positionInChunk.z == 0)
-            chunksToUpdate.Enqueue(below);
+        chunksToUpdate.AddFirst(chunkIndex);
     }
-
-    Queue<IntVector2> chunksToUpdate = new Queue<IntVector2>();
-    Queue<IntVector2> chunksToRemove = new Queue<IntVector2>();
-
-    IntVector2[][] chunkLoadIndices = new IntVector2[][]
-    {
-        new IntVector2[] { new IntVector2(0, 0), },
-        new IntVector2[] { new IntVector2(0, 1), new IntVector2(-1, 0), new IntVector2(1, 0), new IntVector2(0, -1), },
-        new IntVector2[] { new IntVector2(0, 2), new IntVector2(-1, 1), new IntVector2(1, 1), new IntVector2(-2, 0), new IntVector2(-1, -1), new IntVector2(2, 0), new IntVector2(1, -1), new IntVector2(0, -2), },
-        new IntVector2[] { new IntVector2(0, 3), new IntVector2(-1, 2), new IntVector2(1, 2), new IntVector2(-2, 1), new IntVector2(2, 1), new IntVector2(-3, 0), new IntVector2(-2, -1), new IntVector2(-1, -2), new IntVector2(3, 0), new IntVector2(2, -1), new IntVector2(1, -2), new IntVector2(0, -3), },
-        new IntVector2[] { new IntVector2(0, 4), new IntVector2(-1, 3), new IntVector2(1, 3), new IntVector2(-2, 2), new IntVector2(2, 2), new IntVector2(-3, 1), new IntVector2(3, 1), new IntVector2(-4, 0), new IntVector2(-3, -1), new IntVector2(-2, -2), new IntVector2(-1, -3), new IntVector2(4, 0), new IntVector2(3, -1), new IntVector2(2, -2), new IntVector2(1, -3), new IntVector2(0, -4), },
-        new IntVector2[] { new IntVector2(0, 5), new IntVector2(-1, 4), new IntVector2(1, 4), new IntVector2(-2, 3), new IntVector2(2, 3), new IntVector2(-3, 2), new IntVector2(3, 2), new IntVector2(-4, 1), new IntVector2(4, 1), new IntVector2(-5, 0), new IntVector2(-4, -1), new IntVector2(-3, -2), new IntVector2(-2, -3), new IntVector2(-1, -4), new IntVector2(5, 0), new IntVector2(4, -1), new IntVector2(3, -2), new IntVector2(2, -3), new IntVector2(1, -4), new IntVector2(0, -5), },
-        new IntVector2[] { new IntVector2(0, 6), new IntVector2(-1, 5), new IntVector2(1, 5), new IntVector2(-2, 4), new IntVector2(2, 4), new IntVector2(-3, 3), new IntVector2(3, 3), new IntVector2(-4, 2), new IntVector2(4, 2), new IntVector2(-5, 1), new IntVector2(5, 1), new IntVector2(-6, 0), new IntVector2(-5, -1), new IntVector2(-4, -2), new IntVector2(-3, -3), new IntVector2(-2, -4), new IntVector2(-1, -5), new IntVector2(6, 0), new IntVector2(5, -1), new IntVector2(4, -2), new IntVector2(3, -3), new IntVector2(2, -4), new IntVector2(1, -5), new IntVector2(0, -6), },
-        new IntVector2[] { new IntVector2(0, 7), new IntVector2(-1, 6), new IntVector2(1, 6), new IntVector2(-2, 5), new IntVector2(2, 5), new IntVector2(-3, 4), new IntVector2(3, 4), new IntVector2(-4, 3), new IntVector2(4, 3), new IntVector2(-5, 2), new IntVector2(5, 2), new IntVector2(-6, 1), new IntVector2(6, 1), new IntVector2(-7, 0), new IntVector2(-6, -1), new IntVector2(-5, -2), new IntVector2(-4, -3), new IntVector2(-3, -4), new IntVector2(-2, -5), new IntVector2(-1, -6), new IntVector2(7, 0), new IntVector2(6, -1), new IntVector2(5, -2), new IntVector2(4, -3), new IntVector2(3, -4), new IntVector2(2, -5), new IntVector2(1, -6), new IntVector2(0, -7), },
-        new IntVector2[] { new IntVector2(0, 8), new IntVector2(-1, 7), new IntVector2(1, 7), new IntVector2(-2, 6), new IntVector2(2, 6), new IntVector2(-3, 5), new IntVector2(3, 5), new IntVector2(-4, 4), new IntVector2(4, 4), new IntVector2(-5, 3), new IntVector2(5, 3), new IntVector2(-6, 2), new IntVector2(6, 2), new IntVector2(-7, 1), new IntVector2(7, 1), new IntVector2(-8, 0), new IntVector2(-7, -1), new IntVector2(-6, -2), new IntVector2(-5, -3), new IntVector2(-4, -4), new IntVector2(-3, -5), new IntVector2(-2, -6), new IntVector2(-1, -7), new IntVector2(8, 0), new IntVector2(7, -1), new IntVector2(6, -2), new IntVector2(5, -3), new IntVector2(4, -4), new IntVector2(3, -5), new IntVector2(2, -6), new IntVector2(1, -7), new IntVector2(0, -8), },
-        new IntVector2[] { new IntVector2(0, 9), new IntVector2(-1, 8), new IntVector2(1, 8), new IntVector2(-2, 7), new IntVector2(2, 7), new IntVector2(-3, 6), new IntVector2(3, 6), new IntVector2(-4, 5), new IntVector2(4, 5), new IntVector2(-5, 4), new IntVector2(5, 4), new IntVector2(-6, 3), new IntVector2(6, 3), new IntVector2(-7, 2), new IntVector2(7, 2), new IntVector2(-8, 1), new IntVector2(8, 1), new IntVector2(-9, 0), new IntVector2(-8, -1), new IntVector2(-7, -2), new IntVector2(-6, -3), new IntVector2(-5, -4), new IntVector2(-4, -5), new IntVector2(-3, -6), new IntVector2(-2, -7), new IntVector2(-1, -8), new IntVector2(9, 0), new IntVector2(8, -1), new IntVector2(7, -2), new IntVector2(6, -3), new IntVector2(5, -4), new IntVector2(4, -5), new IntVector2(3, -6), new IntVector2(2, -7), new IntVector2(1, -8), new IntVector2(0, -9), },
-        new IntVector2[] { new IntVector2(0, 10), new IntVector2(-1, 9), new IntVector2(1, 9), new IntVector2(-2, 8), new IntVector2(2, 8), new IntVector2(-3, 7), new IntVector2(3, 7), new IntVector2(-4, 6), new IntVector2(4, 6), new IntVector2(-5, 5), new IntVector2(5, 5), new IntVector2(-6, 4), new IntVector2(6, 4), new IntVector2(-7, 3), new IntVector2(7, 3), new IntVector2(-8, 2), new IntVector2(8, 2), new IntVector2(-9, 1), new IntVector2(9, 1), new IntVector2(-10, 0), new IntVector2(-9, -1), new IntVector2(-8, -2), new IntVector2(-7, -3), new IntVector2(-6, -4), new IntVector2(-5, -5), new IntVector2(-4, -6), new IntVector2(-3, -7), new IntVector2(-2, -8), new IntVector2(-1, -9), new IntVector2(10, 0), new IntVector2(9, -1), new IntVector2(8, -2), new IntVector2(7, -3), new IntVector2(6, -4), new IntVector2(5, -5), new IntVector2(4, -6), new IntVector2(3, -7), new IntVector2(2, -8), new IntVector2(1, -9), new IntVector2(0, -10), },
-        new IntVector2[] { new IntVector2(0, 11), new IntVector2(-1, 10), new IntVector2(1, 10), new IntVector2(-2, 9), new IntVector2(2, 9), new IntVector2(-3, 8), new IntVector2(3, 8), new IntVector2(-4, 7), new IntVector2(4, 7), new IntVector2(-5, 6), new IntVector2(5, 6), new IntVector2(-6, 5), new IntVector2(6, 5), new IntVector2(-7, 4), new IntVector2(7, 4), new IntVector2(-8, 3), new IntVector2(8, 3), new IntVector2(-9, 2), new IntVector2(9, 2), new IntVector2(-10, 1), new IntVector2(10, 1), new IntVector2(-11, 0), new IntVector2(-10, -1), new IntVector2(-9, -2), new IntVector2(-8, -3), new IntVector2(-7, -4), new IntVector2(-6, -5), new IntVector2(-5, -6), new IntVector2(-4, -7), new IntVector2(-3, -8), new IntVector2(-2, -9), new IntVector2(-1, -10), new IntVector2(11, 0), new IntVector2(10, -1), new IntVector2(9, -2), new IntVector2(8, -3), new IntVector2(7, -4), new IntVector2(6, -5), new IntVector2(5, -6), new IntVector2(4, -7), new IntVector2(3, -8), new IntVector2(2, -9), new IntVector2(1, -10), new IntVector2(0, -11), },
-   };
     
     private void UpdateVisibleChunks()
     {
         Vector3 playerPos = player.GetTranslation();
 
-        IntVector2 playerChunk = new IntVector2((int) (playerPos.x / (Chunk.CHUNK_SIZE.x * Chunk.BLOCK_SIZE)), (int) (playerPos.z / (Chunk.CHUNK_SIZE.z * Chunk.BLOCK_SIZE)));
+        IntVector2 playerChunk = new IntVector2((int) (playerPos.x / (Chunk.SIZE.x * Block.SIZE)), (int) (playerPos.z / (Chunk.SIZE.z * Block.SIZE)));
 
         List<IntVector2> chunksLoadedThisUpdate = new List<IntVector2>();
 
-        for(int r = 0; r < chunkLoadRadius; r++)
+        for(int r = 0; r < CHUNK_LOAD_RADIUS; r++)
         {
             foreach(IntVector2 v in chunkLoadIndices[r])
             {
@@ -244,7 +343,7 @@ public class Terrain : Spatial
         }
 
         //Load an extra ring of chunks, but don't build meshes for them
-        for(int r = chunkLoadRadius; r < chunkLoadRadius + 1; r++)
+        for(int r = CHUNK_LOAD_RADIUS; r < CHUNK_LOAD_RADIUS + 1; r++)
         {
             foreach(IntVector2 v in chunkLoadIndices[r])
             {
@@ -254,6 +353,6 @@ public class Terrain : Spatial
             }
         }
 
-        chunksToRemove = new Queue<IntVector2>(loadedChunks.Keys.Except(chunksLoadedThisUpdate));
+        chunksToRemove = new HashQueue<IntVector2>(loadedChunks.Keys.Except(chunksLoadedThisUpdate));
     }
 }

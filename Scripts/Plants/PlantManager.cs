@@ -5,7 +5,7 @@ public abstract class PlantManager
 {
     protected Atmosphere atmosphere;
     protected Terrain terrain;
-    protected List<IntVector3> blocks;
+    protected HashSet<IntVector3> blocks;
 
     protected float LIFECYCLE_TICK_TIME = 1f;
     protected double SPREAD_CHANCE;
@@ -29,6 +29,5 @@ public abstract class PlantManager
     public void AdjustGases(float delta)
     {
         foreach (KeyValuePair<Gas, float> entry in GAS_DELTAS)
-            atmosphere.ChangeGasAmt(entry.Key, entry.Value*blocks.Count);
     }
 }

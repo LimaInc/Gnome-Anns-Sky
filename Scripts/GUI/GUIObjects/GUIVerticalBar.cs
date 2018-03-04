@@ -7,33 +7,50 @@ public class GUIVerticalBar : GUIObject
     public static float WIDTH = 64;
 
     private ColorRect cRect;
-    private float perc;
     protected float height;
+    private float perc;
+    public float Percentage
+    {
+        get => perc;
+        set {
+            float newValue = Mathf.Clamp(value, 0, 1);
+            if (perc != newValue)
+            {
+                perc = newValue;
+                cRect.SetPosition(rect.Position + new Vector2(0, (1 - perc) * height));
+                cRect.SetSize(new Vector2(WIDTH, perc * height));
+            }
+        }
+    }
 
     private Color color;
+    private Func<float> percentageSupplier;
 
     public virtual Vector2 Size { get => new Vector2(WIDTH, height); }
 
-    public GUIVerticalBar(Vector2 pos, float height, Color c)
-        : base(pos, new Vector2(WIDTH,height), TEX)
+    public GUIVerticalBar(Vector2 pos, float height_, Color color_, Func<float> percentageSupplier_ = null)
+        : base(pos, new Vector2(WIDTH,height_), TEX)
     {   
-        this.height = height;
-        this.color = c;
+        height = height_;
+        color = color_;
+        percentageSupplier = percentageSupplier_;
 
         cRect = new ColorRect
         {
-            Color = c
+            Color = color
         };
 
-        this.RemoveChild(this.sprite);
-        this.AddChild(cRect);
-        this.AddChild(this.sprite);
+        RemoveChild(sprite);
+        AddChild(cRect);
+        AddChild(sprite);
     }
 
-    public void SetPercentage(float f)
+    public override void _Process(float delta)
     {
-        this.perc = Mathf.Min(1, Mathf.Max(0, f));
-        cRect.SetPosition(rect.Position + new Vector2(0, (1-perc)*height));
-        cRect.SetSize(new Vector2(WIDTH, perc * height));
+        base._Process(delta);
+        if (percentageSupplier != null)
+        {
+            Percentage = percentageSupplier();
+        }
     }
 }

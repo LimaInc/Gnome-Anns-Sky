@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,9 +8,10 @@
     <OutputPath>.mono/temp/bin/$(Configuration)</OutputPath>
     <RootNamespace>SustainableCraft</RootNamespace>
     <AssemblyName>SustainableCraft</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>.mono/temp/obj</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)/$(Configuration)</IntermediateOutputPath>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,17 +51,22 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Scripts\Animals\AnimalBehaviourComponent.cs" />
+    <Compile Include="Scripts\Animals\AnimalPreset.cs" />
+    <Compile Include="Scripts\Animals\AnimalSpawner.cs" />
+    <Compile Include="Scripts\Animals\BaseComponent.cs" />
+    <Compile Include="Scripts\Animals\BaseStrategy.cs" />
+    <Compile Include="Scripts\Animals\BreedStrategy.cs" />
+    <Compile Include="Scripts\Animals\EatStrategy.cs" />
+    <Compile Include="Scripts\Animals\Entity.cs" />
+    <Compile Include="Scripts\Animals\PhysicsComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scripts\NaturalDisasters\DisasterManager.cs" />
-    <Compile Include="Scripts\NaturalDisasters\DisasterProperties.cs" />
-    <Compile Include="Scripts\NaturalDisasters\DisasterPropertiesSandstorm.cs" />
-    <Compile Include="Scripts\NaturalDisasters\Sandstorm.cs" />
     <Compile Include="Scripts\Atmosphere\Atmosphere.cs" />
     <Compile Include="Scripts\Atmosphere\AtmosphericComponent.cs" />
     <Compile Include="Scripts\Atmosphere\ColorMixingAC.cs" />
-    <Compile Include="Scripts\Atmosphere\SandstormComingAC.cs" />
     <Compile Include="Scripts\Atmosphere\Gas.cs" />
     <Compile Include="Scripts\Atmosphere\GasEscapingAC.cs" />
+    <Compile Include="Scripts\Atmosphere\SandstormComingAC.cs" />
     <Compile Include="Scripts\Atmosphere\GasMolecule.cs" />
     <Compile Include="Scripts\Bacteria\ProductionBSC.cs" />
     <Compile Include="Scripts\Bacteria\AsymptoticGrowthBSC.cs" />
@@ -87,6 +93,7 @@
     <Compile Include="Scripts\Fossils\Defossiliser.cs" />
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\Game.cs" />
+    <Compile Include="Scripts\GUI\GUIObjects\GUICompass.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DefossiliserGUI.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIComplexObject.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIFloatingSlot.cs" />
@@ -95,11 +102,12 @@
     <Compile Include="Scripts\GUI\GUIObjects\Label2D.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />
+    <Compile Include="Scripts\Inventory\ItemSpawnEgg.cs" />
     <Compile Include="Scripts\Inventory\ItemBacteriaVial.cs" />
+    <Compile Include="Scripts\Inventory\ItemID.cs" />
     <Compile Include="Scripts\Inventory\ItemStorage.cs" />
-    <Compile Include="Scripts\Inventory\ItemFood.cs" />
     <Compile Include="Scripts\Inventory\ItemBlock.cs" />
-    <Compile Include="Scripts\Inventory\ItemDrink.cs" />
+    <Compile Include="Scripts\Inventory\ItemConsumable.cs" />
     <Compile Include="Scripts\Inventory\ItemPlant.cs" />
     <Compile Include="Scripts\Inventory\ItemStack.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\PlayerGUI.cs" />
@@ -112,6 +120,10 @@
     <Compile Include="Scripts\GUI\GUIObjects\GUIVerticalBar.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DeadGUI.cs" />
     <Compile Include="Scripts\Interaction.cs" />
+    <Compile Include="Scripts\NaturalDisasters\DisasterManager.cs" />
+    <Compile Include="Scripts\NaturalDisasters\DisasterProperties.cs" />
+    <Compile Include="Scripts\NaturalDisasters\DisasterPropertiesSandstorm.cs" />
+    <Compile Include="Scripts\NaturalDisasters\Sandstorm.cs" />
     <Compile Include="Scripts\Plants\Plants.cs" />
     <Compile Include="Scripts\Plants\PlantManager.cs" />
     <Compile Include="Scripts\Plants\GrassManager.cs" />
@@ -119,8 +131,10 @@
     <Compile Include="Scripts\Plants\PlantType.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\Util\Debug.cs" />
+    <Compile Include="Scripts\Util\HashDeque.cs" />
     <Compile Include="Scripts\Util\InputUtil.cs" />
     <Compile Include="Scripts\Util\MathUtil.cs" />
+    <Compile Include="Scripts\Util\HashQueue.cs" />
     <Compile Include="Scripts\World\Base.cs" />
     <Compile Include="Scripts\World\Chunk.cs" />
     <Compile Include="Scripts\Util\CMYKColor.cs" />
@@ -131,13 +145,14 @@
     <Compile Include="Scripts\Util\OctaveNoise.cs" />
     <Compile Include="Scripts\Util\TextureManager.cs" />
     <Compile Include="Scripts\World\PlanetEnvironment.cs" />
+    <Compile Include="Scripts\World\Sun.cs" />
     <Compile Include="Scripts\World\WorldGeneration\IGenerator.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
     <Compile Include="Scripts\World\WorldGeneration\BaseGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\ITerrainModifier.cs" />
     <Compile Include="Scripts\World\WorldGeneration\HillLandscapeTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\IceGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\UniformFossilGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\UniformRandomBlockGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\SmoothingTM.cs" />
     <Compile Include="Scripts\World\WorldGeneration\RockGenerator.cs" />
     <Compile Include="Scripts\World\WorldGeneration\WorldGenerator.cs" />

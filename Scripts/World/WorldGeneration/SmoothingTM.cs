@@ -15,24 +15,26 @@ public class SmoothingTM : ITerrainModifier
     private readonly float sigmoidParamB;
     private readonly float sigmoidParamA;
 
-    public SmoothingTM(Vector2 center, int centerHeight, float smoothingAtCenter, float halfSmoothingDistance)
+    public SmoothingTM(Vector2 centerPos, int centerH, float smoothAtCenter, float halfSmoothingDist)
     {
-        this.center = center;
-        this.centerHeight = centerHeight;
+        center = centerPos;
+        centerHeight = centerH;
 
-        this.smoothingAtCenter = smoothingAtCenter;
-        this.halfSmoothingDistance = halfSmoothingDistance;
+        smoothingAtCenter = smoothAtCenter;
+        halfSmoothingDistance = halfSmoothingDist;
 
-        this.sigmoidParamB = Mathf.Log(this.smoothingAtCenter / (1 - this.smoothingAtCenter));
-        this.sigmoidParamA = -this.sigmoidParamB / this.halfSmoothingDistance;
+        sigmoidParamB = Mathf.Log(smoothingAtCenter / (1 - smoothingAtCenter));
+        sigmoidParamA = -sigmoidParamB / halfSmoothingDistance;
     }
 
     public void UpdateHeight(Vector2 worldCoords, ref int height)
     {
         // probably overkill to do it for every single place in the world
         // TODO: think up a better solution
+        // to do better we'd need to modify outside code
+        // because maths here is almost as simple as possible
         float centerDist = (worldCoords - center).Length();
         float sigmoidSample = MathUtil.Sigmoid(centerDist, sigmoidParamA, sigmoidParamB);
-        height = (int)(sigmoidSample * centerHeight + (1 - sigmoidSample) * height);
+        height = (int)Mathf.Round(sigmoidSample * centerHeight + (1 - sigmoidSample) * height);
     }
 }

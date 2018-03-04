@@ -14,6 +14,7 @@ public class Interaction : Camera
     {
         player = GetNode(Game.PLAYER_PATH) as Player;
 
+
         // Called every time the node is added to the scene.
         // Initialization here
         spaceState = GetWorld().DirectSpaceState;
@@ -26,26 +27,17 @@ public class Interaction : Camera
 
     public bool PlaceBlock(byte b)
     {
-        Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
+        var hitInfo = GetHitInfo();
 
-        Vector3 from = this.ProjectRayOrigin(midScreenPoint);
-        Node[] exc = { this };
-        Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
-
-        foreach(KeyValuePair<object, object> entry in hitInfo)
+        if (hitInfo != null)
         {
-            // do something with entry.Value or entry.Key
-        }
+            Vector3 pos = (Vector3)hitInfo["position"] + (Vector3)hitInfo["normal"] * 0.5f * Block.SIZE;
+            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
 
-        if(hitInfo.Count != 0) //Hit something
-        {
-            Vector3 pos = (Vector3)hitInfo["position"] + (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
-            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
-
-            Vector3 blockCollisionPos = new Vector3(blockPos.x, blockPos.y, blockPos.z) * Chunk.BLOCK_SIZE;
+            Vector3 blockCollisionPos = new Vector3(blockPos.x, blockPos.y, blockPos.z) * Block.SIZE;
 
             BoxShape bs = new BoxShape();
-            bs.SetExtents(new Vector3(Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f, Chunk.BLOCK_SIZE / 2.0f));
+            bs.SetExtents(new Vector3(Block.SIZE, Block.SIZE, Block.SIZE) / 2);
 
             PhysicsShapeQueryParameters psqp = new PhysicsShapeQueryParameters();
             psqp.SetShape(bs);
@@ -62,7 +54,7 @@ public class Interaction : Camera
 
                     if (info["collider"] is KinematicBody)
                     {
-                        //A moving body (player, animal etc.) is in the way
+                        // A moving body (player, animal etc.) is in the way
                         return false;
                     }
                 }
@@ -74,18 +66,44 @@ public class Interaction : Camera
         return false;
     }
 
-    public IntVector3? GetBlockPositionUnderCursor()
+
+    public Dictionary<object, object> GetHitInfo()
     {
         Vector2 midScreenPoint = new Vector2(GetViewport().Size.x * 0.5f, GetViewport().Size.y * 0.5f);
 
-        Vector3 from = this.ProjectRayOrigin(midScreenPoint);
+        Vector3 from = ProjectRayOrigin(midScreenPoint);
         Node[] exc = { this };
-        Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + this.ProjectRayNormal(midScreenPoint) * rayLength, exc);
+        Dictionary<object, object> hitInfo = spaceState.IntersectRay(from, from + ProjectRayNormal(midScreenPoint) * rayLength, exc);
 
-        if(hitInfo.Count != 0) //Hit something
+        return hitInfo.Count > 0 ? hitInfo : null;
+    }
+
+    private Node HitAnimal(Dictionary<object, object> hitInfo)
+    {
+        if(hitInfo != null && hitInfo["collider"] is Node)
         {
-            Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Chunk.BLOCK_SIZE;
-            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.y / Chunk.BLOCK_SIZE), (int)Mathf.Round(pos.z / Chunk.BLOCK_SIZE));
+            Node obj = (Node)hitInfo["collider"];
+            if (obj.IsInGroup("alive") && obj.IsInGroup("animals"))
+            {
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    private void KillAnimal(Node animalNode)
+    {
+        AnimalBehaviourComponent animal = ((Entity)animalNode.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+        animal.Kill();
+        player.AddItem(ItemStorage.items[ItemID.MEAT], animal.FoodDrop);
+    }
+
+    public IntVector3? GetBlockPositionUnderCursor(Dictionary<object, object> hitInfo)
+    {
+        if(hitInfo != null) //Hit something
+        {
+            Vector3 pos = (Vector3)hitInfo["position"] - (Vector3)hitInfo["normal"] * 0.5f * Block.SIZE;
+            IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
             return blockPos;
         }
         return null;
@@ -93,21 +111,46 @@ public class Interaction : Camera
 
     public byte RemoveBlock()
     {
+<<<<<<< HEAD
         IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
         if (blockPossible.HasValue)
+=======
+        var hitInfo = GetHitInfo();
+
+        Node animal = HitAnimal(hitInfo);
+        if (animal != null)
+>>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
         {
-            IntVector3 blockPos = blockPossible.Value;
-            byte ret = terrain.GetBlock(blockPos);
-            terrain.SetBlock(blockPos, 0);
-            return ret;
+            KillAnimal(animal);   
+        }
+        else
+        {
+            IntVector3? blockPossible = GetBlockPositionUnderCursor(hitInfo);
+
+            if (blockPossible.HasValue)
+            {
+                IntVector3 blockPos = blockPossible.Value;
+
+                byte ret = terrain.GetBlock(blockPos);
+
+                if (!Game.GetBlock(ret).Breakable)
+                    return 0;
+
+                terrain.SetBlock(blockPos, 0);
+                return ret;
+            }
         }
         
         return 0;
     }
 
-    public byte GetBlock()
+    public byte GetBlock(Dictionary<object, object> hitInfo)
     {
+<<<<<<< HEAD
         IntVector3? blockPossible = this.GetBlockPositionUnderCursor();
+=======
+        IntVector3? blockPossible = this.GetBlockPositionUnderCursor(hitInfo);
+>>>>>>> a84c7dc6cca15a846594375e2f6a3f7f52852593
         if (blockPossible.HasValue)
         {
             IntVector3 blockPos = blockPossible.Value;

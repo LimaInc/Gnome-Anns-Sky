@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Godot;
+using static ItemID;
 
 public class Defossiliser : Node
 {
@@ -10,14 +10,17 @@ public class Defossiliser : Node
     public const int OUT_INVENTORY_SIZE = 9;
 
     public readonly IList<DefossiliserAction> possibleProcesses;
-    public static readonly IList<DefossiliserAction> DEFAULT_PROCESSES = new List<DefossiliserAction>
+    public readonly IList<DefossiliserAction> DEFAULT_PROCESSES = new List<DefossiliserAction>
     {
-        new DefossiliserAction(ItemStorage.oxygenBacteriaFossil, ItemStorage.oxygenBacteriaVial, processingTime: 12),
-        new DefossiliserAction(ItemStorage.nitrogenBacteriaFossil, ItemStorage.nitrogenBacteriaVial, processingTime: 10),
-        new DefossiliserAction(ItemStorage.carbonDioxideBacteriaFossil, ItemStorage.carbonDioxideBacteriaVial, processingTime: 7),
-        new DefossiliserAction(ItemStorage.grassFossil, ItemStorage.grass, processingTime: 15),
-        new DefossiliserAction(ItemStorage.treeFossil, ItemStorage.tree, processingTime: 30),
-        new DefossiliserAction(ItemStorage.ice, ItemStorage.water, processingTime: 5, outItemCount: 2),
+        new DefossiliserAction(ICE, WATER, processingTime: 5, outItemCount: 2),
+        new DefossiliserAction(OXYGEN_BACTERIA_FOSSIL, OXYGEN_BACTERIA_VIAL, processingTime: 12),
+        new DefossiliserAction(NITROGEN_BACTERIA_FOSSIL, NITROGEN_BACTERIA_VIAL, processingTime: 10),
+        new DefossiliserAction(CARBON_DIOXIDE_BACTERIA_FOSSIL, CARBON_DIOXIDE_BACTERIA_VIAL, processingTime: 7),
+        new DefossiliserAction(GRASS_FOSSIL, GRASS, processingTime: 15),
+        new DefossiliserAction(TREE_FOSSIL, TREE, processingTime: 30, inItemCount: 3),
+        new DefossiliserAction(FROG_FOSSIL, FROG_EGG, processingTime: 40, inItemCount: 2),
+        new DefossiliserAction(REGULAR_ANIMAL_FOSSIL, REGULAR_EGG, processingTime: 60, inItemCount: 3),
+        new DefossiliserAction(BIG_ANIMAL_FOSSIL, BIG_EGG, processingTime: 120, inItemCount: 5)
     };
 
     public Inventory OutInventory { get; private set; }
@@ -25,28 +28,16 @@ public class Defossiliser : Node
 
     public float DefossilisingProgress { get; private set; }
     public DefossiliserAction ActionInProgress { get; private set; }
-
-    public delegate void InventoryChangeHandler();
-
-    public InventoryChangeHandler Callback { get; set; }
-
-    private static readonly IDictionary<Item, DefossiliserAction> transforms = new Dictionary<Item, DefossiliserAction>
-    {
-        [ItemStorage.nitrogenBacteriaFossil] = 
-            new DefossiliserAction(ItemStorage.nitrogenBacteriaFossil, ItemStorage.nitrogenBacteriaVial),
-        [ItemStorage.oxygenBacteriaFossil] =
-            new DefossiliserAction(ItemStorage.oxygenBacteriaFossil, ItemStorage.oxygenBacteriaVial),
-        [ItemStorage.carbonDioxideBacteriaFossil] =
-            new DefossiliserAction(ItemStorage.carbonDioxideBacteriaFossil, ItemStorage.carbonDioxideBacteriaVial),
-    };
+    
+    public Action Callback { get; set; }
 
     public Defossiliser(IList<DefossiliserAction> possibleProcesses = null)
     {
         this.possibleProcesses = possibleProcesses ?? DEFAULT_PROCESSES;
         DefossilisingProgress = 0;
 
-        InInventory = new Inventory(Item.Type.ANY, IN_INVENTORY_SIZE);
-        OutInventory = new Inventory(Item.Type.ANY, OUT_INVENTORY_SIZE);
+        InInventory = new Inventory(Item.ItemType.ANY, IN_INVENTORY_SIZE);
+        OutInventory = new Inventory(Item.ItemType.ANY, OUT_INVENTORY_SIZE);
     }
 
     public void HandleInput(InputEvent e, Player p)
