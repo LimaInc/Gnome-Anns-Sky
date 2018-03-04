@@ -89,6 +89,31 @@ public class Player : KinematicBody
 
     public static readonly Vector3 INIT_REL_POS = new Vector3(0, 5, 0);
 
+    private bool noGUIMode;
+
+    public Player()
+    {
+        noGUIMode = false;
+
+        Inventories = new Dictionary<Item.ItemType, Inventory>
+        {
+            [Item.ItemType.CONSUMABLE] = new Inventory(Item.ItemType.CONSUMABLE, PLAYER_INVENTORY_COUNT),
+            [Item.ItemType.PROCESSED] = new Inventory(Item.ItemType.PROCESSED, PLAYER_INVENTORY_COUNT),
+            [Item.ItemType.BLOCK] = new Inventory(Item.ItemType.BLOCK, PLAYER_INVENTORY_COUNT)
+        };
+
+        AddItem(ItemStorage.items[ItemID.CAKE], 3);
+        AddItem(ItemStorage.items[ItemID.CHOCOLATE], 10);
+        AddItem(ItemStorage.items[ItemID.WATER], 5);
+
+
+        AddItem(ItemStorage.items[ItemID.NITROGEN_BACTERIA_VIAL], 5);
+        AddItem(ItemStorage.items[ItemID.OXYGEN_BACTERIA_VIAL], 5);
+        AddItem(ItemStorage.items[ItemID.CARBON_DIOXIDE_BACTERIA_VIAL], 5);
+        
+        AddItem(ItemStorage.items[ItemID.GRASS], 5);
+    }
+
     public override void _Ready()
     {
         interaction = GetNode(Game.CAMERA_PATH) as Interaction;
@@ -138,26 +163,7 @@ public class Player : KinematicBody
             planetBase.position);
         AddChild(playerGUI);
 
-        Inventories = new Dictionary<Item.ItemType, Inventory>
-        {
-            [Item.ItemType.CONSUMABLE] = new Inventory(Item.ItemType.CONSUMABLE, PLAYER_INVENTORY_COUNT),
-            [Item.ItemType.PROCESSED] = new Inventory(Item.ItemType.PROCESSED, PLAYER_INVENTORY_COUNT),
-            [Item.ItemType.BLOCK] = new Inventory(Item.ItemType.BLOCK, PLAYER_INVENTORY_COUNT)
-        };
-
         InventoryGUI = new InventoryGUI(this, Inventories, this);
-
-        AddItem(ItemStorage.items[ItemID.CAKE], 3);
-        AddItem(ItemStorage.items[ItemID.CHOCOLATE], 10);
-        AddItem(ItemStorage.items[ItemID.WATER], 5);
-
-
-        AddItem(ItemStorage.items[ItemID.NITROGEN_BACTERIA_VIAL], 5);
-        AddItem(ItemStorage.items[ItemID.OXYGEN_BACTERIA_VIAL], 5);
-        AddItem(ItemStorage.items[ItemID.CARBON_DIOXIDE_BACTERIA_VIAL], 5);
-
-
-        AddItem(ItemStorage.items[ItemID.GRASS], 5);
     }
 
     // maybe a bit hacky, TODO: think about it
@@ -173,7 +179,7 @@ public class Player : KinematicBody
             return;
         }
 
-        if(OpenedGUI == null)
+        if (OpenedGUI == null)
         {
             if (e is InputEventMouseMotion emm)
             {
@@ -190,50 +196,54 @@ public class Player : KinematicBody
             }
             else if (e is InputEventMouseButton iemb)
             {
-                if (InputUtil.IsRighPress(iemb))
+                if (!noGUIMode)
                 {
-                    if (ItemInHand == null)
-                    {
-                        byte b = interaction.GetBlock(interaction.GetHitInfo());
-                        Block block = Game.GetBlock(b);
-                        if (block is DefossiliserBlock db)
-                        {
-                            db.HandleInput(e, this);
-                        }
-                    }
-                    else
-                    {
-                        HandleUseItem();
-                    }
-                }
-                else if (InputUtil.IsLeftPress(iemb))
-                {
-                    byte b = interaction.RemoveBlock();
-                    Item ib = ItemStorage.GetItemFromBlock(b);
 
-                    if (ib != null)
+                    if (InputUtil.IsRighPress(iemb))
                     {
                         if (ItemInHand == null)
                         {
-                            ItemInHand = new ItemStack(ItemStorage.GetItemFromBlock(b), 1);
+                            byte b = interaction.GetBlock(interaction.GetHitInfo());
+                            Block block = Game.GetBlock(b);
+                            if (block is DefossiliserBlock db)
+                            {
+                                db.HandleInput(e, this);
+                            }
                         }
                         else
                         {
-                            Item i = ItemInHand.Item;
-                            if (i is ItemBlock curBlock)
+                            HandleUseItem();
+                        }
+                    }
+                    else if (InputUtil.IsLeftPress(iemb))
+                    {
+                        byte b = interaction.RemoveBlock();
+                        Item ib = ItemStorage.GetItemFromBlock(b);
+
+                        if (ib != null)
+                        {
+                            if (ItemInHand == null)
                             {
-                                if (curBlock.Block == b)
+                                ItemInHand = new ItemStack(ItemStorage.GetItemFromBlock(b), 1);
+                            }
+                            else
+                            {
+                                Item i = ItemInHand.Item;
+                                if (i is ItemBlock curBlock)
                                 {
-                                    ItemInHand.ChangeQuantity(1);
+                                    if (curBlock.Block == b)
+                                    {
+                                        ItemInHand.ChangeQuantity(1);
+                                    }
+                                    else
+                                    {
+                                        AddItem(ib, 1);
+                                    }
                                 }
                                 else
                                 {
                                     AddItem(ib, 1);
                                 }
-                            }
-                            else
-                            {
-                                AddItem(ib, 1);
                             }
                         }
                     }
@@ -257,7 +267,7 @@ public class Player : KinematicBody
         if (ItemInHand == null)
             return;
 
-        Item i = this.ItemInHand.Item;
+        Item i = ItemInHand.Item;
 
         bool success = false;
         if (i is ItemBlock b)
@@ -312,7 +322,7 @@ public class Player : KinematicBody
             return;
         }
 
-        if (Input.IsActionJustPressed("inventory"))
+        if (!noGUIMode && Input.IsActionJustPressed("inventory"))
         {
             if (OpenedGUI == null)
             {
@@ -322,6 +332,13 @@ public class Player : KinematicBody
             {
                 CloseGUI();
             }
+        }
+
+        if (Input.IsActionJustPressed("hide_all_gui"))
+        {
+            CloseGUI();
+            playerGUI.Visible = noGUIMode;
+            noGUIMode = !noGUIMode;
         }
 
         // arbitrary choice to decrease stat values before regenerating

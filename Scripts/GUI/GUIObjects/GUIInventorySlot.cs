@@ -145,8 +145,6 @@ public class GUIInventorySlot : GUIObject
 
     public override void _Process(float delta)
     {
-        base._Process(delta);
-
         if (stack != null && labelNum != stack?.Count)
         {
             UpdateLabel();
@@ -157,7 +155,7 @@ public class GUIInventorySlot : GUIObject
     {
         if (e is InputEventMouseMotion iemm)
         {
-            this.hoverLabel.SetPosition(this.ToLocal(iemm.GetPosition()) + HOVER_LABEL_OFFSET);
+            hoverLabel.SetPosition(ToLocal(iemm.GetPosition()) + HOVER_LABEL_OFFSET);
         }
     }
 

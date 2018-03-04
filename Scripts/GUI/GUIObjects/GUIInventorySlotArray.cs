@@ -107,16 +107,16 @@ public class GUIInventorySlotArray : GUIComplexObject
     {
         get
         {
-            return this.slots[x, y];
+            return slots[x, y];
         }
         set
         {
-            if (this.slots[x, y] != null)
+            if (slots[x, y] != null)
             {
-                this.RemoveChild(this.slots[x, y]);
+                RemoveChild(slots[x, y]);
             }
-            this.slots[x, y] = value;
-            this.AddChild(value);
+            slots[x, y] = value;
+            AddChild(value);
 
         }
     }

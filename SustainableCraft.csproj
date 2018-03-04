@@ -93,6 +93,7 @@
     <Compile Include="Scripts\Game.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUICompass.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIElement.cs" />
+    <Compile Include="Scripts\GUI\GUIStandalone\VisibleMouseGUI.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DefossiliserGUI.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIComplexObject.cs" />
     <Compile Include="Scripts\GUI\GUIObjects\GUIFloatingSlot.cs" />

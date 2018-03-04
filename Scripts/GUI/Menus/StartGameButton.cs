@@ -7,7 +7,6 @@ class StartGameButton : Button
 {
     public override void _Input(InputEvent e)
     {
-        base._Input(e);
 
     }
 }

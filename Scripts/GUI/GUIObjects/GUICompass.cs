@@ -37,8 +37,6 @@ class GUICompass : GUIObject
 
     public override void _Process(float delta)
     {
-        base._Process(delta);
-
         Vector2 toPole = northPole - posSupplier();
         sprite.Rotation = viewDirSupplier().AngleTo(toPole);
     }

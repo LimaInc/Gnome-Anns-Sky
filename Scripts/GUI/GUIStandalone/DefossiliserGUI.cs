@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 
 // TODO: remove most of this class, this is very not DRY as most of it is already in InventoryGUI
-public class DefossiliserGUI : GUI
+public class DefossiliserGUI : VisibleMouseGUI
 {
     public static readonly IntVector2 IN_SLOT_COUNT = new IntVector2(3, 3);
     public static readonly IntVector2 OUT_SLOT_COUNT = new IntVector2(3, 3);
@@ -103,15 +103,15 @@ public class DefossiliserGUI : GUI
                 empty, empty, offerToInputInventory);
         }
         box = new GUIBox(this.GetViewportDimensions() / 2, BOX_SIZE);
-        this.AddChild(box);
+        AddChild(box);
         foreach (GUILabeledSlotArray slotArr in subArrays.Values)
         {
-            this.box.AddChild(slotArr);
+            box.AddChild(slotArr);
         }
-        this.box.AddChild(inSlotArray);
-        this.box.AddChild(progressBar);
-        this.box.AddChild(outSlotArray);
-        this.AddChild(floatingSlot);
+        box.AddChild(inSlotArray);
+        box.AddChild(progressBar);
+        box.AddChild(outSlotArray);
+        AddChild(floatingSlot);
     }
 
     private void UpdateSlots()
@@ -146,7 +146,7 @@ public class DefossiliserGUI : GUI
 
     public override void HandleResize()
     {
-        box.Position = this.GetViewportDimensions() / 2;
+        box.Position = GetViewportDimensions() / 2;
 
         Vector2 perSlotSize = SLOT_SPACING + GUIInventorySlot.SIZE;
         Vector2 subArraySize = INVENTORY_SLOT_COUNT * perSlotSize;
@@ -176,29 +176,29 @@ public class DefossiliserGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
+        base.HandleOpen(parent);
         HandleResize();
         Show();
-        Input.SetMouseMode(Input.MouseMode.Visible);
         UpdateSlots();
         defossiliser.Callback = UpdateDefossiliserSlotState;
     }
 
     public override void HandleClose()
     {
-        this.Hide();
+        base.HandleClose();
+        Hide();
         SaveSlotState();
         defossiliser.Callback = null;
         ItemStack stack = floatingSlot.GetCurItemStack();
         if (stack != null)
         {
-            this.subInventories[stack.Item.IType].TryAddItemStack(stack);
+            subInventories[stack.Item.IType].TryAddItemStack(stack);
             floatingSlot.ClearItemStack();
         }
     }
 
     public override void _Ready()
     {
-        base._Ready();
         Game g = GetNode(Game.GAME_PATH) as Game;
         if (!g.IsAParentOf(defossiliser))
         {

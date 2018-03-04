@@ -47,7 +47,6 @@ public class GUIVerticalBar : GUIObject
 
     public override void _Process(float delta)
     {
-        base._Process(delta);
         if (percentageSupplier != null)
         {
             Percentage = percentageSupplier();

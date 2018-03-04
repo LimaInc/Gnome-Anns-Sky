@@ -15,10 +15,10 @@ public class BaseGenerator : IGenerator
     public BaseGenerator(Base b)
     {
         @base = b;
-        
-        this.radiusSquared = @base.radius * @base.radius;
 
-        this.defossiliserLocalPosition = new IntVector3(0, 1, 2 - (int)@base.radius);
+        radiusSquared = @base.radius * @base.radius;
+
+        defossiliserLocalPosition = new IntVector3(0, 1, 2 - (int)@base.radius);
     }
 
     public void GenerateChunk(byte[,,] chunk, int[,] chunkTerrainHeight, IntVector2 chunkIndex, IntVector3 chunkSize)
