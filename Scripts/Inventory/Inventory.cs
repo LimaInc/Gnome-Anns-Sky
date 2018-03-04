@@ -33,11 +33,12 @@ public class Inventory
 
     public bool TryAddItemStack(ItemStack i)
     {
-        return TryAddItem(i.Item, i.Count);
+        return TryAddItem(i.Item.Id, i.Count);
     }
 
-    public bool CanAdd(Item item, int cnt)
+    public bool CanAdd(ItemID itemID, int cnt)
     {
+        Item item = ItemStorage.Instance[itemID];
         if (!Item.CompatibleWith(item.IType, type))
         {
             GD.Print("Something just tried to add a " + item.Name + " to a " + this.type + " inventory!");
@@ -74,9 +75,10 @@ public class Inventory
         return res;
     }
 
-    public bool TryAddItem(Item item, int cnt)
+    public bool TryAddItem(ItemID itemID, int cnt)
     {
-        if (!CanAdd(item, cnt))
+        Item item = ItemStorage.Instance[itemID];
+        if (!CanAdd(itemID, cnt))
         {
             return false;
         }
@@ -100,7 +102,7 @@ public class Inventory
             }
             else
             {
-                int? index = TryGetStackIndex(item);
+                int? index = TryGetStackIndex(itemID);
                 if (index.HasValue)
                 {
                     stacks[index.Value].ChangeQuantity(cnt);
@@ -120,25 +122,25 @@ public class Inventory
             }
         }
         throw new Exception("This should never have happened, trying to add "+cnt+" of "+item+
-            " to a full inventory, even though the CanAdd function returns "+CanAdd(item, cnt));
+            " to a full inventory, even though the CanAdd function returns "+CanAdd(itemID, cnt));
     }
 
-    public int? TryGetStackIndex(Item item)
+    public int? TryGetStackIndex(ItemID itemID)
     {
         for (int i = 0; i < this.size; i++)
         {
-            if (stacks[i]?.Item.Id == item.Id)
+            if (stacks[i]?.Item.Id == itemID)
                 return i;
         }
         return null;
     }
 
-    public int ItemCount(Item item)
+    public int ItemCount(ItemID itemID)
     {
         int count = 0;
         for (int i = 0; i < this.size; i++)
         {
-            if (stacks[i]?.Item.Id == item.Id)
+            if (stacks[i]?.Item.Id == itemID)
                 count += stacks[i].Count;
         }
         return count;

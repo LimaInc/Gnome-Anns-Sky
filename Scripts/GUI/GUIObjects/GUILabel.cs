@@ -1,13 +1,14 @@
 ﻿using Godot;
+using System;
 
-public class Label2D : Node2D
+public class GUILabel : GUIElement
 {
     private Label label;
 
-    public Label2D() : base()
+    public GUILabel(Func<bool> shouldShow = null) : base(shouldShow)
     {
         label = new Label();
-        this.AddChild(label);
+        AddChild(label);
     }
 
     public string Text { get => label.Text; set => label.Text = value; }

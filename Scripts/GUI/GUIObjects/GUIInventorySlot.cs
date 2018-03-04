@@ -3,7 +3,7 @@ using Godot;
 
 public class GUIInventorySlot : GUIObject
 {
-    public static readonly Texture TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "inventorySlot.png") as Texture;
+    public const string SLOT_TEXTURE = "inventorySlot";
     public static readonly Vector2 SIZE = new Vector2(32, 32);
 
     private static readonly Vector2 HOVER_LABEL_OFFSET = SIZE / 2;
@@ -17,33 +17,33 @@ public class GUIInventorySlot : GUIObject
     public const int CUR_ITEM_CHILD_Z = 1;
     private Sprite curItemChild;
     public const int LABEL_Z = 1;
-    private Label2D labelChild;
+    private GUILabel labelChild;
     private int labelNum;
 
     public const int HOVER_LABEL_Z = 3;
-    private Label2D hoverLabel;
+    private GUILabel hoverLabel;
 
     private Func<ItemStack,bool> quickMoveItem;
     private Action invUpdate;
 
     // TODO: use the invUpdate delegate idea to refactor the inventory with GUI synchronisation system
-    public GUIInventorySlot(GUIInventorySlot toExchangeOnPress, Item.ItemType t, int ind, Vector2 pos, 
-        Func<ItemStack,bool> quickMove = null, Action invUpdateCallback = null)
-        : base(new Vector2(), SIZE, TEX) 
+    public GUIInventorySlot(GUIInventorySlot exchangeSlot_, Item.ItemType type_, int index_, Vector2 pos, 
+        Func<ItemStack,bool> quickMoveItem_ = null, Action invUpdate_ = null, Func<bool> shouldShow = null)
+        : base(new Vector2(), SIZE, Game.guiResourceLoader.GetResource(SLOT_TEXTURE) as Texture, shouldShow) 
     {
         SetPosition(pos);
 
-        exchangeSlot = toExchangeOnPress;
-        quickMoveItem = quickMove;
-        invUpdate = invUpdateCallback;
-        index = ind;
-        type = t;
+        exchangeSlot = exchangeSlot_;
+        quickMoveItem = quickMoveItem_;
+        invUpdate = invUpdate_;
+        index = index_;
+        type = type_;
 
-        labelChild = new Label2D();
+        labelChild = new GUILabel();
         labelChild.SetZAsRelative(true);
         labelChild.SetZIndex(LABEL_Z);
 
-        hoverLabel = new Label2D();
+        hoverLabel = new GUILabel();
         hoverLabel.Hide();
         hoverLabel.SetZAsRelative(true);
         hoverLabel.SetZIndex(HOVER_LABEL_Z);
@@ -145,8 +145,6 @@ public class GUIInventorySlot : GUIObject
 
     public override void _Process(float delta)
     {
-        base._Process(delta);
-
         if (stack != null && labelNum != stack?.Count)
         {
             UpdateLabel();
@@ -157,7 +155,7 @@ public class GUIInventorySlot : GUIObject
     {
         if (e is InputEventMouseMotion iemm)
         {
-            this.hoverLabel.SetPosition(this.ToLocal(iemm.GetPosition()) + HOVER_LABEL_OFFSET);
+            hoverLabel.SetPosition(ToLocal(iemm.GetPosition()) + HOVER_LABEL_OFFSET);
         }
     }
 

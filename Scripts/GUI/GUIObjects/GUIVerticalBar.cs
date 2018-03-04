@@ -3,8 +3,8 @@ using System;
 
 public class GUIVerticalBar : GUIObject
 {
-    public static Texture TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "bar.png") as Texture;
-    public static float WIDTH = 64;
+    public const string BAR = "bar";
+    public const float WIDTH = 64;
 
     private ColorRect cRect;
     protected float height;
@@ -27,9 +27,9 @@ public class GUIVerticalBar : GUIObject
     private Func<float> percentageSupplier;
 
     public virtual Vector2 Size { get => new Vector2(WIDTH, height); }
-
-    public GUIVerticalBar(Vector2 pos, float height_, Color color_, Func<float> percentageSupplier_ = null)
-        : base(pos, new Vector2(WIDTH,height_), TEX)
+    
+    public GUIVerticalBar(Vector2 pos, float height_, Color color_, Func<float> percentageSupplier_ = null, Func<bool> shouldShow = null)
+        : base(pos, new Vector2(WIDTH,height_), Game.guiResourceLoader.GetResource(BAR) as Texture, shouldShow)
     {   
         height = height_;
         color = color_;
@@ -47,7 +47,6 @@ public class GUIVerticalBar : GUIObject
 
     public override void _Process(float delta)
     {
-        base._Process(delta);
         if (percentageSupplier != null)
         {
             Percentage = percentageSupplier();

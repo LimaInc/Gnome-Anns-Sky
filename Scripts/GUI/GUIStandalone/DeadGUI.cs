@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-public class DeadGUI : GUI
+public class DeadGUI : VisibleMouseGUI
 {
     private static readonly Color BACKGROUND_COLOR = new Color(0.8f, 0.0f, 0.0f, 0.5f);
 
@@ -12,7 +12,7 @@ public class DeadGUI : GUI
     private ColorRect background;
     float time;
 
-    private static Texture DEAD_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "youAreDead.png") as Texture;
+    private const string DEAD_TEX = "youAreDead";
     
     public DeadGUI(Node vs) : base(vs)
     {
@@ -24,8 +24,10 @@ public class DeadGUI : GUI
         };
         AddChild(background);
 
-        youAreDead = new Sprite();
-        youAreDead.SetTexture(DEAD_TEX);
+        youAreDead = new Sprite
+        {
+            Texture = Game.guiResourceLoader.GetResource(DEAD_TEX) as Texture
+        };
         AddChild(youAreDead);
     }
 
@@ -39,16 +41,14 @@ public class DeadGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
+        base.HandleOpen(parent);
         HandleResize();
         _Process(0);
         Show();
-        Input.SetMouseMode(Input.MouseMode.Visible);
     }
 
     public override void _Process(float delta)
     {
-        base._Process(delta);
-
         time += delta;
         textScale = BASE_TEXT_SCALE + Mathf.Sin(time * 2) * 0.2f;
         youAreDead.Scale = new Vector2(textScale, textScale);

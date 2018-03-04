@@ -7,7 +7,7 @@ path="res://.import/big.dae-16de2fe6538826b59a4453b3e6891768.scn"
 [deps]
 
 source_file="res://models/big0/big.dae"
-source_md5="3d78757a1ea2ec4b96f2086765d6d9fe"
+source_md5="0fc4e7274913569cb2529cfff5c15f5d"
 
 dest_files=[ "res://.import/big.dae-16de2fe6538826b59a4453b3e6891768.scn" ]
 dest_md5="7c1f0ebb4fdac35dfbb7f55486c9585e"
