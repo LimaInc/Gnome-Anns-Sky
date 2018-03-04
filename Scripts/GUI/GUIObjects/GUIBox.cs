@@ -3,19 +3,21 @@ using Godot;
 
 public class GUIBox : GUIObject
 {
-    public static Texture GUI_SHEET = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "guiSheet.png") as Texture;
+    public const string GUI_SHEET = "guiSheet";
 
     public const int REGION_SIZE = 16;
 
     // TODO: extract 9 element scaling into separate class, use it also for bars
-    public GUIBox(Vector2 pos, Vector2 size) : base(pos, size, GUI_SHEET, size / 16)
+    public GUIBox(Vector2 pos, Vector2 size, Func<bool> shouldShow = null) : 
+        base(pos, size, Game.guiResourceLoader.GetResource(GUI_SHEET) as Texture, size / REGION_SIZE, shouldShow)
     {
+        Texture tex = Game.guiResourceLoader.GetResource(GUI_SHEET) as Texture;
         for (int x=0; x < 3; ++x)
         {
             for (int y=0; y < 3; ++y)
             {
                 Sprite s = (x==1 && y==1) ? sprite : new Sprite();
-                s.Texture = GUI_SHEET;
+                s.Texture = tex;
                 s.RegionEnabled = true;
                 s.RegionRect = new Rect2(x * REGION_SIZE, y * REGION_SIZE, REGION_SIZE, REGION_SIZE);
                 if (!(x == 1 && y == 1))

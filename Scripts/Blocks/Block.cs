@@ -8,7 +8,7 @@ public abstract class Block
 
     abstract public bool Breakable { get; }
 
-    abstract public string[] TexturePaths { get; }
+    abstract public string[] TextureNames { get; }
     
     abstract public int GetTextureIndex(BlockFace face);
 

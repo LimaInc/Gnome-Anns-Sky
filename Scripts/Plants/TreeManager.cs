@@ -70,10 +70,8 @@ public class TreeManager : PlantManager
 
     protected override bool Valid(IntVector3 blockPos)
     {
-        if (terrain.GetBlock(blockPos) != redRock &&
-                terrain.GetBlock(blockPos) != grassBlock &&
-                atmosphere.GetGasAmt(Gas.NITROGEN) < 0.01 &&
-                atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE) < 0.01)
+        if (terrain.GetBlock(blockPos) != redRock && terrain.GetBlock(blockPos) != grassBlock ||
+                atmosphere.GetGasAmt(Gas.NITROGEN) < 0.01 || atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE) < 0.01)
             return false;
 
         for (int i = 0; i < 48; i++)

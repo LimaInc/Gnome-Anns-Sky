@@ -1,14 +1,14 @@
 ﻿public class OxygenBacteriaFossilBlock : FossilBlock
 {
-    public OxygenBacteriaFossilBlock() : base("bacteriaFossilBlock.png") { }
+    public OxygenBacteriaFossilBlock() : base("bacteriaFossilBlock") { }
 }
 
 public class NitrogenBacteriaFossilBlock : FossilBlock
 {
-    public NitrogenBacteriaFossilBlock() : base("bacteriaFossilBlock.png") { }
+    public NitrogenBacteriaFossilBlock() : base("bacteriaFossilBlock") { }
 }
 
 public class CarbonDioxideBacteriaFossilBlock : FossilBlock
 {
-    public CarbonDioxideBacteriaFossilBlock() : base("bacteriaFossilBlock.png") { }
+    public CarbonDioxideBacteriaFossilBlock() : base("bacteriaFossilBlock") { }
 }

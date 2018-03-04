@@ -17,13 +17,14 @@ public class GUIInventorySlotArray : GUIComplexObject
 
     public GUIInventorySlotArray(GUIInventorySlot exchangeSlot, Item.ItemType type, 
         IntVector2 size, Vector2 slotSpacing, 
-        Func<ItemStack,bool> quickMove = null, Action invUpdateCallback = null)
+        Func<ItemStack,bool> quickMoveItemStack_ = null, Action invUpdate_ = null, Func<bool> shouldShow = null) : 
+            base(shouldShow)
     {
         ExchangeSlot = exchangeSlot;
         SlotType = type;
         Dimensions = size;
-        quickMoveItemStack = quickMove;
-        invUpdate = invUpdateCallback;
+        quickMoveItemStack = quickMoveItemStack_;
+        invUpdate = invUpdate_;
 
         slots = new GUIInventorySlot[Dimensions.x, Dimensions.y];
 
@@ -106,16 +107,16 @@ public class GUIInventorySlotArray : GUIComplexObject
     {
         get
         {
-            return this.slots[x, y];
+            return slots[x, y];
         }
         set
         {
-            if (this.slots[x, y] != null)
+            if (slots[x, y] != null)
             {
-                this.RemoveChild(this.slots[x, y]);
+                RemoveChild(slots[x, y]);
             }
-            this.slots[x, y] = value;
-            this.AddChild(value);
+            slots[x, y] = value;
+            AddChild(value);
 
         }
     }

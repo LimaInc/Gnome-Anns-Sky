@@ -8,7 +8,6 @@ class ProductionBSC : BacterialStateComponent
 
     public override void _Ready()
     {
-        base._Ready();
         atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
     }
 

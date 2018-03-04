@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Godot;
 
 class GUICompass : GUIObject
 {
-    public static readonly Texture COMPASS_ARROW = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "greenArrow.png") as Texture;
+    public const string COMPASS_ARROW = "greenArrow";
 
     private readonly Vector2 northPole;
     private readonly Func<Vector2> posSupplier;
     private readonly Func<Vector2> viewDirSupplier;
 
     public GUICompass(Vector2 pos, Vector2 size, Vector2 northPole_, 
-        Func<Vector2> posSupplier_, Func<Vector2> viewDirSuppier_) : 
-            base(pos, size, COMPASS_ARROW, BaseScale(size))
+        Func<Vector2> posSupplier_, Func<Vector2> viewDirSuppier_, Func<bool> shouldShow = null) : 
+            base(pos, size, Game.guiResourceLoader.GetResource(COMPASS_ARROW) as Texture, BaseScale(size), shouldShow)
     {
         northPole = northPole_;
         posSupplier = posSupplier_;
@@ -31,14 +29,13 @@ class GUICompass : GUIObject
 
     private static Vector2 BaseScale(Vector2 size)
     {
-        float baseScale = Mathf.Max(size.x, size.y) / COMPASS_ARROW.GetSize().Length();
+        Texture tex = Game.guiResourceLoader.GetResource(COMPASS_ARROW) as Texture;
+        float baseScale = Mathf.Max(size.x, size.y) / tex.GetSize().Length();
         return new Vector2(baseScale, baseScale);
     }
 
     public override void _Process(float delta)
     {
-        base._Process(delta);
-
         Vector2 toPole = northPole - posSupplier();
         sprite.Rotation = viewDirSupplier().AngleTo(toPole);
     }

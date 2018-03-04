@@ -4,8 +4,12 @@ using System.Collections.Generic;
 
 public class AnimalSpawner : Node
 {
+    public const string ANIMALS_SCRIPT_PATH = Game.SCRIPTS_PATH + "/Animals";
+    public const string ENTITY_SCRIPT_PATH = ANIMALS_SCRIPT_PATH + "/Entity.cs";
+
     private List<AnimalPreset> presets;
-    Script entityScript = (Script)ResourceLoader.Load("res://Scripts/Animals/Entity.cs");
+    private Script entityScript = ResourceLoader.Load(ENTITY_SCRIPT_PATH) as Script;
+    private ResourcePreloader animalResourceLoader;
 
     private void HollisticDemo()
     {
@@ -70,16 +74,17 @@ public class AnimalSpawner : Node
         SpawnAnimal("frog", AnimalBehaviourComponent.AnimalSex.Female, new Vector3(0.0f, 55.0f, 0.0f));
         SpawnAnimal("animal0", AnimalBehaviourComponent.AnimalSex.Male, new Vector3(0.0f, 50.0f, 10.0f));
     }
-
-
+    
     public override void _Ready()
     {
+        animalResourceLoader = GetNode(Game.ANIMAL_RESOURCE_LOADER) as ResourcePreloader;
+
         presets = new List<AnimalPreset>();
 
         // For now, hardcode presets
         AnimalPreset male0 = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://Scenes/MaleAnimal0.tscn"),
+            animalResourceLoader.GetResource("MaleAnimal0") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             10,
             90,
@@ -90,7 +95,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset female0 = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleAnimal0.tscn"),
+            animalResourceLoader.GetResource("FemaleAnimal0") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             10,
             90,
@@ -101,7 +106,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset maleFrog = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://Scenes/MaleFrog.tscn"),
+            animalResourceLoader.GetResource("MaleFrog") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             90,
@@ -112,7 +117,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset femaleFrog = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleFrog.tscn"),
+            animalResourceLoader.GetResource("FemaleFrog") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             90,
@@ -123,7 +128,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset maleBig = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://Scenes/MaleBig.tscn"),
+            animalResourceLoader.GetResource("MaleBig") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Omnivore,
             100,
             70,
@@ -134,7 +139,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset femaleBig = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleBig.tscn"),
+            animalResourceLoader.GetResource("FemaleBig") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Omnivore,
             100,
             70,
@@ -145,7 +150,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset maleFrogBD = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://Scenes/MaleFrog.tscn"),
+            animalResourceLoader.GetResource("MaleFrog") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             80,
@@ -154,7 +159,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset femaleFrogBD = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleFrog.tscn"),
+            animalResourceLoader.GetResource("FemaleFrog") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Herbivore,
             1,
             80,
@@ -163,7 +168,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset male0BD = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Male,
-            (PackedScene)ResourceLoader.Load("res://Scenes/MaleAnimal0.tscn"),
+            animalResourceLoader.GetResource("MaleAnimal0") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             1,
             80,
@@ -172,7 +177,7 @@ public class AnimalSpawner : Node
 
         AnimalPreset female0BD = new AnimalPreset(
             AnimalBehaviourComponent.AnimalSex.Female,
-            (PackedScene)ResourceLoader.Load("res://Scenes/FemaleAnimal0.tscn"),
+            animalResourceLoader.GetResource("FemaleAnimal0") as PackedScene,
             AnimalBehaviourComponent.AnimalDiet.Carnivore,
             1,
             80,

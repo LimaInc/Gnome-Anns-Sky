@@ -1,11 +1,11 @@
 public class GrassBlock : CubeBlock
 {
     public override bool Breakable { get { return true; } }
-    public override string[] TexturePaths { get {
+    public override string[] TextureNames { get {
             return new[] {
-                Game.BLOCK_TEXTURE_PATH + "grassTop.png",
-                Game.BLOCK_TEXTURE_PATH + "grassSide.png",
-                Game.BLOCK_TEXTURE_PATH + "brown_rock_side.png"
+                "grassTop",
+                "grassSide",
+                "brown_rock_side"
             };
         }
     }
