@@ -3,11 +3,11 @@
     private readonly string[] texturePaths; 
 
     public override bool Breakable { get { return true; } }
-    public override string[] TexturePaths { get => texturePaths; }
+    public override string[] TextureNames { get => texturePaths; }
 
     public FossilBlock(string texture)
     {
-        texturePaths = new[] { Game.BLOCK_TEXTURES_DIR_PATH + texture };
+        texturePaths = new[] { texture };
     }
 
     public override int GetTextureIndex(BlockFace face) => 0;

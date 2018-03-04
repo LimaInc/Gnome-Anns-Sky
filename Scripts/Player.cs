@@ -87,7 +87,7 @@ public class Player : KinematicBody
     private Plants plants;
     private BacterialState bacteria;
 
-    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 5, 0);
+    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 2, 0);
 
     private bool noGUIMode;
 
@@ -101,17 +101,6 @@ public class Player : KinematicBody
             [Item.ItemType.PROCESSED] = new Inventory(Item.ItemType.PROCESSED, PLAYER_INVENTORY_COUNT),
             [Item.ItemType.BLOCK] = new Inventory(Item.ItemType.BLOCK, PLAYER_INVENTORY_COUNT)
         };
-
-        AddItem(ItemStorage.items[ItemID.CAKE], 3);
-        AddItem(ItemStorage.items[ItemID.CHOCOLATE], 10);
-        AddItem(ItemStorage.items[ItemID.WATER], 5);
-
-
-        AddItem(ItemStorage.items[ItemID.NITROGEN_BACTERIA_VIAL], 5);
-        AddItem(ItemStorage.items[ItemID.OXYGEN_BACTERIA_VIAL], 5);
-        AddItem(ItemStorage.items[ItemID.CARBON_DIOXIDE_BACTERIA_VIAL], 5);
-        
-        AddItem(ItemStorage.items[ItemID.GRASS], 5);
     }
 
     public override void _Ready()
@@ -165,26 +154,31 @@ public class Player : KinematicBody
 
         InventoryGUI = new InventoryGUI(this, Inventories, this);
 
+        CallDeferred("Initialize");
+    }
 
-        this.AddItem(ItemStorage.items[ItemID.CAKE], 3);
-        this.AddItem(ItemStorage.items[ItemID.CHOCOLATE], 10);
-        this.AddItem(ItemStorage.items[ItemID.WATER], 5);
+    private void Initialize()
+    {
+        AddItem(ItemID.CAKE, 3);
+        AddItem(ItemID.CHOCOLATE, 10);
+        AddItem(ItemID.WATER, 5);
 
         //TEMP
-        this.AddItem(ItemStorage.items[ItemID.CARBON_DIOXIDE_BACTERIA_VIAL], 100);
-        this.AddItem(ItemStorage.items[ItemID.OXYGEN_BACTERIA_VIAL], 100);
-        this.AddItem(ItemStorage.items[ItemID.NITROGEN_BACTERIA_VIAL], 100);
-        this.AddItem(ItemStorage.items[ItemID.REGULAR_EGG], 100);
-        this.AddItem(ItemStorage.items[ItemID.BIG_EGG], 100);
-        this.AddItem(ItemStorage.items[ItemID.FROG_EGG], 100);
-        this.AddItem(ItemStorage.items[ItemID.GRASS], 100);
-        this.AddItem(ItemStorage.items[ItemID.TREE], 100);
+        AddItem(ItemID.CARBON_DIOXIDE_BACTERIA_VIAL, 100);
+        AddItem(ItemID.OXYGEN_BACTERIA_VIAL, 100);
+        AddItem(ItemID.NITROGEN_BACTERIA_VIAL, 100);
+        AddItem(ItemID.REGULAR_EGG, 100);
+        AddItem(ItemID.BIG_EGG, 100);
+        AddItem(ItemID.FROG_EGG, 100);
+        AddItem(ItemID.GRASS, 100);
+        AddItem(ItemID.TREE, 100);
     }
 
     // maybe a bit hacky, TODO: think about it
-    public void AddItem(Item i, int n)
+    public void AddItem(ItemID id, int n)
     {
-        Inventories[i.IType].TryAddItem(i, n);
+        Item i = ItemStorage.Instance[id];
+        Inventories[i.IType].TryAddItem(id, n);
     }
 
     public override void _Input(InputEvent e)
@@ -252,12 +246,12 @@ public class Player : KinematicBody
                                     }
                                     else
                                     {
-                                        AddItem(ib, 1);
+                                        AddItem(ib.Id, 1);
                                     }
                                 }
                                 else
                                 {
-                                    AddItem(ib, 1);
+                                    AddItem(ib.Id, 1);
                                 }
                             }
                         }

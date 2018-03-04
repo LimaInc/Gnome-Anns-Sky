@@ -3,7 +3,7 @@ using Godot;
 
 public class GUIInventorySlot : GUIObject
 {
-    public static readonly Texture TEX = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "inventorySlot.png") as Texture;
+    public const string SLOT_TEXTURE = "inventorySlot";
     public static readonly Vector2 SIZE = new Vector2(32, 32);
 
     private static readonly Vector2 HOVER_LABEL_OFFSET = SIZE / 2;
@@ -29,7 +29,7 @@ public class GUIInventorySlot : GUIObject
     // TODO: use the invUpdate delegate idea to refactor the inventory with GUI synchronisation system
     public GUIInventorySlot(GUIInventorySlot exchangeSlot_, Item.ItemType type_, int index_, Vector2 pos, 
         Func<ItemStack,bool> quickMoveItem_ = null, Action invUpdate_ = null, Func<bool> shouldShow = null)
-        : base(new Vector2(), SIZE, TEX, shouldShow) 
+        : base(new Vector2(), SIZE, Game.guiResourceLoader.GetResource(SLOT_TEXTURE) as Texture, shouldShow) 
     {
         SetPosition(pos);
 

@@ -12,7 +12,7 @@ public class DeadGUI : VisibleMouseGUI
     private ColorRect background;
     float time;
 
-    private static Texture DEAD_TEX = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "youAreDead.png") as Texture;
+    private const string DEAD_TEX = "youAreDead";
     
     public DeadGUI(Node vs) : base(vs)
     {
@@ -24,8 +24,10 @@ public class DeadGUI : VisibleMouseGUI
         };
         AddChild(background);
 
-        youAreDead = new Sprite();
-        youAreDead.SetTexture(DEAD_TEX);
+        youAreDead = new Sprite
+        {
+            Texture = Game.guiResourceLoader.GetResource(DEAD_TEX) as Texture
+        };
         AddChild(youAreDead);
     }
 

@@ -8,15 +8,15 @@
 
 config_version=3
 
-[Scene]
-
-=false
-
 [application]
 
 config/name="SustainableCraft"
 run/main_scene="res://Scenes/MenuScene.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+LoadingScene="*res://Scenes/LoadingScene.tscn"
 
 [input]
 

@@ -5,15 +5,12 @@ class LoadingScreen : Control
     private const int maxTime = 1000 / 60;
 
     private ResourceInteractiveLoader loader;
+    private ProgressBar progressBar;
 
     public override void _Ready()
     {
         loader = ResourceLoader.LoadInteractive(Menu.GAMEPLAY_SCENE_PATH);
-        GD.Print("Dependencies: ");
-        foreach(string dependency in ResourceLoader.GetDependencies(Menu.GAMEPLAY_SCENE_PATH))
-        {
-            GD.Print(dependency);
-        }
+        progressBar = GetNode(Menu.LOADING_PROGRESS_PATH) as ProgressBar;
         SetProcess(false);
     }
 
@@ -26,15 +23,15 @@ class LoadingScreen : Control
             while (err != Error.FileEof && OS.GetTicksMsec() <= timeUp)
             {
                 err = loader.Poll();
-                GD.Print("Progress: " + loader.GetStage() / (float)loader.GetStageCount());
                 switch (err)
                 {
                     case Error.FileEof:
                         PackedScene scene = loader.GetResource() as PackedScene;
                         GetTree().ChangeSceneTo(scene);
+                        SetProcess(false);
                         break;
                     case Error.Ok:
-                        // TODO: implement progress bar, then update it here
+                        progressBar.Value = loader.GetStage() / (float)loader.GetStageCount();
                         break;
                     default:
                         GD.Print(err);

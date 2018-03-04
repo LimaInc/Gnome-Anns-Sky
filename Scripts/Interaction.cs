@@ -92,9 +92,9 @@ public class Interaction : Camera
 
     private void KillAnimal(Node animalNode)
     {
-        AnimalBehaviourComponent animal = ((Entity)animalNode.GetNode("Entity")).GetComponent<AnimalBehaviourComponent>();
+        AnimalBehaviourComponent animal = (animalNode.GetNode("Entity") as Entity).GetComponent<AnimalBehaviourComponent>();
         animal.Kill();
-        player.AddItem(ItemStorage.items[ItemID.MEAT], animal.FoodDrop);
+        player.AddItem(ItemID.MEAT, animal.FoodDrop);
     }
 
     public IntVector3? GetBlockPositionUnderCursor(Dictionary<object, object> hitInfo)

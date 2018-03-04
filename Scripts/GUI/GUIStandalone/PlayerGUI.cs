@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class PlayerGUI : GUI
 {
-    private static Texture AIR_ICON_TEX = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "airIcon.png") as Texture;
-    public static Texture CROSSHAIR_TEX = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "crosshairWhite.png") as Texture;
+    private const string AIR_ICON_TEX = "airIcon";
+    public const string CROSSHAIR_TEX = "crosshairWhite";
 
     private readonly static IDictionary<Gas, Color> GAS_BAR_COLORS = new Dictionary<Gas, Color>
     {
@@ -31,13 +31,15 @@ public class PlayerGUI : GUI
         [Player.Stats.WATER] = 1,
         [Player.Stats.FOOD] = 0
     };
-    private readonly static IDictionary<Player.Stats, Sprite> STAT_BAR_SPRITES = new Dictionary<Player.Stats, Sprite>
+    // VERY hacky
+    // TODO: fix
+    private readonly static IDictionary<Player.Stats, Func<Sprite>> STAT_BAR_SPRITES = new Dictionary<Player.Stats, Func<Sprite>>
     {
-        [Player.Stats.WATER] = ItemStorage.items[ItemID.WATER].GenerateGUISprite(),
-        [Player.Stats.FOOD] = ItemStorage.items[ItemID.CAKE].GenerateGUISprite(),
-        [Player.Stats.AIR] = new Sprite
+        [Player.Stats.WATER] = () => ItemStorage.Instance[ItemID.WATER].GenerateGUISprite(),
+        [Player.Stats.FOOD] = () => ItemStorage.Instance[ItemID.CAKE].GenerateGUISprite(),
+        [Player.Stats.AIR] = () => new Sprite
         {
-            Texture = AIR_ICON_TEX,
+            Texture = Game.guiResourceLoader.GetResource(AIR_ICON_TEX) as Texture
         }
     };
     private readonly static IDictionary<Player.Stats, float> STAT_LEVEL_MAX_SHOW = new Dictionary<Player.Stats, float>
@@ -89,21 +91,26 @@ public class PlayerGUI : GUI
         }
     }
 
+    private readonly Func<Vector2> viewDirSupplier;
+
     public override void _Ready()
     {
         atm = GetNode(Game.ATMOSPHERE_PATH) as Atmosphere;
     }
 
     // TODO: remove player field, pass lambdas instead
-    public PlayerGUI(Player p, Func<Vector2> viewDirSupplier, Vector3 northMonopole_) : base(p)
+    public PlayerGUI(Player p, Func<Vector2> viewDirSupplier_, Vector3 northMonopole_) : base(p)
     {
+        Visible = false;
         player = p;
         northMonopole = northMonopole_;
-        Initialize(viewDirSupplier, new Vector2(northMonopole.x, northMonopole.z));
+        viewDirSupplier = viewDirSupplier_;
+
+        CallDeferred("Initialize", new Vector2(northMonopole.x, northMonopole.z));
         BackgroundMode = false;
     }
 
-    public void Initialize(Func<Vector2> viewDirSupplier, Vector2 northPole)
+    public void Initialize(Vector2 northPole)
     {
         Vector2 empty = new Vector2();
 
@@ -114,9 +121,10 @@ public class PlayerGUI : GUI
                 () => player[stat], 
                 () => player[stat] < STAT_LEVEL_MAX_SHOW[stat]);
             AddChild(statBars[stat]);
-            STAT_BAR_SPRITES[stat].Scale = ICON_SCALE;
-            STAT_BAR_SPRITES[stat].Position = ICON_OFFSET;
-            statBars[stat].AddChild(STAT_BAR_SPRITES[stat]);
+            Sprite sprite = STAT_BAR_SPRITES[stat]();
+            sprite.Scale = ICON_SCALE;
+            sprite.Position = ICON_OFFSET;
+            statBars[stat].AddChild(sprite);
         }
         foreach (KeyValuePair<Gas, Color> kvPair in GAS_BAR_COLORS)
         {
@@ -146,8 +154,10 @@ public class PlayerGUI : GUI
             });
         AddChild(inHandLabel);
 
-        crosshair = new GUIObject(empty, CROSSHAIR_TEX.GetSize(), CROSSHAIR_TEX, () => !BackgroundMode);
+        Texture tex = Game.guiResourceLoader.GetResource(CROSSHAIR_TEX) as Texture;
+        crosshair = new GUIObject(empty, tex.GetSize(), tex, () => !BackgroundMode);
         AddChild(crosshair);
+        Visible = true;
     }
 
     public override void HandleResize()

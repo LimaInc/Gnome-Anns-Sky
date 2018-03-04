@@ -103,6 +103,7 @@
     <Compile Include="Scripts\GUI\Menus\LoadingScreen.cs" />
     <Compile Include="Scripts\GUI\Menus\Menu.cs" />
     <Compile Include="Scripts\GUI\Menus\ExitButton.cs" />
+    <Compile Include="Scripts\GUI\Menus\LoadingProgressBar.cs" />
     <Compile Include="Scripts\GUI\Menus\StartGameButton.cs" />
     <Compile Include="Scripts\Inventory\Inventory.cs" />
     <Compile Include="Scripts\Inventory\Item.cs" />

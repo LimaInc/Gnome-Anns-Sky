@@ -74,8 +74,8 @@ public class GUIObject : GUIElement
         if (automaticRescaling)
         {
             rect = new Rect2(new Vector2(), newSize);
-            sprite.SetPosition(newSize / 2);
-            sprite.SetScale(new Vector2(rect.Size.x / sprite.Texture.GetSize().x, rect.Size.y / sprite.Texture.GetSize().y));
+            sprite.Position = newSize / 2;
+            sprite.Scale = new Vector2(rect.Size.x / sprite.Texture.GetSize().x, rect.Size.y / sprite.Texture.GetSize().y);
         }
         else
         {

@@ -63,10 +63,11 @@ public class InventoryGUI : VisibleMouseGUI
 
     public InventoryGUI(Player player_, IDictionary<Item.ItemType,Inventory> inventories, Node vSource) : base(vSource)
     {
+        Visible = false;
         player = player_;
         subInventories = inventories;
 
-        Initialize();
+        CallDeferred("Initialize");
     }
 
     public void UpdateHandSlot()
@@ -92,8 +93,6 @@ public class InventoryGUI : VisibleMouseGUI
 
     private void Initialize()
     {
-        Hide();
-
         floatingSlot = new GUIFloatingSlot
         {
             ZAsRelative = true,
@@ -166,13 +165,13 @@ public class InventoryGUI : VisibleMouseGUI
         base.HandleOpen(parent);
         HandleResize();
         UpdateSlots();
-        Show();
+        Visible = true;
     }
 
     public override void HandleClose()
     {
+        Visible = false;
         base.HandleClose();
-        Hide();
         SaveSlotState();
         ItemStack stack = floatingSlot.GetCurItemStack();
         if (stack != null)

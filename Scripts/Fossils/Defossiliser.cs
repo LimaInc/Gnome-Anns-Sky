@@ -8,8 +8,6 @@ public class Defossiliser : Node
 {
     public const int IN_INVENTORY_SIZE = 9;
     public const int OUT_INVENTORY_SIZE = 9;
-
-    public readonly IList<DefossiliserAction> possibleProcesses;
     public readonly IList<DefossiliserAction> DEFAULT_PROCESSES = new List<DefossiliserAction>
     {
         new DefossiliserAction(ICE, WATER, processingTime: 5, outItemCount: 2),
@@ -22,7 +20,7 @@ public class Defossiliser : Node
         new DefossiliserAction(REGULAR_ANIMAL_FOSSIL, REGULAR_EGG, processingTime: 60, inItemCount: 3),
         new DefossiliserAction(BIG_ANIMAL_FOSSIL, BIG_EGG, processingTime: 120, inItemCount: 5)
     };
-
+    
     public Inventory OutInventory { get; private set; }
     public Inventory InInventory { get; private set; }
 
@@ -31,13 +29,40 @@ public class Defossiliser : Node
     
     public Action Callback { get; set; }
 
-    public Defossiliser(IList<DefossiliserAction> possibleProcesses = null)
+    private readonly IList<DefossiliserAction> possibleProcesses;
+
+    public Defossiliser(IList<DefossiliserAction> initialProcesses = null)
     {
-        this.possibleProcesses = possibleProcesses ?? DEFAULT_PROCESSES;
+        possibleProcesses = new List<DefossiliserAction>();
+        if (initialProcesses != null)
+        {
+            AddProcesses(initialProcesses);
+        }
         DefossilisingProgress = 0;
 
         InInventory = new Inventory(Item.ItemType.ANY, IN_INVENTORY_SIZE);
         OutInventory = new Inventory(Item.ItemType.ANY, OUT_INVENTORY_SIZE);
+    }
+
+    public void AddProcesses(IList<DefossiliserAction> newProcesses)
+    {
+        foreach(DefossiliserAction da in newProcesses)
+        {
+            if (!possibleProcesses.Contains(da))
+            {
+                possibleProcesses.Add(da);
+            }
+        }
+    }
+
+    // VERY hacky
+    // TODO: fix after rewriting block system
+    public override void _Ready()
+    {
+        if (possibleProcesses == null)
+        {
+            AddProcesses(DEFAULT_PROCESSES);
+        }
     }
 
     public void HandleInput(InputEvent e, Player p)
@@ -55,7 +80,7 @@ public class Defossiliser : Node
         if (ActionInProgress == null)
         {
             IEnumerable<DefossiliserAction> doableActionsRightNow = 
-                possibleProcesses.Where(p => p.CanBeDoneWith(InInventory) && OutInventory.CanAdd(p.outItem, p.outItemCount));
+                possibleProcesses.Where(p => p.CanBeDoneWith(InInventory) && OutInventory.CanAdd(p.outItemID, p.outItemCount));
             if (doableActionsRightNow.Any())
             {
                 ActionInProgress = doableActionsRightNow.OrderBy(action => action.ProcessingTime).First();
@@ -64,7 +89,7 @@ public class Defossiliser : Node
         else
         {
             if (ActionInProgress.CanBeDoneWith(InInventory) && 
-                OutInventory.CanAdd(ActionInProgress.outItem, ActionInProgress.outItemCount))
+                OutInventory.CanAdd(ActionInProgress.outItemID, ActionInProgress.outItemCount))
             {
                 DefossilisingProgress += delta / ActionInProgress.ProcessingTime;
                 if (DefossilisingProgress >= 1)

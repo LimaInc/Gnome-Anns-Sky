@@ -1,7 +1,7 @@
 public class LeafBlock : CubeBlock
 {
     public override bool Breakable { get { return false; } }
-    public override string[] TexturePaths { get { return new[] { Game.BLOCK_TEXTURES_DIR_PATH + "blockLeaf.png" }; } }
+    public override string[] TextureNames { get { return new[] { "blockLeaf" }; } }
 
     public override int GetTextureIndex(BlockFace face)
     {

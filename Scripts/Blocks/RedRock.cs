@@ -1,10 +1,10 @@
 public class RedRock : CubeBlock
 {
     public override bool Breakable { get { return true; } }
-    public override string[] TexturePaths { get {
+    public override string[] TextureNames { get {
             return new[] {
-                Game.BLOCK_TEXTURES_DIR_PATH + "brown_rock_top.png",
-                Game.BLOCK_TEXTURES_DIR_PATH + "brown_rock_side.png"
+                "brown_rock_top",
+                "brown_rock_side"
             };
         }
     }

@@ -3,7 +3,7 @@ using Godot;
 
 class GUICompass : GUIObject
 {
-    public static readonly Texture COMPASS_ARROW = ResourceLoader.Load(Game.GUI_TEXTURES_DIR_PATH + "greenArrow.png") as Texture;
+    public const string COMPASS_ARROW = "greenArrow";
 
     private readonly Vector2 northPole;
     private readonly Func<Vector2> posSupplier;
@@ -11,7 +11,7 @@ class GUICompass : GUIObject
 
     public GUICompass(Vector2 pos, Vector2 size, Vector2 northPole_, 
         Func<Vector2> posSupplier_, Func<Vector2> viewDirSuppier_, Func<bool> shouldShow = null) : 
-            base(pos, size, COMPASS_ARROW, BaseScale(size), shouldShow)
+            base(pos, size, Game.guiResourceLoader.GetResource(COMPASS_ARROW) as Texture, BaseScale(size), shouldShow)
     {
         northPole = northPole_;
         posSupplier = posSupplier_;
@@ -29,7 +29,8 @@ class GUICompass : GUIObject
 
     private static Vector2 BaseScale(Vector2 size)
     {
-        float baseScale = Mathf.Max(size.x, size.y) / COMPASS_ARROW.GetSize().Length();
+        Texture tex = Game.guiResourceLoader.GetResource(COMPASS_ARROW) as Texture;
+        float baseScale = Mathf.Max(size.x, size.y) / tex.GetSize().Length();
         return new Vector2(baseScale, baseScale);
     }
 
