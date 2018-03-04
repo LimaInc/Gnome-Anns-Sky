@@ -55,13 +55,15 @@ public class WheatManager : PlantManager
         time += delta;
 
         Tuple<IntVector3, float> block;
-        while ((block = growingQueue.Peek()) != null)
+        while (growingQueue.Count > 0)
         {
-            if (block.Item2 > time)
+            block = growingQueue.Peek();
+            if (block?.Item2 > time)
                 break;
 
             growingQueue.Dequeue();
 
+            // TODO: group all into a batch grow
             if (Grow(block.Item1))
                 growingQueue.Enqueue(Tuple.Create(block.Item1 + new IntVector3(0, 1, 0), time + GROWING_TIME));
         }
