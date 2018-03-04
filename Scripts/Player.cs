@@ -143,6 +143,17 @@ public class Player : KinematicBody
         this.AddItem(ItemStorage.items[ItemID.CAKE], 3);
         this.AddItem(ItemStorage.items[ItemID.CHOCOLATE], 10);
         this.AddItem(ItemStorage.items[ItemID.WATER], 5);
+
+        //TEMP
+        this.AddItem(ItemStorage.items[ItemID.CARBON_DIOXIDE_BACTERIA_VIAL], 100);
+        this.AddItem(ItemStorage.items[ItemID.OXYGEN_BACTERIA_VIAL], 100);
+        this.AddItem(ItemStorage.items[ItemID.NITROGEN_BACTERIA_VIAL], 100);
+        this.AddItem(ItemStorage.items[ItemID.REGULAR_EGG], 100);
+        this.AddItem(ItemStorage.items[ItemID.BIG_EGG], 100);
+        this.AddItem(ItemStorage.items[ItemID.FROG_EGG], 100);
+        this.AddItem(ItemStorage.items[ItemID.GRASS], 100);
+        this.AddItem(ItemStorage.items[ItemID.TREE], 100);
+
     }
 
     // maybe a bit hacky, TODO: think about it

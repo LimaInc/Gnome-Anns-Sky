@@ -91,7 +91,7 @@ public class EatStrategy : BaseStrategy
         {
             if (IsFood(otherBody))
             {
-                foodInRange.Remove(otherBody);
+                //foodInRange.Remove(otherBody);
             }
         }
     }
@@ -126,6 +126,7 @@ public class EatStrategy : BaseStrategy
             {
                 continue;
             }
+
             // Identify whether we can see the target by raycasting
             PhysicsDirectSpaceState spaceState = component.Body.GetWorld().GetDirectSpaceState();
             var result = spaceState.IntersectRay(component.Body.GetTranslation(), b.GetTranslation(), new[] { component.Body, b });

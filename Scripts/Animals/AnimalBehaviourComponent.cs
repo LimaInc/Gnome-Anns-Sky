@@ -4,6 +4,12 @@ using System.Collections.Generic;
 
 public class AnimalBehaviourComponent : BaseComponent
 {
+    private static readonly byte RED_ROCK_ID = Game.GetBlockId<RedRock>();
+    private static readonly byte GRASS_BLOCK_ID = Game.GetBlockId<GrassBlock>();
+
+
+    Terrain terrain; 
+
     public AnimalBehaviourComponent(Entity parent, AnimalSex sex, AnimalDiet diet, int foodChainLevel,
         int breedability, string presetName, float oxygenConsumption, float co2Production, int foodDrop) : base(parent)
     {
@@ -134,6 +140,8 @@ public class AnimalBehaviourComponent : BaseComponent
         {
             strategy.Ready();
         }
+
+        terrain = parent.GetNode(Game.TERRAIN_PATH) as Terrain;
     }
 
     protected void SetupInitialisationSignals()
@@ -236,10 +244,28 @@ public class AnimalBehaviourComponent : BaseComponent
             }
             else if (Satiated < 80.0f)
             {
-                PhysicsBody eatTarget = eatStrategy.ShouldEatState();
-                if (eatTarget != null)
+                if (Diet == AnimalDiet.Herbivore)
                 {
-                    eatStrategy.StartState(eatTarget);
+                    //just try to eat whatever block is below
+
+                    Vector3 pos = Body.GetTranslation();
+                    IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
+                    blockPos.y--;
+                    byte block = terrain.GetBlock(blockPos);
+                    if(block == GRASS_BLOCK_ID)
+                    {
+                        GD.Print("Eat grass!");
+                        Satiated = Math.Max(100.0f, Satiated + 20.0f);
+                        terrain.SetBlock(blockPos,RED_ROCK_ID);
+                    }
+                }
+                else
+                {
+                    PhysicsBody eatTarget = eatStrategy.ShouldEatState();
+                    if (eatTarget != null)
+                    {
+                        eatStrategy.StartState(eatTarget);
+                    }
                 }
             }
         }

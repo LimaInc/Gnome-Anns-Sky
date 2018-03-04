@@ -129,7 +129,7 @@ public class PhysicsComponent : BaseComponent
             {
                 if (IsWatching(body))
                 {
-                    parent.SendMessage("objectInRange", body);
+                    //parent.SendMessage("objectInRange", body);
                 }
             }
 
