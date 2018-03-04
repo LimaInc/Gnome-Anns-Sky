@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-public class GUIObject : Node2D
+public class GUIObject : GUIElement
 {
     protected Rect2 rect;
     protected Sprite sprite;
@@ -9,7 +9,7 @@ public class GUIObject : Node2D
 
     private bool hovered;
 
-    public GUIObject(Vector2 pos, Vector2 size, Texture t)
+    public GUIObject(Vector2 pos, Vector2 size, Texture t, Func<bool> shouldShow = null) : base(shouldShow)
     {
         automaticRescaling = true;
         Position = pos;
@@ -21,7 +21,7 @@ public class GUIObject : Node2D
     }
 
     //For GUI objects that need manual scaling
-    public GUIObject(Vector2 pos, Vector2 size, Texture t, Vector2 scale)
+    public GUIObject(Vector2 pos, Vector2 size, Texture t, Vector2 scale, Func<bool> shouldShow = null) : base(shouldShow)
     {
         automaticRescaling = false;
         Position = pos;
@@ -41,6 +41,8 @@ public class GUIObject : Node2D
 
     public override void _Input(InputEvent e)
     {
+        if (e is InputEventKey && this is GUICompass)
+
         if (e is InputEventMouseButton iemb)
         {
             Vector2 pos = ToLocal(iemb.GetPosition());

@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-public class DeadGUI : GUI
+public class DeadGUI : VisibleMouseGUI
 {
     private static readonly Color BACKGROUND_COLOR = new Color(0.8f, 0.0f, 0.0f, 0.5f);
 
@@ -39,16 +39,14 @@ public class DeadGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
+        base.HandleOpen(parent);
         HandleResize();
         _Process(0);
         Show();
-        Input.SetMouseMode(Input.MouseMode.Visible);
     }
 
     public override void _Process(float delta)
     {
-        base._Process(delta);
-
         time += delta;
         textScale = BASE_TEXT_SCALE + Mathf.Sin(time * 2) * 0.2f;
         youAreDead.Scale = new Vector2(textScale, textScale);

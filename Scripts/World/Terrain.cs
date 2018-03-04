@@ -11,7 +11,7 @@ public class Terrain : Spatial
     public const int RED_ROCK_LAYER_NUM = 3;
     public const int FOSSIL_DEPTH_MIN = 1;
     public const int FOSSIL_DEPTH_MAX = RED_ROCK_LAYER_NUM;
-    public const int BACTERIA_FOSSIL_DEPTH_MIN = 0;
+    public const int BACTERIA_FOSSIL_DEPTH_MIN = 1;
 
     public const float BASE_FOSSIL_SPAWN_RATE = Game.FOSSIL_SPAWN_MULITPLIER * 0.0005f;
 

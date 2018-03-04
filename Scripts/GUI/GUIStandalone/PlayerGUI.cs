@@ -7,31 +7,31 @@ public class PlayerGUI : GUI
     private static Texture AIR_ICON_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "airIcon.png") as Texture;
     public static Texture CROSSHAIR_TEX = ResourceLoader.Load(Game.GUI_TEXTURE_PATH + "crosshairWhite.png") as Texture;
 
-    private readonly static IDictionary<Gas, Color> gasBarColors = new Dictionary<Gas, Color>
+    private readonly static IDictionary<Gas, Color> GAS_BAR_COLORS = new Dictionary<Gas, Color>
     {
         [Gas.OXYGEN] = Colors.MAGENTA,
         [Gas.NITROGEN] = Colors.CYAN,
         [Gas.CARBON_DIOXIDE] = Colors.YELLOW
     };
-    private readonly static IDictionary<Gas, float> gasBarOffsetIndices = new Dictionary<Gas, float>
+    private readonly static IDictionary<Gas, float> GAS_BAR_OFFSET_INDICES = new Dictionary<Gas, float>
     {
-        [Gas.OXYGEN] = 0,
-        [Gas.NITROGEN] = 1,
-        [Gas.CARBON_DIOXIDE] = 2
+        [Gas.OXYGEN] = 1,
+        [Gas.NITROGEN] = 2,
+        [Gas.CARBON_DIOXIDE] = 0
     };
-    private readonly static IDictionary<Player.Stats, Color> statBarColors = new Dictionary<Player.Stats, Color>
+    private readonly static IDictionary<Player.Stats, Color> STAT_BAR_COLORS = new Dictionary<Player.Stats, Color>
     {
-        [Player.Stats.AIR] = gasBarColors[Gas.OXYGEN],
+        [Player.Stats.AIR] = GAS_BAR_COLORS[Gas.OXYGEN],
         [Player.Stats.WATER] = new Color(0.0f, 0.0f, 1.0f),
         [Player.Stats.FOOD] = new Color(0.0f, 0.7f, 0.2f)
     };
-    private readonly static IDictionary<Player.Stats, float> statBarOffsetIndices = new Dictionary<Player.Stats, float>
+    private readonly static IDictionary<Player.Stats, float> STAT_BAR_OFFSET_INDICES = new Dictionary<Player.Stats, float>
     {
-        [Player.Stats.AIR] = 0,
+        [Player.Stats.AIR] = 2,
         [Player.Stats.WATER] = 1,
-        [Player.Stats.FOOD] = 2
+        [Player.Stats.FOOD] = 0
     };
-    private readonly static IDictionary<Player.Stats, Sprite> statBarSprites = new Dictionary<Player.Stats, Sprite>
+    private readonly static IDictionary<Player.Stats, Sprite> STAT_BAR_SPRITES = new Dictionary<Player.Stats, Sprite>
     {
         [Player.Stats.WATER] = ItemStorage.items[ItemID.WATER].GenerateGUISprite(),
         [Player.Stats.FOOD] = ItemStorage.items[ItemID.CAKE].GenerateGUISprite(),
@@ -40,7 +40,13 @@ public class PlayerGUI : GUI
             Texture = AIR_ICON_TEX,
         }
     };
-
+    private readonly static IDictionary<Player.Stats, float> STAT_LEVEL_MAX_SHOW = new Dictionary<Player.Stats, float>
+    {
+        [Player.Stats.AIR] = 0.95f,
+        [Player.Stats.WATER] = 1.01f,
+        [Player.Stats.FOOD] = 1.01f
+    };
+    
     private const float BAR_LENGTH = 200;
     private const float BAR_SEPARATION = 30;
     private const float BAR_EDGE_OFFSET = 20;
@@ -52,7 +58,9 @@ public class PlayerGUI : GUI
     private const float ATM_BAR_SPACING = 25;
 
     private readonly static Vector2 COMPASS_OFFSET = new Vector2(10, 10);
-    private static readonly Vector2 COMPASS_SIZE = new Vector2(250, 100);
+    private readonly static Vector2 COMPASS_SIZE = new Vector2(250, 100);
+
+    private const float MIN_RADIUS_FOR_COMPASS = 12;
 
     private Player player;
 
@@ -60,13 +68,12 @@ public class PlayerGUI : GUI
     private readonly IDictionary<Gas, GUIHorizontalBar> gasBars = new Dictionary<Gas, GUIHorizontalBar>();
     private GUICompass compass;
 
-    private Label2D inHandLabel;
+    private GUILabel inHandLabel;
 
-    private Sprite crosshair;
+    private GUIObject crosshair;
 
     private Atmosphere atm;
-
-    // private GUIBox debugSheet;
+    private Vector3 northMonopole;
 
     private bool backgroundMode = false;
     public bool BackgroundMode
@@ -76,11 +83,7 @@ public class PlayerGUI : GUI
         {
             if (backgroundMode && !value)
             {
-                ChangeToForegroundMode();
-            }
-            else if (!backgroundMode && value)
-            {
-                ChangeToBackgroundMode();
+                Input.SetMouseMode(Input.MouseMode.Captured);
             }
             backgroundMode = value;
         }
@@ -92,57 +95,58 @@ public class PlayerGUI : GUI
     }
 
     // TODO: remove player field, pass lambdas instead
-    public PlayerGUI(Player p, Func<Vector2> viewDirSupplier, Vector2 northPole) : base(p)
+    public PlayerGUI(Player p, Func<Vector2> viewDirSupplier, Vector3 northMonopole_) : base(p)
     {
         player = p;
-        Initialize(viewDirSupplier, northPole);
+        northMonopole = northMonopole_;
+        Initialize(viewDirSupplier, new Vector2(northMonopole.x, northMonopole.z));
         BackgroundMode = false;
-    }
-
-    private void ChangeToBackgroundMode()
-    {
-        crosshair.Hide();
-    }
-
-    private void ChangeToForegroundMode()
-    {
-        crosshair.Show();
-        Input.SetMouseMode(Input.MouseMode.Captured);
     }
 
     public void Initialize(Func<Vector2> viewDirSupplier, Vector2 northPole)
     {
         Vector2 empty = new Vector2();
 
-        foreach (KeyValuePair<Player.Stats,Color> kvPair in statBarColors)
+        foreach (KeyValuePair<Player.Stats,Color> kvPair in STAT_BAR_COLORS)
         {
             Player.Stats stat = kvPair.Key;
-            statBars[stat] = new GUIVerticalBar(empty, BAR_LENGTH, kvPair.Value, () => player[stat]);
+            statBars[stat] = new GUIVerticalBar(empty, BAR_LENGTH, kvPair.Value, 
+                () => player[stat], 
+                () => player[stat] < STAT_LEVEL_MAX_SHOW[stat]);
             AddChild(statBars[stat]);
-            statBarSprites[stat].Scale = ICON_SCALE;
-            statBarSprites[stat].Position = ICON_OFFSET;
-            statBars[stat].AddChild(statBarSprites[stat]);
+            STAT_BAR_SPRITES[stat].Scale = ICON_SCALE;
+            STAT_BAR_SPRITES[stat].Position = ICON_OFFSET;
+            statBars[stat].AddChild(STAT_BAR_SPRITES[stat]);
         }
-        foreach (KeyValuePair<Gas, Color> kvPair in gasBarColors)
+        foreach (KeyValuePair<Gas, Color> kvPair in GAS_BAR_COLORS)
         {
             Gas g = kvPair.Key;
-            gasBars[g] = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, kvPair.Value, () => atm.GetGasProgress(g));
+            gasBars[g] = new GUIHorizontalBar(empty, ATM_BAR_LENGTH, kvPair.Value, 
+                () => atm.GetGasProgress(g), 
+                () => atm.GetGasProgress(g) > 0 && atm.GetGasProgress(g) < 1);
             AddChild(gasBars[g]);
         }
 
         // debugSheet = new GUIBox(empty, COMPASS_SIZE);
         // AddChild(debugSheet);  
         compass = new GUICompass(empty, COMPASS_SIZE, northPole, 
-            () => new Vector2(player.Translation.x / Block.SIZE, player.Translation.z), viewDirSupplier);
+            () => new Vector2(player.Translation.x, player.Translation.z) / Block.SIZE, 
+            viewDirSupplier,
+            () => (player.Translation / Block.SIZE - northMonopole).LengthSquared() >= MIN_RADIUS_FOR_COMPASS * MIN_RADIUS_FOR_COMPASS);
         AddChild(compass);
 
-        inHandLabel = new Label2D();
+        // hacky, works for now, TODO: fix
+        inHandLabel = new GUILabel(() => {
+            bool showLabel = !BackgroundMode && player.ItemInHand != null;
+            if (showLabel)
+            {
+                inHandLabel.Text = "Currently in hand: " + player.ItemInHand.Item.Name + ",    Quantity : " + player.ItemInHand.Count;
+            }
+            return showLabel;
+            });
         AddChild(inHandLabel);
 
-        crosshair = new Sprite()
-        {
-            Texture = CROSSHAIR_TEX
-        };
+        crosshair = new GUIObject(empty, CROSSHAIR_TEX.GetSize(), CROSSHAIR_TEX, () => !BackgroundMode);
         AddChild(crosshair);
     }
 
@@ -152,7 +156,7 @@ public class PlayerGUI : GUI
         Vector2 statOffsetDiff = new Vector2(BAR_SEPARATION + GUIVerticalBar.WIDTH, 0);
         foreach (KeyValuePair<Player.Stats,GUIVerticalBar> kvPair in statBars)
         {
-            kvPair.Value.Position = baseStatOffset + statOffsetDiff * statBarOffsetIndices[kvPair.Key];
+            kvPair.Value.Position = baseStatOffset + statOffsetDiff * STAT_BAR_OFFSET_INDICES[kvPair.Key];
         }
 
         // TODO: all of this is static, do it in Initialize()
@@ -160,7 +164,7 @@ public class PlayerGUI : GUI
         Vector2 amtosOffsetDiff = new Vector2(ATM_BAR_LENGTH + ATM_BAR_SPACING, 0);
         foreach (KeyValuePair<Gas, GUIHorizontalBar> kvPair in gasBars)
         {
-            kvPair.Value.Position = baseAtmOffset + amtosOffsetDiff * gasBarOffsetIndices[kvPair.Key];
+            kvPair.Value.Position = baseAtmOffset + amtosOffsetDiff * GAS_BAR_OFFSET_INDICES[kvPair.Key];
         }
 
         // debugSheet.Position = new Vector2((GetViewportDimensions() - COMPASS_OFFSET - COMPASS_SIZE / 2).x, (COMPASS_OFFSET + COMPASS_SIZE / 2).y);
@@ -170,21 +174,5 @@ public class PlayerGUI : GUI
         inHandLabel.Position = new Vector2(GetViewportDimensions().x / 2 - 80, GetViewportDimensions().y - 15);
         
         crosshair.Position = GetViewportDimensions() / 2;
-    }
-
-    public override void _Process(float delta)
-    {
-        base._Process(delta);
-
-        // TODO: put that in hand slot update function, not here
-        if (!BackgroundMode && player.ItemInHand != null)
-        {
-            inHandLabel.Text = "Currently in hand: " + player.ItemInHand.Item.Name + ",    " +
-                "Quantity : " + player.ItemInHand.Count;
-        }
-        else 
-        {
-            inHandLabel.Text = "";
-        }
     }
 }

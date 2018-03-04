@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 
-public class InventoryGUI : GUI
+public class InventoryGUI : VisibleMouseGUI
 {
     public const int BOX_Z = 0;
     public const int ARRAY_SLOT_Z = 1;
@@ -163,20 +163,21 @@ public class InventoryGUI : GUI
 
     public override void HandleOpen(Node parent)
     {
+        base.HandleOpen(parent);
         HandleResize();
         UpdateSlots();
         Show();
-        Input.SetMouseMode(Input.MouseMode.Visible);
     }
 
     public override void HandleClose()
     {
+        base.HandleClose();
         Hide();
         SaveSlotState();
         ItemStack stack = floatingSlot.GetCurItemStack();
         if (stack != null)
         {
-            this.subInventories[stack.Item.IType].TryAddItemStack(stack);
+            subInventories[stack.Item.IType].TryAddItemStack(stack);
             floatingSlot.ClearItemStack();
         }
     }
