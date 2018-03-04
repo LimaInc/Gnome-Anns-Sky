@@ -16,7 +16,7 @@ public class BreedStrategy : BaseStrategy
     private float waitingTimer = 0.0f;
     private const float waitingThreshold = 3.0f;
 
-    private const float satiatedThreshold = 80.0f;
+    private const float satiatedThreshold = 60.0f;
 
     public BreedStrategy(AnimalBehaviourComponent component) : base(component)
     {
@@ -106,10 +106,17 @@ public class BreedStrategy : BaseStrategy
                     {
                         if (component.Sex == AnimalBehaviourComponent.AnimalSex.Female)
                         {
+                            GD.Print(component.PresetName, " breed!");
                             Node spawnNode = component.parent.GetNode(Game.ANIMAL_SPAWNER_PATH);
                             int nextSex = BaseComponent.random.Next(0, 2);
                             spawnNode.Call("SpawnAnimal", component.PresetName, (AnimalBehaviourComponent.AnimalSex)nextSex, component.Body.GetTranslation() + new Vector3(0.0f, 2.0f, 0.0f));
-                            component.Satiated -= 20.0f;
+                            component.Satiated -= component.BirthDrop;
+
+                            //quick and dirty balance fix - frogs not reproducing enough
+                            if(component.PresetName == "frog")
+                            {
+                                spawnNode.Call("SpawnAnimal", component.PresetName, (AnimalBehaviourComponent.AnimalSex)nextSex, component.Body.GetTranslation() + new Vector3(0.5f, 2.0f, 0.0f));
+                            }
                         }
                         active = false;
                     }

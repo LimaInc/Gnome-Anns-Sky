@@ -11,7 +11,7 @@ public class AnimalBehaviourComponent : BaseComponent
     Terrain terrain; 
 
     public AnimalBehaviourComponent(Entity parent, AnimalSex sex, AnimalDiet diet, int foodChainLevel,
-        int breedability, string presetName, float oxygenConsumption, float co2Production, int foodDrop) : base(parent)
+        int breedability, string presetName, float oxygenConsumption, float co2Production, int foodDrop, float birthDrop) : base(parent)
     {
         this.Sex = sex;
         this.Diet = diet;
@@ -22,6 +22,7 @@ public class AnimalBehaviourComponent : BaseComponent
         this.oxygenConsumption = oxygenConsumption;
         this.co2Production = co2Production;
         this.FoodDrop = foodDrop;
+        this.BirthDrop = birthDrop;
     }
 
     public enum AnimalSex
@@ -46,6 +47,8 @@ public class AnimalBehaviourComponent : BaseComponent
 
     public void Kill()
     {
+        AnimalSpawner.animalCount[PresetName]--;
+        GD.Print(PresetName, " count: ", AnimalSpawner.animalCount[PresetName]);
         Body.RemoveFromGroup("alive");
         Body.QueueFree();
     }
@@ -77,6 +80,7 @@ public class AnimalBehaviourComponent : BaseComponent
 
     public KinematicBody Body { get; private set; }
 
+    public float BirthDrop { get; private set; }
     public int FoodDrop { get; private set; }
     public AnimalSex Sex { get; private set; }
     public AnimalDiet Diet { get; private set; }
@@ -166,6 +170,7 @@ public class AnimalBehaviourComponent : BaseComponent
         if(Satiated <= 0.0f)
         {
             Kill();
+
         }
     }
 
@@ -258,9 +263,10 @@ public class AnimalBehaviourComponent : BaseComponent
                     byte block = terrain.GetBlock(blockPos);
                     if(block == GRASS_BLOCK_ID)
                     {
-                        GD.Print("Eat grass!");
                         Satiated = Math.Max(100.0f, Satiated + 20.0f);
                         terrain.SetBlock(blockPos,RED_ROCK_ID);
+                        GrassManager.grassCount -= 1;
+                        GD.Print("Grass count: ", GrassManager.grassCount);
                     }
                 }
                 else

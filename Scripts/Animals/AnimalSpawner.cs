@@ -84,7 +84,8 @@ public class AnimalSpawner : Node
             10,
             90,
             "animal0",
-            2
+            2,
+            10
         );
 
         AnimalPreset female0 = new AnimalPreset(
@@ -94,7 +95,8 @@ public class AnimalSpawner : Node
             10,
             90,
             "animal0",
-            2
+            2,
+            10
         );
 
         AnimalPreset maleFrog = new AnimalPreset(
@@ -104,7 +106,8 @@ public class AnimalSpawner : Node
             1,
             90,
             "frog",
-            1
+            1,
+            5
         );
 
         AnimalPreset femaleFrog = new AnimalPreset(
@@ -114,7 +117,8 @@ public class AnimalSpawner : Node
             1,
             90,
             "frog",
-            1
+            1,
+            5
         );
 
         AnimalPreset maleBig = new AnimalPreset(
@@ -124,7 +128,8 @@ public class AnimalSpawner : Node
             100,
             70,
             "big",
-            3
+            3,
+            20
         );
 
         AnimalPreset femaleBig = new AnimalPreset(
@@ -134,7 +139,8 @@ public class AnimalSpawner : Node
             100,
             70,
             "big",
-            3
+            3,
+            20
         );
 
         AnimalPreset maleFrogBD = new AnimalPreset(
@@ -209,6 +215,8 @@ public class AnimalSpawner : Node
         }
     }
 
+    public static Dictionary<string, int> animalCount = new Dictionary<string, int>();
+
     public void SpawnAnimal(string presetName, AnimalBehaviourComponent.AnimalSex sex, Vector3 position)
     {
         //GD.Print("Spawning ", presetName);
@@ -234,7 +242,19 @@ public class AnimalSpawner : Node
 
         entity.SetName("Entity");
 
-        AnimalBehaviourComponent behaviourComponent = new AnimalBehaviourComponent(entity, preset.sex, preset.diet, preset.foodChainLevel, preset.breedability, preset.presetName, preset.oxygenConsumption, preset.co2Production, preset.foodDrop);
+        if (!animalCount.ContainsKey(presetName))
+        {
+            animalCount.Add(presetName, 1);
+        }
+        else
+        {
+            animalCount[presetName]++;
+        }
+
+        GD.Print(presetName, " count: ", AnimalSpawner.animalCount[presetName]);
+
+        AnimalBehaviourComponent behaviourComponent = new AnimalBehaviourComponent(entity, preset.sex, preset.diet, preset.foodChainLevel, preset.breedability,
+                            preset.presetName, preset.oxygenConsumption, preset.co2Production, preset.foodDrop, preset.birthDrop);
         PhysicsComponent physicsComponent = new PhysicsComponent(entity);
         entity.AddComponent(behaviourComponent);
         entity.AddComponent(physicsComponent);
