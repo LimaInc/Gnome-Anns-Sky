@@ -106,7 +106,6 @@ public class BreedStrategy : BaseStrategy
                     {
                         if (component.Sex == AnimalBehaviourComponent.AnimalSex.Female)
                         {
-                            GD.Print(component.PresetName, " breed!");
                             Node spawnNode = component.parent.GetNode(Game.ANIMAL_SPAWNER_PATH);
                             int nextSex = BaseComponent.random.Next(0, 2);
                             spawnNode.Call("SpawnAnimal", component.PresetName, (AnimalBehaviourComponent.AnimalSex)nextSex, component.Body.GetTranslation() + new Vector3(0.0f, 2.0f, 0.0f));

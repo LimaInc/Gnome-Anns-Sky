@@ -34,8 +34,6 @@ public class GrassManager : PlantManager
 
     private float time;
 
-    public static int grassCount = 0;
-
     public GrassManager(Plants plants_) : base(plants_, SPREAD_CHANCE, GAS_PRODUCTION)
     {
         time = 0;
@@ -71,11 +69,9 @@ public class GrassManager : PlantManager
         int idx = 0;
         foreach (IntVector3 blockPos in blockPosList)
         {
-            grassCount++;
             blocksToChange[idx++] = Tuple.Create(blockPos, GRASS_BLOCK_ID);
         }
 
-        GD.Print("Grass count: ", grassCount);
         terrain.SetBlocks(blocksToChange);
         blocks.UnionWith(validBlocks);
         time = 0;
@@ -110,8 +106,6 @@ public class GrassManager : PlantManager
             blocksToChange.Add(Tuple.Create(block, RED_ROCK_ID));
             numberToDie--;
         }
-        grassCount -= blocksToChange.Count;
-        GD.Print("Grass count: ", grassCount);
         terrain.SetBlocks(blocksToChange);
 
         Spread();

@@ -215,12 +215,9 @@ public class AnimalSpawner : Node
         }
     }
 
-    public static Dictionary<string, int> animalCount = new Dictionary<string, int>();
 
     public void SpawnAnimal(string presetName, AnimalBehaviourComponent.AnimalSex sex, Vector3 position)
     {
-        //GD.Print("Spawning ", presetName);
-
         // Choose preset
         AnimalPreset preset = null;
         foreach (AnimalPreset p in presets)
@@ -241,17 +238,6 @@ public class AnimalSpawner : Node
         kb.AddChild(entity);
 
         entity.SetName("Entity");
-
-        if (!animalCount.ContainsKey(presetName))
-        {
-            animalCount.Add(presetName, 1);
-        }
-        else
-        {
-            animalCount[presetName]++;
-        }
-
-        GD.Print(presetName, " count: ", AnimalSpawner.animalCount[presetName]);
 
         AnimalBehaviourComponent behaviourComponent = new AnimalBehaviourComponent(entity, preset.sex, preset.diet, preset.foodChainLevel, preset.breedability,
                             preset.presetName, preset.oxygenConsumption, preset.co2Production, preset.foodDrop, preset.birthDrop);

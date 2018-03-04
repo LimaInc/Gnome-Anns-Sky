@@ -178,7 +178,6 @@ public class Terrain : Spatial
 
                     for (int i = 0; i < number; i++)
                     {
-                        // GD.Print("Spawning animal in chunk create");
                         double sexNum = rand.NextDouble();
                         AnimalBehaviourComponent.AnimalSex sex = (sexNum > 0.5 ? AnimalBehaviourComponent.AnimalSex.Male : AnimalBehaviourComponent.AnimalSex.Female);
                         Vector3 chunkOrigin = (new Vector3(chunkIndex.x * Chunk.SIZE.x, Chunk.SIZE.y / 2.0f, chunkIndex.y * Chunk.SIZE.z) * Block.SIZE);

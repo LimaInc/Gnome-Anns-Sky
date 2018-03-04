@@ -47,8 +47,6 @@ public class AnimalBehaviourComponent : BaseComponent
 
     public void Kill()
     {
-        AnimalSpawner.animalCount[PresetName]--;
-        GD.Print(PresetName, " count: ", AnimalSpawner.animalCount[PresetName]);
         Body.RemoveFromGroup("alive");
         Body.QueueFree();
     }
@@ -265,8 +263,6 @@ public class AnimalBehaviourComponent : BaseComponent
                     {
                         Satiated = Math.Max(100.0f, Satiated + 20.0f);
                         terrain.SetBlock(blockPos,RED_ROCK_ID);
-                        GrassManager.grassCount -= 1;
-                        GD.Print("Grass count: ", GrassManager.grassCount);
                     }
                 }
                 else
