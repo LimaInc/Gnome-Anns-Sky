@@ -257,12 +257,15 @@ public class AnimalBehaviourComponent : BaseComponent
                     //just try to eat whatever block is below
                     Vector3 pos = Body.GetTranslation();
                     IntVector3 blockPos = new IntVector3((int)Mathf.Round(pos.x / Block.SIZE), (int)Mathf.Round(pos.y / Block.SIZE), (int)Mathf.Round(pos.z / Block.SIZE));
-                    blockPos.y--;
-                    byte block = terrain.GetBlock(blockPos);
-                    if(block == GRASS_BLOCK_ID)
+                    if (blockPos.y > 0)
                     {
-                        Satiated = Math.Max(100.0f, Satiated + 20.0f);
-                        terrain.SetBlock(blockPos,RED_ROCK_ID);
+                        blockPos.y--;
+                        byte block = terrain.GetBlock(blockPos);
+                        if (block == GRASS_BLOCK_ID)
+                        {
+                            Satiated = Math.Max(100.0f, Satiated + 20.0f);
+                            terrain.SetBlock(blockPos, RED_ROCK_ID);
+                        }
                     }
                 }
                 else
