@@ -18,7 +18,8 @@ public class Defossiliser : Node
         new DefossiliserAction(TREE_FOSSIL, TREE, processingTime: 30, inItemCount: 3),
         new DefossiliserAction(FROG_FOSSIL, FROG_EGG, processingTime: 40, inItemCount: 2),
         new DefossiliserAction(REGULAR_ANIMAL_FOSSIL, REGULAR_EGG, processingTime: 60, inItemCount: 3),
-        new DefossiliserAction(BIG_ANIMAL_FOSSIL, BIG_EGG, processingTime: 120, inItemCount: 5)
+        new DefossiliserAction(BIG_ANIMAL_FOSSIL, BIG_EGG, processingTime: 120, inItemCount: 5),
+        new DefossiliserAction(WHEAT, CAKE, processingTime: 120, inItemCount: 5)
     };
     
     public Inventory OutInventory { get; private set; }

@@ -156,7 +156,7 @@ public class Player : KinematicBody
 
         CallDeferred("Initialize");
     }
-
+    
     private void Initialize()
     {
         AddItem(ItemID.CAKE, 3);
@@ -172,6 +172,7 @@ public class Player : KinematicBody
         AddItem(ItemID.FROG_EGG, 100);
         AddItem(ItemID.GRASS, 100);
         AddItem(ItemID.TREE, 100);
+        AddItem(ItemID.WHEAT, 100);
     }
 
     // maybe a bit hacky, TODO: think about it
