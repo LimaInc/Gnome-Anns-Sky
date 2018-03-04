@@ -16,11 +16,11 @@ public class Chunk : Spatial
     private Terrain terrain;
     private IntVector2 chunkCoords;
 
-    bool generationFinished = false;
-    SurfaceTool surfaceTool = new SurfaceTool();
-    SpatialMaterial material = new SpatialMaterial();
+    private bool generationFinished = false;
+    private SurfaceTool surfaceTool = new SurfaceTool();
+    private SpatialMaterial material = new SpatialMaterial();
 
-    ST.Thread generationThread;
+    private ST.Thread generationThread;
 
     public byte GetBlockInChunk(IntVector3 position)
     {
