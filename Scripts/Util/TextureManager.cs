@@ -24,7 +24,7 @@ public abstract class TextureManager
             uvs[i] = new Rect2((float)xPos / atlasImage.GetWidth(), 0, (float)images[0].GetWidth() / atlasImage.GetWidth(), 1);
 
             images[i].Lock();
-            for(int x = -MARGIN; x < images[i].GetWidth() + MARGIN; x++)
+            for(int x = -(MARGIN / 2); x < images[i].GetWidth() + (MARGIN / 2); x++)
             {
                 for(int y = 0; y < images[i].GetHeight(); y++)
                 {
