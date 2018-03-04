@@ -1,17 +1,15 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
-[ext_resource path="res://Scripts/World/Sun.cs" type="Script" id=2]
-[ext_resource path="res://Scripts/World/Terrain.cs" type="Script" id=3]
-[ext_resource path="res://Scripts/Player.cs" type="Script" id=4]
-[ext_resource path="res://Scripts/Interaction.cs" type="Script" id=5]
-[ext_resource path="res://Scripts/World/PlanetEnvironment.cs" type="Script" id=6]
-[ext_resource path="res://Scripts/Atmosphere/Atmosphere.cs" type="Script" id=7]
-[ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=8]
-[ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=9]
-[ext_resource path="res://Scripts/World/Base.cs" type="Script" id=10]
-[ext_resource path="res://Scripts/Animals/AnimalSpawner.cs" type="Script" id=11]
-[ext_resource path="res://Scripts/NaturalDisasters/DisasterManager.cs" type="Script" id=12]
+[ext_resource path="res://Scripts/World/Terrain.cs" type="Script" id=2]
+[ext_resource path="res://Scripts/Player.cs" type="Script" id=3]
+[ext_resource path="res://Scripts/Interaction.cs" type="Script" id=4]
+[ext_resource path="res://Scripts/World/PlanetEnvironment.cs" type="Script" id=5]
+[ext_resource path="res://Scripts/Atmosphere/Atmosphere.cs" type="Script" id=6]
+[ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=7]
+[ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=8]
+[ext_resource path="res://Scripts/World/Base.cs" type="Script" id=9]
+[ext_resource path="res://Scripts/NaturalDisasters/DisasterManager.cs" type="Script" id=10]
 
 [sub_resource type="ProceduralSky" id=1]
 
@@ -32,7 +30,7 @@ sun_angle_max = 100.0
 sun_curve = 0.05
 sun_energy = 16.0
 texture_size = 2
-_sections_unfolded = [ "Ground", "Resource", "Sky", "Sun", "Texture" ]
+_sections_unfolded = [ "Ground", "Resource", "Sky" ]
 
 [sub_resource type="Environment" id=2]
 
@@ -121,7 +119,7 @@ _sections_unfolded = [ "Pause" ]
 
 [node name="DirectionalLight" type="DirectionalLight" parent="." index="0"]
 
-transform = Transform( 0.874765, -0.315769, 0.367528, 0, 0.758496, 0.651677, -0.484549, -0.570064, 0.663505, -0.00488515, 0.0231733, 0.00479742 )
+transform = Transform( 0.619674, 0.693489, 0.367528, -0.703591, 0.283331, 0.651677, 0.347799, -0.662417, 0.663505, -0.00488515, 0.0231733, 0.00479742 )
 layers = 1
 light_color = Color( 1, 1, 1, 1 )
 light_energy = 1.0
@@ -141,16 +139,15 @@ directional_shadow_split_1 = 0.1
 directional_shadow_split_2 = 0.2
 directional_shadow_split_3 = 0.5
 directional_shadow_blend_splits = false
-directional_shadow_normal_bias = 0.01
-directional_shadow_bias_split_scale = 0.5
+directional_shadow_normal_bias = 0.8
+directional_shadow_bias_split_scale = 0.25
 directional_shadow_depth_range = 0
-directional_shadow_max_distance = 30.0
-script = ExtResource( 2 )
-_sections_unfolded = [ "Light", "Shadow", "Transform" ]
+directional_shadow_max_distance = 200.0
+_sections_unfolded = [ "Light", "Shadow" ]
 
 [node name="Terrain" type="Spatial" parent="." index="1"]
 
-script = ExtResource( 3 )
+script = ExtResource( 2 )
 
 [node name="Player" type="KinematicBody" parent="." index="2"]
 
@@ -165,7 +162,7 @@ axis_lock_angular_x = false
 axis_lock_angular_y = false
 axis_lock_angular_z = false
 collision/safe_margin = 0.001
-script = ExtResource( 4 )
+script = ExtResource( 3 )
 _sections_unfolded = [ "Axis Lock", "Collision", "Transform", "Visibility", "collision" ]
 
 [node name="Camera" type="Camera" parent="Player" index="0"]
@@ -183,33 +180,29 @@ fov = 70.0
 size = 1.0
 near = 0.05
 far = 100.0
-script = ExtResource( 5 )
+script = ExtResource( 4 )
 _sections_unfolded = [ "Transform" ]
 
 [node name="PlanetEnvironment" type="WorldEnvironment" parent="." index="3"]
 
 environment = SubResource( 2 )
-script = ExtResource( 6 )
+script = ExtResource( 5 )
 
 [node name="Atmosphere" type="Node" parent="PlanetEnvironment" index="0"]
 
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 
 [node name="BacterialState" type="Node" parent="PlanetEnvironment" index="1"]
 
-script = ExtResource( 8 )
+script = ExtResource( 7 )
 
 [node name="Plants" type="Node" parent="PlanetEnvironment" index="2"]
 
-script = ExtResource( 9 )
+script = ExtResource( 8 )
 
 [node name="Base" type="Node" parent="." index="4"]
 
-script = ExtResource( 10 )
-
-[node name="AnimalSpawner" type="Node" parent="." index="5"]
-
-script = ExtResource( 11 )
+script = ExtResource( 9 )
 
 [node name="DisasterManager" type="WorldEnvironment" parent="." index="5"]
 
