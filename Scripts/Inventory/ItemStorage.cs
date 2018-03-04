@@ -119,7 +119,6 @@ public class ItemStorage : Node
 
     private static Texture GetTexture(string name)
     {
-        Debug.PrintPlace(name);
         return itemResourceLoader.GetResource(name) as Texture;
     }
 
