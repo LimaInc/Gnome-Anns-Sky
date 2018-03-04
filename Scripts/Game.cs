@@ -36,6 +36,7 @@ public class Game : Node
         RegisterBlock(new CarbonDioxideBacteriaFossilBlock());
         RegisterBlock(new GrassFossilBlock());
         RegisterBlock(new TreeFossilBlock());
+        RegisterBlock(new WheatFossilBlock());
         RegisterBlock(new FrogFossilBlock());
         RegisterBlock(new RegularAnimalFossilBlock());
         RegisterBlock(new BigAnimalFossilBlock());
@@ -43,6 +44,7 @@ public class Game : Node
         RegisterBlock(new GrassBlock());
         RegisterBlock(new TreeBlock());
         RegisterBlock(new LeafBlock());
+        RegisterBlock(new WheatBlock());
         RegisterBlock(new IceBlock());
 
         RegisterBlock(new HabitationBlock());

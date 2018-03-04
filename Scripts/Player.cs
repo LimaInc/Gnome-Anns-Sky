@@ -160,6 +160,7 @@ public class Player : KinematicBody
         this.AddItem(ItemStorage.items[ItemID.FROG_EGG], 100);
         this.AddItem(ItemStorage.items[ItemID.GRASS], 100);
         this.AddItem(ItemStorage.items[ItemID.TREE], 100);
+        this.AddItem(ItemStorage.items[ItemID.WHEAT], 100);
 
     }
 

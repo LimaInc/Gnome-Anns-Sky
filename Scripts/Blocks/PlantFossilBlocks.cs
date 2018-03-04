@@ -7,3 +7,8 @@ public class TreeFossilBlock : FossilBlock
 {
     public TreeFossilBlock() : base("treeFossilBlock.png") { }
 }
+
+public class WheatFossilBlock : FossilBlock
+{
+    public WheatFossilBlock() : base("wheatFossilBlock.png") { }
+}

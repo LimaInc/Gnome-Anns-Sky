@@ -89,6 +89,7 @@
     <Compile Include="Scripts\Blocks\TreeBlock.cs" />
     <Compile Include="Scripts\Blocks\Stone.cs" />
     <Compile Include="Scripts\Blocks\IceBlock.cs" />
+    <Compile Include="Scripts\Blocks\WheatBlock.cs" />
     <Compile Include="Scripts\Fossils\Defossiliser.cs" />
     <Compile Include="Scripts\Fossils\DefossiliserAction.cs" />
     <Compile Include="Scripts\Game.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Scripts\Plants\PlantManager.cs" />
     <Compile Include="Scripts\Plants\GrassManager.cs" />
     <Compile Include="Scripts\Plants\TreeManager.cs" />
+    <Compile Include="Scripts\Plants\WheatManager.cs" />
     <Compile Include="Scripts\Plants\PlantType.cs" />
     <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\Util\Debug.cs" />

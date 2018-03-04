@@ -16,7 +16,8 @@ public class Plants : Node
 
         plantManagers = new Dictionary<PlantType, PlantManager> {
             [PlantType.GRASS] = new GrassManager(this),
-            [PlantType.TREE] = new TreeManager(this)
+            [PlantType.TREE] = new TreeManager(this),
+            [PlantType.WHEAT] = new WheatManager(this)
         };
     }
 
