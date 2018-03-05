@@ -41,22 +41,33 @@ public class Chunk : Spatial
         }
     }
 
-    public bool TrySetBlockInChunk(IntVector3 position, byte block)
+    public byte? TrySetBlockInChunk(IntVector3 position, byte block)
     {
         return TrySetBlockInChunk(position.x, position.y, position.z, block);
     }
 
-    public bool TrySetBlockInChunk(int x, int y, int z, byte block)
+    public byte? TrySetBlockInChunk(int x, int y, int z, byte block)
     {
-        if (x < 0 || x >= SIZE.x || y < 0 || y >= SIZE.y || z < 0 || z >= SIZE.z)
+        if (IsPosInChunk(x,y,z))
         {
-            return false;
+            byte prevBlock = blocks[x, y, z];
+            blocks[x, y, z] = block;
+            return prevBlock;
         }
         else
         {
-            blocks[x, y, z] = block;
-            return true;
+            return null;
         }
+    }
+
+    public bool IsPosInChunk(IntVector3 pos)
+    {
+        return IsPosInChunk(pos.x, pos.y, pos.z);
+    }
+
+    public bool IsPosInChunk(int x, int y, int z)
+    {
+        return x >= 0 && x < SIZE.x && y >= 0 && y < SIZE.y && z >= 0 && z < SIZE.z;
     }
 
     public override void _Process(float delta)
@@ -74,6 +85,7 @@ public class Chunk : Spatial
             meshInstance.SetMesh(mesh);
         }
     }
+
     public void UpdateMesh()
     {
         if(generationThread != null && generationThread.ThreadState == ST.ThreadState.Running)

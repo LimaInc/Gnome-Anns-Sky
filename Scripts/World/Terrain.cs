@@ -40,6 +40,8 @@ public class Terrain : Spatial
 
     private static readonly IntVector2[][] chunkLoadIndices;
 
+    private Action<byte, byte, IntVector3> blockChageCallback;
+
     static Terrain()
     {
         chunkLoadIndices = new IntVector2[CHUNK_INDICES_SIZE][];
@@ -87,6 +89,9 @@ public class Terrain : Spatial
         Vector2 playerPos = new Vector2(player.Translation.x, player.Translation.z) / Block.SIZE;
         float terrainGraphicalHeight = worldGenerator.GetHeightAt(playerPos) * Block.SIZE;
         player.Translation = new Vector3(playerPos.x, terrainGraphicalHeight + Player.INIT_REL_POS.y, playerPos.y);
+
+        Plants p = GetNode(Game.PLANTS_PATH) as Plants;
+        blockChageCallback = (oldBlock, newBlock, blockPos) => p.HandleBlockChange(oldBlock, newBlock, blockPos);
     }
 
     public const float ANIMAL_CHUNK_RANGE = 16.0f;
@@ -243,88 +248,97 @@ public class Terrain : Spatial
         }
     }
 
-    public void SetBlocks(IEnumerable<Tuple<IntVector3, byte>> blocks)
+    public void SetBlocks(IEnumerable<Tuple<IntVector3, byte>> blocks, bool priority = false)
     {
         HashSet<IntVector2> chunks = new HashSet<IntVector2>();
         foreach (Tuple<IntVector3, byte> b in blocks)
         {
             IntVector3 pos = b.Item1;
             byte block = b.Item2;
-
-            //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
-            IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.SIZE.x),
-                                                   (int)Mathf.Floor((float)pos.z / Chunk.SIZE.z));
-
-            Chunk chunk = loadedChunks[chunkIndex].Item1;
-
-            IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.SIZE.z);
-
-            chunk.TrySetBlockInChunk(positionInChunk, block);
-
-            IntVector2 right = chunkIndex + new IntVector2(1,0);
-            IntVector2 left = chunkIndex + new IntVector2(-1,0);
-            IntVector2 above = chunkIndex + new IntVector2(0,1);
-            IntVector2 below = chunkIndex + new IntVector2(0,-1);
-
-            chunks.Add(chunkIndex);
-
-            if (positionInChunk.x == Chunk.SIZE.x - 1)
-                chunks.Add(right);
-
-            if (positionInChunk.x == 0)
-                chunks.Add(left);
-
-            if (positionInChunk.z == Chunk.SIZE.z - 1)
-                chunks.Add(above);
-
-            if (positionInChunk.z == 0)
-                chunks.Add(below);
+            chunks.UnionWith(SetBlockAndGetChunksToUpdate(pos, block));
         }
 
         foreach (IntVector2 chunk in chunks)
         {
-            chunksToUpdate.AddLast(chunk);
+            if (priority)
+            {
+                chunksToUpdate.AddFirst(chunk);
+            }
+            else
+            {
+                chunksToUpdate.AddLast(chunk);
+            }
         }
     }
 
-    public void SetBlock(IntVector3 pos, byte block)
+    public void SetBlock(IntVector3 pos, byte block, bool priority = false)
     {
-        //Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
-        IntVector2 chunkIndex = new IntVector2((int)Mathf.Floor((float)pos.x / Chunk.SIZE.x),
-                                               (int)Mathf.Floor((float)pos.z / Chunk.SIZE.z));
+        foreach (IntVector2 chunk in SetBlockAndGetChunksToUpdate(pos, block))
+        {
+            if (priority)
+            {
+                chunksToUpdate.AddFirst(chunk);
+            }
+            else
+            {
+                chunksToUpdate.AddLast(chunk);
+            }
+        }
+    }
+
+    public IntVector2 ChunkIndex(IntVector3 worldPos)
+    {
+        return new IntVector2((int)Mathf.Floor((float)worldPos.x / Chunk.SIZE.x),
+                              (int)Mathf.Floor((float)worldPos.z / Chunk.SIZE.z));
+    }
+
+    public ISet<IntVector2> SetBlockAndGetChunksToUpdate(IntVector3 pos, byte block)
+    {
+        HashSet<IntVector2> chunks = new HashSet<IntVector2>();
+
+        // Messy code here is because C# rounds integer division towards 0, rather than negative infinity like we want :(
+        IntVector2 chunkIndex = ChunkIndex(pos);
 
         Chunk chunk = loadedChunks[chunkIndex].Item1;
 
         IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.SIZE.z);
 
-        chunk.TrySetBlockInChunk(positionInChunk, block);
+        byte? oldBlockId = chunk.TrySetBlockInChunk(positionInChunk, block);
 
-        IntVector2 right = chunkIndex + new IntVector2(1,0);
-        IntVector2 left = chunkIndex + new IntVector2(-1,0);
-        IntVector2 above = chunkIndex + new IntVector2(0,1);
-        IntVector2 below = chunkIndex + new IntVector2(0,-1);
+        if (!oldBlockId.HasValue)
+        {
+            throw new Exception("Bad stuff happened here");
+        }
+
+        blockChageCallback(oldBlockId.Value, block, pos);
+
+        IntVector2 right = chunkIndex + new IntVector2(1, 0);
+        IntVector2 left = chunkIndex + new IntVector2(-1, 0);
+        IntVector2 above = chunkIndex + new IntVector2(0, 1);
+        IntVector2 below = chunkIndex + new IntVector2(0, -1);
 
         // assumes Chunk.SIZE > 1
         if (positionInChunk.x == Chunk.SIZE.x - 1)
         {
-            chunksToUpdate.AddFirst(right);
+            chunks.Add(right);
         }
         else if (positionInChunk.x == 0)
         {
-            chunksToUpdate.AddFirst(left);
+            chunks.Add(left);
         }
         if (positionInChunk.z == Chunk.SIZE.z - 1)
         {
-            chunksToUpdate.AddFirst(above);
+            chunks.Add(above);
         }
         else if (positionInChunk.z == 0)
         {
-            chunksToUpdate.AddFirst(below);
+            chunks.Add(below);
         }
+        chunks.Add(chunkIndex);
 
-        chunksToUpdate.AddFirst(chunkIndex);
+        return chunks;
     }
-    
+
     private void UpdateVisibleChunks()
     {
         Vector3 playerPos = player.GetTranslation();

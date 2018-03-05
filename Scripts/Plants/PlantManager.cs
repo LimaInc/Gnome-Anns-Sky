@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 
-public abstract class PlantManager
+public abstract class PlantManager : Node
 {
     protected Atmosphere atmosphere;
     protected Terrain terrain;
@@ -30,9 +31,18 @@ public abstract class PlantManager
     abstract public void LifeCycle(float delta);
     abstract protected void Spread();
 
+    abstract public void HandleBlockChange(byte oldId, byte newId, IntVector3 pos);
+
     public void AdjustGases(float delta)
     {
         foreach (KeyValuePair<Gas, float> entry in gasDeltas)
             atmosphere.ChangeGasAmt(entry.Key, entry.Value * plantBlocks.Count);
+    }
+
+    public override void _PhysicsProcess(float delta)
+    {
+        delta *= Mathf.Min(Game.SPEED, Game.PLANT_MAX_SPEED);
+        LifeCycle(delta);
+        AdjustGases(delta);
     }
 }

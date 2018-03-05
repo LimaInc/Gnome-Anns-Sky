@@ -46,7 +46,7 @@ class Debug
         GD.Print(msg);
     }
 
-    public static void PrintPlaceOccasionally(string str = null, int stackFrameNum = 2)
+    public static void PrintPlaceOccasionallyInit(string str = null, int stackFrameNum = 2)
     {
         if (n % 100 == 0)
         {
@@ -54,9 +54,9 @@ class Debug
         }
     }
 
-    public static void PrintPlaceOccasionallyEnd(string str = null, int stackFrameNum = 3)
+    public static void PrintPlaceOccasionally(string str = null, int stackFrameNum = 3)
     {
-        PrintPlaceOccasionally(str, stackFrameNum);
+        PrintPlaceOccasionallyInit(str, stackFrameNum);
         n++;
     }
 }

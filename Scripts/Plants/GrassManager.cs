@@ -181,4 +181,54 @@ public class GrassManager : PlantManager
         }
         PlantOn(blocksToChange);
     }
+
+    public override void HandleBlockChange(byte oldId, byte newId, IntVector3 blockPos)
+    {
+        // remove grass
+        if (oldId == GRASS_BLOCK_ID && newId != GRASS_BLOCK_ID)
+        {
+            DeregisterGrassAt(blockPos);
+            RespondToChangedGrassiness(blockPos);
+        }
+        
+        // uncover soil
+        if (oldId != AIR_ID && newId == AIR_ID)
+        {
+            if (blockPos.y > 0)
+            {
+                IntVector3 under = blockPos + new IntVector3(0, -1, 0);
+                if (terrain.GetBlock(under) == RED_ROCK_ID)
+                {
+                    RespondToChangedGrassiness(under);
+                }
+            }
+        }
+
+        // add grass
+        if (newId == GRASS_BLOCK_ID)
+        {
+            RespondToChangedGrassiness(blockPos);
+        }
+
+        // add soil
+        if (newId == RED_ROCK_ID)
+        {
+            RespondToChangedGrassiness(blockPos);
+        }
+
+        // cover grass
+        if (oldId == AIR_ID && newId != AIR_ID && blockPos.y > 0)
+        {
+            IntVector3 under = blockPos + new IntVector3(0, -1, 0);
+            if (terrain.GetBlock(under) == GRASS_BLOCK_ID)
+            {
+                terrain.SetBlock(under, RED_ROCK_ID);
+            }
+        }
+    }
+
+    public override void _PhysicsProcess(float delta)
+    {
+        Debug.PrintPlaceOccasionally(delta+"");
+    }
 }

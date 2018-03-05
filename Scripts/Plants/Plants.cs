@@ -4,6 +4,9 @@ using Godot;
 
 public class Plants : Node
 {
+    private static readonly byte GRASS_ID = Game.GetBlockId<GrassBlock>();
+    private static readonly byte RED_ROCK_ID = Game.GetBlockId<RedRock>();
+
     public Atmosphere atmosphere;
     public Terrain terrain;
 
@@ -19,6 +22,10 @@ public class Plants : Node
             [PlantType.TREE] = new TreeManager(this),
             [PlantType.WHEAT] = new WheatManager(this)
         };
+        foreach (PlantManager pm in plantManagers.Values)
+        {
+            AddChild(pm);
+        }
     }
 
     public bool Plant(ItemPlant plantItem, IntVector3 blockPos)
@@ -35,14 +42,11 @@ public class Plants : Node
         get => plantManagers[i];
     }
 
-    public override void _PhysicsProcess(float delta)
+    internal void HandleBlockChange(byte oldBlockId, byte newBlockId, IntVector3 blockPos)
     {
-        // TODO: fix plants so that there is no reasonable limit to speedup
-        delta *= Mathf.Min(Game.SPEED, Game.PLANT_MAX_SPEED);
-        foreach (PlantManager plantManager in plantManagers.Values)
+        foreach (PlantManager pm in plantManagers.Values)
         {
-            plantManager.LifeCycle(delta);
-            plantManager.AdjustGases(delta);
+            pm.HandleBlockChange(oldBlockId, newBlockId, blockPos);
         }
     }
 }

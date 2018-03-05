@@ -256,4 +256,9 @@ public class TreeManager : PlantManager
 
         return;
     }
+
+    public override void HandleBlockChange(byte oldId, byte newId, IntVector3 pos)
+    {
+        // TODO: check if the tree is still there, maybe?
+    }
 }

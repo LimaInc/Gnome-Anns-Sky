@@ -65,7 +65,9 @@ public class WheatManager : PlantManager
 
             // TODO: group all into a batch grow
             if (Grow(block.Item1))
+            {
                 growingQueue.Enqueue(Tuple.Create(block.Item1 + new IntVector3(0, 1, 0), time + GROWING_TIME));
+            }
         }
     }
 
@@ -94,5 +96,10 @@ public class WheatManager : PlantManager
     protected override void Spread()
     {
         return;
+    }
+
+    public override void HandleBlockChange(byte oldId, byte newId, IntVector3 pos)
+    {
+        // TODO: check if the wheat is still there, maybe?
     }
 }
