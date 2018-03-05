@@ -10,7 +10,7 @@ config_version=3
 
 [application]
 
-config/name="SustainableCraft"
+config/name="Gnome Ann's Sky"
 run/main_scene="res://Scenes/MenuScene.tscn"
 config/icon="res://icon.png"
 
