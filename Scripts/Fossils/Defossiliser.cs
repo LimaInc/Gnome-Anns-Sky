@@ -60,7 +60,7 @@ public class Defossiliser : Node
     // TODO: fix after rewriting block system
     public override void _Ready()
     {
-        if (possibleProcesses == null)
+        if (possibleProcesses.Count == 0)
         {
             AddProcesses(DEFAULT_PROCESSES);
         }

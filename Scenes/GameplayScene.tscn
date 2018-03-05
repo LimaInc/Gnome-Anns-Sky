@@ -1,4 +1,4 @@
-[gd_scene load_steps=73 format=2]
+[gd_scene load_steps=74 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
 [ext_resource path="res://Images/Blocks/OLD_grass.png" type="Texture" id=2]
@@ -44,32 +44,33 @@
 [ext_resource path="res://Images/Items/itemTreeFossil.png" type="Texture" id=42]
 [ext_resource path="res://Images/Items/itemWater.png" type="Texture" id=43]
 [ext_resource path="res://Images/Items/itemWheat.png" type="Texture" id=44]
-[ext_resource path="res://Images/GUI/airIcon.png" type="Texture" id=45]
-[ext_resource path="res://Images/GUI/bar.png" type="Texture" id=46]
-[ext_resource path="res://Images/GUI/crosshairWhite.png" type="Texture" id=47]
-[ext_resource path="res://Images/GUI/cursor.png" type="Texture" id=48]
-[ext_resource path="res://Images/GUI/greenArrow.png" type="Texture" id=49]
-[ext_resource path="res://Images/GUI/guiSheet.png" type="Texture" id=50]
-[ext_resource path="res://Images/GUI/inventorySlot.png" type="Texture" id=51]
-[ext_resource path="res://Images/GUI/youAreDead.png" type="Texture" id=52]
-[ext_resource path="res://Scenes/Animals/FemaleAnimal0.tscn" type="PackedScene" id=53]
-[ext_resource path="res://Scenes/Animals/FemaleBig.tscn" type="PackedScene" id=54]
-[ext_resource path="res://Scenes/Animals/FemaleFrog.tscn" type="PackedScene" id=55]
-[ext_resource path="res://Scenes/Animals/MaleAnimal0.tscn" type="PackedScene" id=56]
-[ext_resource path="res://Scenes/Animals/MaleBig.tscn" type="PackedScene" id=57]
-[ext_resource path="res://Scenes/Animals/MaleFrog.tscn" type="PackedScene" id=58]
-[ext_resource path="res://Scripts/World/Sun.cs" type="Script" id=59]
-[ext_resource path="res://Scripts/World/Terrain.cs" type="Script" id=60]
-[ext_resource path="res://Scripts/Player.cs" type="Script" id=61]
-[ext_resource path="res://Scripts/Interaction.cs" type="Script" id=62]
-[ext_resource path="res://Scripts/NaturalDisasters/DisasterManager.cs" type="Script" id=63]
-[ext_resource path="res://Scripts/World/PlanetEnvironment.cs" type="Script" id=64]
-[ext_resource path="res://Scripts/Atmosphere/Atmosphere.cs" type="Script" id=65]
-[ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=66]
-[ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=67]
-[ext_resource path="res://Scripts/Animals/AnimalSpawner.cs" type="Script" id=68]
-[ext_resource path="res://Scripts/World/Base.cs" type="Script" id=69]
-[ext_resource path="res://Scripts/Inventory/ItemStorage.cs" type="Script" id=70]
+[ext_resource path="res://Images/Items/itemWheatFossil.png" type="Texture" id=45]
+[ext_resource path="res://Images/GUI/airIcon.png" type="Texture" id=46]
+[ext_resource path="res://Images/GUI/bar.png" type="Texture" id=47]
+[ext_resource path="res://Images/GUI/crosshairWhite.png" type="Texture" id=48]
+[ext_resource path="res://Images/GUI/cursor.png" type="Texture" id=49]
+[ext_resource path="res://Images/GUI/greenArrow.png" type="Texture" id=50]
+[ext_resource path="res://Images/GUI/guiSheet.png" type="Texture" id=51]
+[ext_resource path="res://Images/GUI/inventorySlot.png" type="Texture" id=52]
+[ext_resource path="res://Images/GUI/youAreDead.png" type="Texture" id=53]
+[ext_resource path="res://Scenes/Animals/FemaleAnimal0.tscn" type="PackedScene" id=54]
+[ext_resource path="res://Scenes/Animals/FemaleBig.tscn" type="PackedScene" id=55]
+[ext_resource path="res://Scenes/Animals/FemaleFrog.tscn" type="PackedScene" id=56]
+[ext_resource path="res://Scenes/Animals/MaleAnimal0.tscn" type="PackedScene" id=57]
+[ext_resource path="res://Scenes/Animals/MaleBig.tscn" type="PackedScene" id=58]
+[ext_resource path="res://Scenes/Animals/MaleFrog.tscn" type="PackedScene" id=59]
+[ext_resource path="res://Scripts/World/Sun.cs" type="Script" id=60]
+[ext_resource path="res://Scripts/World/Terrain.cs" type="Script" id=61]
+[ext_resource path="res://Scripts/Player.cs" type="Script" id=62]
+[ext_resource path="res://Scripts/Interaction.cs" type="Script" id=63]
+[ext_resource path="res://Scripts/NaturalDisasters/DisasterManager.cs" type="Script" id=64]
+[ext_resource path="res://Scripts/World/PlanetEnvironment.cs" type="Script" id=65]
+[ext_resource path="res://Scripts/Atmosphere/Atmosphere.cs" type="Script" id=66]
+[ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=67]
+[ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=68]
+[ext_resource path="res://Scripts/Animals/AnimalSpawner.cs" type="Script" id=69]
+[ext_resource path="res://Scripts/World/Base.cs" type="Script" id=70]
+[ext_resource path="res://Scripts/Inventory/ItemStorage.cs" type="Script" id=71]
 
 [sub_resource type="ProceduralSky" id=1]
 
@@ -185,15 +186,15 @@ resources = [ PoolStringArray( "OLD_grass", "OLD_stone", "animalFossilBlock", "b
 
 [node name="ItemResourceLoader" type="ResourcePreloader" parent="ResourceLoaders" index="1"]
 
-resources = [ PoolStringArray( "cake", "itemAnimalFossil", "itemBacteriaFossil", "itemBigEgg", "itemCake", "itemCarbonDioxideBacteriaVial", "itemChocolate", "itemEgg", "itemFossil", "itemFrogEgg", "itemGrass", "itemGrassFossil", "itemIce", "itemMeat", "itemNitrogenBacteriaVial", "itemOxygenBacteriaVial", "itemRedRock", "itemStone", "itemTree", "itemTreeFossil", "itemWater", "itemWheat" ), [ ExtResource( 23 ), ExtResource( 24 ), ExtResource( 25 ), ExtResource( 26 ), ExtResource( 27 ), ExtResource( 28 ), ExtResource( 29 ), ExtResource( 30 ), ExtResource( 31 ), ExtResource( 32 ), ExtResource( 33 ), ExtResource( 34 ), ExtResource( 35 ), ExtResource( 36 ), ExtResource( 37 ), ExtResource( 38 ), ExtResource( 39 ), ExtResource( 40 ), ExtResource( 41 ), ExtResource( 42 ), ExtResource( 43 ), ExtResource( 44 ) ] ]
+resources = [ PoolStringArray( "cake", "itemAnimalFossil", "itemBacteriaFossil", "itemBigEgg", "itemCake", "itemCarbonDioxideBacteriaVial", "itemChocolate", "itemEgg", "itemFossil", "itemFrogEgg", "itemGrass", "itemGrassFossil", "itemIce", "itemMeat", "itemNitrogenBacteriaVial", "itemOxygenBacteriaVial", "itemRedRock", "itemStone", "itemTree", "itemTreeFossil", "itemWater", "itemWheat", "itemWheatFossil" ), [ ExtResource( 23 ), ExtResource( 24 ), ExtResource( 25 ), ExtResource( 26 ), ExtResource( 27 ), ExtResource( 28 ), ExtResource( 29 ), ExtResource( 30 ), ExtResource( 31 ), ExtResource( 32 ), ExtResource( 33 ), ExtResource( 34 ), ExtResource( 35 ), ExtResource( 36 ), ExtResource( 37 ), ExtResource( 38 ), ExtResource( 39 ), ExtResource( 40 ), ExtResource( 41 ), ExtResource( 42 ), ExtResource( 43 ), ExtResource( 44 ), ExtResource( 45 ) ] ]
 
 [node name="GUIResourceLoader" type="ResourcePreloader" parent="ResourceLoaders" index="2"]
 
-resources = [ PoolStringArray( "airIcon", "bar", "crosshairWhite", "cursor", "greenArrow", "guiSheet", "inventorySlot", "youAreDead" ), [ ExtResource( 45 ), ExtResource( 46 ), ExtResource( 47 ), ExtResource( 48 ), ExtResource( 49 ), ExtResource( 50 ), ExtResource( 51 ), ExtResource( 52 ) ] ]
+resources = [ PoolStringArray( "airIcon", "bar", "crosshairWhite", "cursor", "greenArrow", "guiSheet", "inventorySlot", "youAreDead" ), [ ExtResource( 46 ), ExtResource( 47 ), ExtResource( 48 ), ExtResource( 49 ), ExtResource( 50 ), ExtResource( 51 ), ExtResource( 52 ), ExtResource( 53 ) ] ]
 
 [node name="AnimalResourceLoader" type="ResourcePreloader" parent="ResourceLoaders" index="3"]
 
-resources = [ PoolStringArray( "FemaleAnimal0", "FemaleBig", "FemaleFrog", "MaleAnimal0", "MaleBig", "MaleFrog" ), [ ExtResource( 53 ), ExtResource( 54 ), ExtResource( 55 ), ExtResource( 56 ), ExtResource( 57 ), ExtResource( 58 ) ] ]
+resources = [ PoolStringArray( "FemaleAnimal0", "FemaleBig", "FemaleFrog", "MaleAnimal0", "MaleBig", "MaleFrog" ), [ ExtResource( 54 ), ExtResource( 55 ), ExtResource( 56 ), ExtResource( 57 ), ExtResource( 58 ), ExtResource( 59 ) ] ]
 
 [node name="DirectionalLight" type="DirectionalLight" parent="." index="1"]
 
@@ -221,12 +222,12 @@ directional_shadow_normal_bias = 0.01
 directional_shadow_bias_split_scale = 0.5
 directional_shadow_depth_range = 0
 directional_shadow_max_distance = 30.0
-script = ExtResource( 59 )
+script = ExtResource( 60 )
 _sections_unfolded = [ "Light", "Shadow", "Transform" ]
 
 [node name="Terrain" type="Spatial" parent="." index="2"]
 
-script = ExtResource( 60 )
+script = ExtResource( 61 )
 
 [node name="Player" type="KinematicBody" parent="." index="3"]
 
@@ -242,7 +243,7 @@ axis_lock_angular_x = false
 axis_lock_angular_y = false
 axis_lock_angular_z = false
 collision/safe_margin = 0.001
-script = ExtResource( 61 )
+script = ExtResource( 62 )
 _sections_unfolded = [ "Axis Lock", "Collision", "Transform", "Visibility", "collision" ]
 
 [node name="Camera" type="Camera" parent="Player" index="0"]
@@ -260,41 +261,41 @@ fov = 70.0
 size = 1.0
 near = 0.05
 far = 100.0
-script = ExtResource( 62 )
+script = ExtResource( 63 )
 _sections_unfolded = [ "Transform" ]
 
 [node name="DisasterManager" type="WorldEnvironment" parent="." index="4"]
 
 environment = null
-script = ExtResource( 63 )
+script = ExtResource( 64 )
 
 [node name="PlanetEnvironment" type="WorldEnvironment" parent="." index="5"]
 
 environment = SubResource( 2 )
-script = ExtResource( 64 )
+script = ExtResource( 65 )
 
 [node name="Atmosphere" type="Node" parent="PlanetEnvironment" index="0"]
 
-script = ExtResource( 65 )
+script = ExtResource( 66 )
 
 [node name="BacterialState" type="Node" parent="PlanetEnvironment" index="1"]
 
-script = ExtResource( 66 )
+script = ExtResource( 67 )
 
 [node name="Plants" type="Node" parent="PlanetEnvironment" index="2"]
 
-script = ExtResource( 67 )
+script = ExtResource( 68 )
 
 [node name="AnimalSpawner" type="Node" parent="PlanetEnvironment" index="3"]
 
-script = ExtResource( 68 )
+script = ExtResource( 69 )
 
 [node name="Base" type="Node" parent="." index="6"]
 
-script = ExtResource( 69 )
+script = ExtResource( 70 )
 
 [node name="ItemStorage" type="Node" parent="." index="7"]
 
-script = ExtResource( 70 )
+script = ExtResource( 71 )
 
 
