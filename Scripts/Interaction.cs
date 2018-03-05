@@ -114,6 +114,7 @@ public class Interaction : Camera
 
         Node animal = HitAnimal(hitInfo);
         if (animal != null)
+
         {
             KillAnimal(animal);   
         }

@@ -66,6 +66,7 @@
     <Compile Include="Scripts\Atmosphere\Gas.cs" />
     <Compile Include="Scripts\Atmosphere\GasEscapingAC.cs" />
     <Compile Include="Scripts\Atmosphere\GasMolecule.cs" />
+    <Compile Include="Scripts\Atmosphere\SandstormComingAC.cs" />
     <Compile Include="Scripts\Bacteria\ProductionBSC.cs" />
     <Compile Include="Scripts\Bacteria\AsymptoticGrowthBSC.cs" />
     <Compile Include="Scripts\Bacteria\Bacteria.cs" />
@@ -126,6 +127,10 @@
     <Compile Include="Scripts\GUI\GUIObjects\GUIVerticalBar.cs" />
     <Compile Include="Scripts\GUI\GUIStandalone\DeadGUI.cs" />
     <Compile Include="Scripts\Interaction.cs" />
+    <Compile Include="Scripts\NaturalDisasters\DisasterManager.cs" />
+    <Compile Include="Scripts\NaturalDisasters\DisasterProperties.cs" />
+    <Compile Include="Scripts\NaturalDisasters\DisasterPropertiesSandstorm.cs" />
+    <Compile Include="Scripts\NaturalDisasters\Sandstorm.cs" />
     <Compile Include="Scripts\Plants\PlantBody.cs" />
     <Compile Include="Scripts\Plants\Plants.cs" />
     <Compile Include="Scripts\Plants\PlantManager.cs" />

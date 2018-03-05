@@ -9,6 +9,8 @@ public class Game : Node
     public const string TERRAIN_PATH = GAME_PATH + "/Terrain";
     public const string PLAYER_PATH = GAME_PATH + "/Player";
     public const string CAMERA_PATH = PLAYER_PATH+"/Camera";
+    public const string NATURAL_DISASTERS_PATH = GAME_PATH + "/DisasterManager";
+    public const string SANDSTORM_PATH = NATURAL_DISASTERS_PATH + "/Sandstorm";
     public const string PLANET_BASE_PATH = GAME_PATH + "/Base";
     public const string WORLD_ENVIRO_PATH = GAME_PATH + "/PlanetEnvironment";
     public const string PLANTS_PATH = WORLD_ENVIRO_PATH + "/Plants";

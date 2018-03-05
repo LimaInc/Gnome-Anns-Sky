@@ -1,4 +1,4 @@
-[gd_scene load_steps=72 format=2]
+[gd_scene load_steps=73 format=2]
 
 [ext_resource path="res://Scripts/Game.cs" type="Script" id=1]
 [ext_resource path="res://Images/Blocks/OLD_grass.png" type="Texture" id=2]
@@ -62,13 +62,14 @@
 [ext_resource path="res://Scripts/World/Terrain.cs" type="Script" id=60]
 [ext_resource path="res://Scripts/Player.cs" type="Script" id=61]
 [ext_resource path="res://Scripts/Interaction.cs" type="Script" id=62]
-[ext_resource path="res://Scripts/World/PlanetEnvironment.cs" type="Script" id=63]
-[ext_resource path="res://Scripts/Atmosphere/Atmosphere.cs" type="Script" id=64]
-[ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=65]
-[ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=66]
-[ext_resource path="res://Scripts/Animals/AnimalSpawner.cs" type="Script" id=67]
-[ext_resource path="res://Scripts/World/Base.cs" type="Script" id=68]
-[ext_resource path="res://Scripts/Inventory/ItemStorage.cs" type="Script" id=69]
+[ext_resource path="res://Scripts/NaturalDisasters/DisasterManager.cs" type="Script" id=63]
+[ext_resource path="res://Scripts/World/PlanetEnvironment.cs" type="Script" id=64]
+[ext_resource path="res://Scripts/Atmosphere/Atmosphere.cs" type="Script" id=65]
+[ext_resource path="res://Scripts/Bacteria/BacterialState.cs" type="Script" id=66]
+[ext_resource path="res://Scripts/Plants/Plants.cs" type="Script" id=67]
+[ext_resource path="res://Scripts/Animals/AnimalSpawner.cs" type="Script" id=68]
+[ext_resource path="res://Scripts/World/Base.cs" type="Script" id=69]
+[ext_resource path="res://Scripts/Inventory/ItemStorage.cs" type="Script" id=70]
 
 [sub_resource type="ProceduralSky" id=1]
 
@@ -262,34 +263,38 @@ far = 100.0
 script = ExtResource( 62 )
 _sections_unfolded = [ "Transform" ]
 
-[node name="PlanetEnvironment" type="WorldEnvironment" parent="." index="4"]
+[node name="DisasterManager" type="WorldEnvironment" parent="." index="4"]
 
-editor/display_folded = true
-environment = SubResource( 2 )
+environment = null
 script = ExtResource( 63 )
+
+[node name="PlanetEnvironment" type="WorldEnvironment" parent="." index="5"]
+
+environment = SubResource( 2 )
+script = ExtResource( 64 )
 
 [node name="Atmosphere" type="Node" parent="PlanetEnvironment" index="0"]
 
-script = ExtResource( 64 )
+script = ExtResource( 65 )
 
 [node name="BacterialState" type="Node" parent="PlanetEnvironment" index="1"]
 
-script = ExtResource( 65 )
+script = ExtResource( 66 )
 
 [node name="Plants" type="Node" parent="PlanetEnvironment" index="2"]
 
-script = ExtResource( 66 )
+script = ExtResource( 67 )
 
 [node name="AnimalSpawner" type="Node" parent="PlanetEnvironment" index="3"]
 
-script = ExtResource( 67 )
-
-[node name="Base" type="Node" parent="." index="5"]
-
 script = ExtResource( 68 )
 
-[node name="ItemStorage" type="Node" parent="." index="6"]
+[node name="Base" type="Node" parent="." index="6"]
 
 script = ExtResource( 69 )
+
+[node name="ItemStorage" type="Node" parent="." index="7"]
+
+script = ExtResource( 70 )
 
 
