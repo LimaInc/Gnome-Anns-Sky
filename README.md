@@ -1,5 +1,9 @@
 # Gnome Ann's Sky
 
+## Easy method to run on 64-bit linux
+* Run ./run.sh in the project root.
+* If this doesn't work, you must run it through the Godot editor, as described below.
+
 ## Building
 * Install [Godot](https://godotengine.org/download)
     * Mono version (C# Support) is required.
