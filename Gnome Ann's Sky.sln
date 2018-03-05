@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gnome Ann's Sky", "Gnome Ann's Sky.csproj", "{47497670-603E-4967-930A-340625D65F92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gnome Ann's Sky", "Gnome Ann's Sky.csproj", "{2AF7D531-B500-42E3-A411-1E6C3C67A4DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	Tools|Any CPU = Tools|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{47497670-603E-4967-930A-340625D65F92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47497670-603E-4967-930A-340625D65F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47497670-603E-4967-930A-340625D65F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47497670-603E-4967-930A-340625D65F92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47497670-603E-4967-930A-340625D65F92}.Tools|Any CPU.ActiveCfg = Tools|Any CPU
-		{47497670-603E-4967-930A-340625D65F92}.Tools|Any CPU.Build.0 = Tools|Any CPU
+		{2AF7D531-B500-42E3-A411-1E6C3C67A4DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AF7D531-B500-42E3-A411-1E6C3C67A4DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AF7D531-B500-42E3-A411-1E6C3C67A4DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AF7D531-B500-42E3-A411-1E6C3C67A4DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AF7D531-B500-42E3-A411-1E6C3C67A4DF}.Tools|Any CPU.ActiveCfg = Tools|Any CPU
+		{2AF7D531-B500-42E3-A411-1E6C3C67A4DF}.Tools|Any CPU.Build.0 = Tools|Any CPU
 	EndGlobalSection
 EndGlobal

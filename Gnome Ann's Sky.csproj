@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{47497670-603E-4967-930A-340625D65F92}</ProjectGuid>
+    <ProjectGuid>{2AF7D531-B500-42E3-A411-1E6C3C67A4DF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <OutputPath>.mono\temp\bin\$(Configuration)</OutputPath>
     <RootNamespace>Gnome Ann's Sky</RootNamespace>
@@ -173,6 +173,14 @@
     <None Include="Scripts\Animals\MaleAnimal0.tscn" />
     <None Include="Scripts\Animals\MaleBig.tscn" />
     <None Include="Scripts\Animals\MaleFrog.tscn" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".mono\assemblies\GodotSharp.dll" />
+    <Content Include=".mono\assemblies\GodotSharp.pdb" />
+    <Content Include=".mono\assemblies\GodotSharp.xml" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.dll" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.pdb" />
+    <Content Include=".mono\assemblies\GodotSharpEditor.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
