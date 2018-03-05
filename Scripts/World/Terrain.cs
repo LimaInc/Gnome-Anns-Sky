@@ -59,7 +59,9 @@ public class Terrain : Spatial
         }
     }
 
-    private HashDeque<IntVector2> chunksToUpdate = new HashDeque<IntVector2>();
+    // TODO: replace with single priority queue
+    private HashQueue<IntVector2> priorityChunksToUpdate = new HashQueue<IntVector2>();
+    private HashQueue<IntVector2> regularChunksToUpdate = new HashQueue<IntVector2>();
     private HashQueue<IntVector2> chunksToRemove = new HashQueue<IntVector2>();
 
     //Stores the loaded chunks, indexed by their position, whether chunk model is currently loaded and whether the node exists in the Godot scene currently
@@ -138,7 +140,7 @@ public class Terrain : Spatial
             if (buildMesh && !tuple.Item2) //But maybe we need to build a mesh for it?
             {
                 loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(tuple.Item1, true, tuple.Item3);
-                chunksToUpdate.AddLast(chunkIndex);
+                regularChunksToUpdate.Enqueue(chunkIndex);
             }
 
             if (!tuple.Item3) // If node not created, but it is in memory
@@ -150,11 +152,11 @@ public class Terrain : Spatial
         {
             byte[,,] blocks = worldGenerator.GetChunk(chunkIndex, Chunk.SIZE);
             Chunk chunk = new Chunk(this, chunkIndex, blocks);
-            this.AddChild(chunk);
+            AddChild(chunk);
             loadedChunks[chunkIndex] = new Tuple<Chunk, bool, bool>(chunk, buildMesh, true);
             if (buildMesh)
             {
-                chunksToUpdate.AddLast(chunkIndex);
+                regularChunksToUpdate.Enqueue(chunkIndex);
             }
 
 
@@ -213,8 +215,7 @@ public class Terrain : Spatial
 
     public byte GetBlock(int x, int y, int z)
     {
-        IntVector2 chunkIndex = new IntVector2(MathUtil.RoundDownDiv(x, Chunk.SIZE.x),
-                                               MathUtil.RoundDownDiv(z, Chunk.SIZE.z));
+        IntVector2 chunkIndex = ChunkIndex(x, z);
 
         IntVector3 positionInChunk = new IntVector3(x,y,z) - (new IntVector3(chunkIndex.x, 0, chunkIndex.y) * Chunk.SIZE);
 
@@ -238,9 +239,15 @@ public class Terrain : Spatial
             UpdateVisibleChunks();
         }
 
+        HashQueue<IntVector2> chunksToUpdate = priorityChunksToUpdate.Count > 0 ? priorityChunksToUpdate : regularChunksToUpdate;
         if(chunksToUpdate.Count > 0)
         {
-            loadedChunks[chunksToUpdate.RemoveFirst()].Item1.UpdateMesh();
+            IntVector2 chunkPos = chunksToUpdate.Dequeue();
+            if (!loadedChunks[chunkPos].Item1.UpdateMesh())
+            {
+                Debug.PrintPlace(chunkPos+" still being updated");
+                chunksToUpdate.Enqueue(chunkPos);
+            }
         }
         else if(chunksToRemove.Count > 0)
         {
@@ -260,14 +267,7 @@ public class Terrain : Spatial
 
         foreach (IntVector2 chunk in chunks)
         {
-            if (priority)
-            {
-                chunksToUpdate.AddFirst(chunk);
-            }
-            else
-            {
-                chunksToUpdate.AddLast(chunk);
-            }
+            (priority ? priorityChunksToUpdate : regularChunksToUpdate).Enqueue(chunk);
         }
     }
 
@@ -275,21 +275,19 @@ public class Terrain : Spatial
     {
         foreach (IntVector2 chunk in SetBlockAndGetChunksToUpdate(pos, block))
         {
-            if (priority)
-            {
-                chunksToUpdate.AddFirst(chunk);
-            }
-            else
-            {
-                chunksToUpdate.AddLast(chunk);
-            }
+            (priority ? priorityChunksToUpdate : regularChunksToUpdate).Enqueue(chunk);
         }
     }
 
-    public IntVector2 ChunkIndex(IntVector3 worldPos)
+    public static IntVector2 ChunkIndex(int x, int z)
     {
-        return new IntVector2((int)Mathf.Floor((float)worldPos.x / Chunk.SIZE.x),
-                              (int)Mathf.Floor((float)worldPos.z / Chunk.SIZE.z));
+        return new IntVector2(MathUtil.RoundDownDiv(x, Chunk.SIZE.x),
+                              MathUtil.RoundDownDiv(z, Chunk.SIZE.z));
+    }
+
+    public static IntVector2 ChunkIndex(IntVector3 pos)
+    {
+        return ChunkIndex(pos.x, pos.z);
     }
 
     public ISet<IntVector2> SetBlockAndGetChunksToUpdate(IntVector3 pos, byte block)

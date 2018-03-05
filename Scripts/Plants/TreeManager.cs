@@ -68,7 +68,7 @@ public class TreeManager : PlantManager
         treeBlockVectors[idx++] = Tuple.Create(new IntVector3(0, 8, 0), leafBlock);
     }
 
-    protected override bool CanSpreadTo(IntVector3 blockPos)
+    protected override bool CanGrowOn(IntVector3 blockPos)
     {
         if (terrain.GetBlock(blockPos) != redRock && terrain.GetBlock(blockPos) != grassBlock ||
                 atmosphere.GetGasAmt(Gas.NITROGEN) < 0.01 || atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE) < 0.01)
@@ -89,7 +89,7 @@ public class TreeManager : PlantManager
         for (int i = 0; i < 48; i++)
             treeBlocks[i] = Tuple.Create(blockPos + treeBlockVectors[i].Item1, treeBlockVectors[i].Item2);
 
-        if (!CanSpreadTo(blockPos))
+        if (!CanGrowOn(blockPos))
             return false;
 
         terrain.SetBlocks(treeBlocks);
@@ -192,14 +192,14 @@ public class TreeManager : PlantManager
             bool candidateExists = false;
             for (int i = 0; i < MIN_DISTANCE / 2; i++)
             {
-                if (CanSpreadTo(candidate + new IntVector3(0, i, 0)))
+                if (CanGrowOn(candidate + new IntVector3(0, i, 0)))
                 {
                     candidate += new IntVector3(0, i, 0);
                     candidateExists = true;
                     break;
                 }
 
-                if (i != 0 && CanSpreadTo(candidate + new IntVector3(0, -i, 0)))
+                if (i != 0 && CanGrowOn(candidate + new IntVector3(0, -i, 0)))
                 {
                     candidate += new IntVector3(0, -i, 0);
                     candidateExists = true;

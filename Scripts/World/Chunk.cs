@@ -20,7 +20,7 @@ public class Chunk : Spatial
     private SurfaceTool surfaceTool = new SurfaceTool();
     private SpatialMaterial material = new SpatialMaterial();
 
-    private ST.Thread generationThread;
+    public bool UpdatingMesh { get; private set; }
 
     public byte GetBlockInChunk(IntVector3 position)
     {
@@ -72,35 +72,38 @@ public class Chunk : Spatial
 
     public override void _Process(float delta)
     {
-        if(generationFinished)
+        if (generationFinished)
         {
-            generationFinished = false;
-
             ArrayMesh mesh = new ArrayMesh();
-
             mesh = surfaceTool.Commit();
-
             collider.Shape = mesh.CreateTrimeshShape();
-
             meshInstance.SetMesh(mesh);
+
+            generationFinished = false;
+            UpdatingMesh = false;
         }
     }
 
-    public void UpdateMesh()
+    public bool UpdateMesh()
     {
-        if(generationThread != null && generationThread.ThreadState == ST.ThreadState.Running)
-            generationThread.Abort();
-        
-        generationThread = new ST.Thread(() =>
+        if (!UpdatingMesh)
         {
-            GenerateSurface();
-            generationFinished = true;
-        })
+            UpdatingMesh = true;
+            ST.Thread generationThread = new ST.Thread(() =>
+            {
+                GenerateSurface();
+                generationFinished = true;
+            })
+            {
+                Priority = ST.ThreadPriority.Highest
+            };
+            generationThread.Start();
+            return true;
+        }
+        else
         {
-            Priority = ST.ThreadPriority.Highest
-        };
-        
-        generationThread.Start();
+            return false;
+        }
     }
 
     private void GenerateSurface()
@@ -170,6 +173,8 @@ public class Chunk : Spatial
 
         this.chunkCoords = coords;
 
+        UpdatingMesh = false;
+
         meshInstance = new MeshInstance();
         this.AddChild(meshInstance);
 
@@ -183,6 +188,5 @@ public class Chunk : Spatial
         material.SetSpecularMode(SpatialMaterial.SpecularMode.Disabled);
         material.SetMetallic(0);
         material.SetRoughness(1);
-
     }
 }

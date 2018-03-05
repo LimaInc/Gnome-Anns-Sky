@@ -26,9 +26,7 @@ public class Sandstorm : Spatial
 
     public override void _Process(float delta)
     {
-    	Console.WriteLine(this.GetPath());
-
-		timeAlive += delta;
+        timeAlive += delta;
 		if (lifeTime < timeAlive) GetParent().RemoveChild(this);
     }
 	

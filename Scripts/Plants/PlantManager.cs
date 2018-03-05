@@ -25,7 +25,7 @@ public abstract class PlantManager : Node
         gasDeltas = gasDeltas_;
     }
 
-    abstract protected bool CanSpreadTo(IntVector3 blockPos);
+    abstract protected bool CanGrowOn(IntVector3 blockPos);
     abstract public bool PlantOn(IntVector3 blockPos);
 
     abstract public void LifeCycle(float delta);

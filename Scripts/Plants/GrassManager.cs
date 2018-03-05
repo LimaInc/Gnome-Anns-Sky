@@ -25,7 +25,10 @@ public class GrassManager : PlantManager
         [Gas.CARBON_DIOXIDE] = 0.5f,
     };
 
-    private static IntVector3[] adjacentBlockVectors = new IntVector3[12] {
+    private const float MAX_GRASS_UPDATE_TIME = 1000 / 20f; // in msec
+
+    // must be symmetric around (0,0,0)
+    private static readonly IntVector3[] ADJACENT_BLOCK_VECTORS = new IntVector3[12] {
         new IntVector3(-1, -1, 0), new IntVector3(-1, 0, 0), new IntVector3(-1, 1, 0),
         new IntVector3(0, -1, -1), new IntVector3(0, 0, -1), new IntVector3(0, 1, -1),
         new IntVector3(0, -1, 1), new IntVector3(0, 0, 1), new IntVector3(0, 1, 1),
@@ -34,11 +37,17 @@ public class GrassManager : PlantManager
 
     private const double SPREAD_CHANCE = 0.65f;
 
+    // TODO: introduce chunk locality
+    private HashQueue<IntVector2> chunksToPlantGrassOn;
+    private IDictionary<IntVector2, ISet<IntVector3>> grassToPlantGivenChunk;
+
     private float time;
 
     public GrassManager(Plants plants) : base(plants, SPREAD_CHANCE, GAS_PRODUCTION)
     {
         time = 0;
+        chunksToPlantGrassOn = new HashQueue<IntVector2>();
+        grassToPlantGivenChunk = new Dictionary<IntVector2, ISet<IntVector3>>();
     }
 
     private bool BlocksAlrightToSpread(IntVector3 blockPos)
@@ -47,7 +56,7 @@ public class GrassManager : PlantManager
                terrain.GetBlock(blockPos + new IntVector3(0, 1, 0)) == AIR_ID;
     }
     
-    protected override bool CanSpreadTo(IntVector3 blockPos)
+    protected override bool CanGrowOn(IntVector3 blockPos)
     {
         return BlocksAlrightToSpread(blockPos) && 
             GAS_REQUIREMENTS.All(kvPair => atmosphere.GetGasProgress(kvPair.Key) >= kvPair.Value);
@@ -55,18 +64,34 @@ public class GrassManager : PlantManager
 
     public override bool PlantOn(IntVector3 blockPos)
     {
-        List<IntVector3> blockPosList = new List<IntVector3>()
+        if (CanGrowOn(blockPos))
         {
-            blockPos
-        };
-        return PlantOn(blockPosList);
+            terrain.SetBlock(blockPos, GRASS_BLOCK_ID);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void PlantOnChunk()
+    {
+        IntVector2 chunk = chunksToPlantGrassOn.Dequeue();
+        IEnumerable<IntVector3> validBlocks = grassToPlantGivenChunk[chunk].Where(CanGrowOn);
+        IEnumerable<Tuple<IntVector3, byte>> blocksToChange =
+            grassToPlantGivenChunk[chunk]
+                .Where(CanGrowOn)
+                .Select(pos => Tuple.Create(pos, GRASS_BLOCK_ID));
+        grassToPlantGivenChunk.Remove(chunk);
+        terrain.SetBlocks(blocksToChange);
     }
 
     public void UpdateActive(IntVector3 blockPos)
     {
         if (plantBlocks.Contains(blockPos))
         {
-            if (adjacentBlockVectors.Any(delta => BlocksAlrightToSpread(delta+blockPos)))
+            if (ADJACENT_BLOCK_VECTORS.Any(delta => BlocksAlrightToSpread(delta+blockPos)))
             {
                 plantActiveBlocks.Add(blockPos);
             }
@@ -80,45 +105,19 @@ public class GrassManager : PlantManager
     public void RespondToChangedGrassiness(IntVector3 blockPos)
     {
         UpdateActive(blockPos);
-        foreach(IntVector3 delta in adjacentBlockVectors)
+        foreach(IntVector3 delta in ADJACENT_BLOCK_VECTORS)
         {
             UpdateActive(blockPos + delta);
         }
-    }
-
-    public bool PlantOn(List<IntVector3> blockPosList)
-    {
-        List<IntVector3> validBlocks = (from blockPos in blockPosList
-                                        where CanSpreadTo(blockPos)
-                                        select blockPos).ToList();
-        
-        if (validBlocks.Count == 0)
-            return false;
-
-        Tuple<IntVector3, byte>[] blocksToChange = new Tuple<IntVector3, byte>[validBlocks.Count];
-
-        int idx = 0;
-        foreach (IntVector3 blockPos in validBlocks)
-        {
-            blocksToChange[idx++] = Tuple.Create(blockPos, GRASS_BLOCK_ID);
-        }
-
-        terrain.SetBlocks(blocksToChange);
-        plantBlocks.UnionWith(validBlocks);
-        foreach (IntVector3 blockPos in validBlocks)
-        {
-            // TODO: think performance, this probably checks same blocks multiple times
-            RespondToChangedGrassiness(blockPos);
-        }
-        time = 0;
-        return true;
     }
 
     public override void LifeCycle(float delta)
     {
         time += delta;
         if (time < LIFECYCLE_TICK_TIME || plantBlocks.Count == 0)
+        {
             return;
+        }
         time = 0;
 
 
@@ -153,21 +152,20 @@ public class GrassManager : PlantManager
 
     protected override void Spread()
     {
-        List<IntVector3> blocksToChange = new List<IntVector3>();
         // with small probability, pick random point and spread to adjacent block
         for (double spreadNo = plantActiveBlocks.Count * spreadChance; spreadNo > 0; spreadNo--)
         {
             if (spreadNo < 1 && randGen.NextDouble() > spreadNo)
                 return;
 
-            // find a grass block that still exists
+            // find an active grass block
             IntVector3 block = plantActiveBlocks.ElementAt(randGen.Next(plantActiveBlocks.Count));
 
             // get adjacent blocks
             List<IntVector3> adjacentBlocks = new List<IntVector3>();
-            foreach (IntVector3 v in adjacentBlockVectors)
+            foreach (IntVector3 v in ADJACENT_BLOCK_VECTORS)
             {
-                if (CanSpreadTo(block + v))
+                if (BlocksAlrightToSpread(block + v))
                 {
                     adjacentBlocks.Add(block + v);
                 }
@@ -176,10 +174,30 @@ public class GrassManager : PlantManager
             // choose an adjacent block and plant on it
             if (adjacentBlocks.Count > 0)
             {
-                blocksToChange.Add(adjacentBlocks[randGen.Next(adjacentBlocks.Count)]);
+                AddGrassToPlant(adjacentBlocks[randGen.Next(adjacentBlocks.Count)]);
+            }
+            else
+            {
+                throw new Exception("Active grass should always have adjacent blocks available to spread");
             }
         }
-        PlantOn(blocksToChange);
+    }
+
+    private void AddGrassToPlant(IntVector3 grassPos)
+    {
+        IntVector2 chunk = Terrain.ChunkIndex(grassPos);
+        if (grassToPlantGivenChunk.TryGetValue(chunk, out ISet<IntVector3> grassPosSet))
+        {
+            grassPosSet.Add(grassPos);
+        }
+        else
+        {
+            grassToPlantGivenChunk[chunk] = new HashSet<IntVector3>
+            {
+                grassPos
+            };
+            chunksToPlantGrassOn.Enqueue(chunk);
+        }
     }
 
     public override void HandleBlockChange(byte oldId, byte newId, IntVector3 blockPos)
@@ -207,6 +225,7 @@ public class GrassManager : PlantManager
         // add grass
         if (newId == GRASS_BLOCK_ID)
         {
+            plantBlocks.Add(blockPos);
             RespondToChangedGrassiness(blockPos);
         }
 
@@ -216,19 +235,29 @@ public class GrassManager : PlantManager
             RespondToChangedGrassiness(blockPos);
         }
 
-        // cover grass
+        // cover something that was uncovered before
         if (oldId == AIR_ID && newId != AIR_ID && blockPos.y > 0)
         {
             IntVector3 under = blockPos + new IntVector3(0, -1, 0);
-            if (terrain.GetBlock(under) == GRASS_BLOCK_ID)
+            byte underBlockId = terrain.GetBlock(under);
+
+            if (underBlockId == GRASS_BLOCK_ID) // cover grass
             {
                 terrain.SetBlock(under, RED_ROCK_ID);
+            }
+            else if (underBlockId == RED_ROCK_ID) // cover soil
+            {
+                RespondToChangedGrassiness(blockPos);
             }
         }
     }
 
     public override void _PhysicsProcess(float delta)
     {
-        Debug.PrintPlaceOccasionally(delta+"");
+        float tStart = OS.GetTicksMsec();
+        while (chunksToPlantGrassOn.Count > 0 && OS.GetTicksMsec() - tStart < MAX_GRASS_UPDATE_TIME)
+        {
+            PlantOnChunk();
+        }
     }
 }
