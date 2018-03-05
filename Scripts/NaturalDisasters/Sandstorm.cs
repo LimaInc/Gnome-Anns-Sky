@@ -26,7 +26,6 @@ public class Sandstorm : Spatial
 
     public override void _Process(float delta)
     {
-    	Console.WriteLine(this.GetPath());
 
 		timeAlive += delta;
 		if (lifeTime < timeAlive) GetParent().RemoveChild(this);
@@ -40,7 +39,7 @@ public class Sandstorm : Spatial
 			-direction.x,
 			2,
 			-direction.y
-		).Normalized();
+		).Normalized()*10;
 		
 		PhysicsDirectSpaceState spaceState = GetWorld()
 			.GetDirectSpaceState();
