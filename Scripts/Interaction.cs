@@ -152,6 +152,15 @@ public class Interaction : Camera
                 }
                 terrain.SetBlock(blockPos, AIR_ID);
                 // UGLY, TODO: fix
+                if (blockPos.y > 0)
+                {
+                    GrassManager gm = plants[PlantType.GRASS] as GrassManager;
+                    IntVector3 under = blockPos + new IntVector3(0, -1, 0);
+                    if (terrain.GetBlock(under) == RED_ROCK_ID)
+                    {
+                        gm.RespondToChangedGrassiness(under);
+                    }
+                }
                 if (blockId == GRASS_ID)
                 {
                     GrassManager gm = plants[PlantType.GRASS] as GrassManager;
