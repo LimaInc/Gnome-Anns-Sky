@@ -36,7 +36,7 @@ public class Sandstorm : Spatial
 		//So we need to check if the player is in cover
 		//We do this by casting a ray up and in the direction of the wind
 		
-		Vector3 checkDir = new Vector3(
+		Vector3 checkDir = 10 * new Vector3(
 			-direction.x,
 			2,
 			-direction.y
