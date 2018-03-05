@@ -68,7 +68,7 @@ public class TreeManager : PlantManager
         treeBlockVectors[idx++] = Tuple.Create(new IntVector3(0, 8, 0), leafBlock);
     }
 
-    protected override bool Valid(IntVector3 blockPos)
+    protected override bool CanSpreadTo(IntVector3 blockPos)
     {
         if (terrain.GetBlock(blockPos) != redRock && terrain.GetBlock(blockPos) != grassBlock ||
                 atmosphere.GetGasAmt(Gas.NITROGEN) < 0.01 || atmosphere.GetGasAmt(Gas.CARBON_DIOXIDE) < 0.01)
@@ -89,11 +89,11 @@ public class TreeManager : PlantManager
         for (int i = 0; i < 48; i++)
             treeBlocks[i] = Tuple.Create(blockPos + treeBlockVectors[i].Item1, treeBlockVectors[i].Item2);
 
-        if (!Valid(blockPos))
+        if (!CanSpreadTo(blockPos))
             return false;
 
         terrain.SetBlocks(treeBlocks);
-        blocks.Add(blockPos);
+        plantBlocks.Add(blockPos);
         Tuple<int, int> gridPos = Tuple.Create(blockPos.x/GRID_SIZE, blockPos.z/GRID_SIZE);
         if (!grid.ContainsKey(gridPos))
             grid[gridPos] = new List<IntVector3>();
@@ -133,16 +133,16 @@ public class TreeManager : PlantManager
     public override void LifeCycle(float delta)
     {
         time += delta;
-        if (time < LIFECYCLE_TICK_TIME || blocks.Count == 0)
+        if (time < LIFECYCLE_TICK_TIME || plantBlocks.Count == 0)
             return;
 
         time = 0;
 
-        List<IntVector3> blocksToRemove = (from block in blocks
+        List<IntVector3> blocksToRemove = (from block in plantBlocks
                                            where !physicsBodies[block].IsInGroup("alive")
                                            select block).ToList();
 
-        blocks.ExceptWith(blocksToRemove);
+        plantBlocks.ExceptWith(blocksToRemove);
 
         List<Tuple<IntVector3, byte>> blocksToChange = new List<Tuple<IntVector3, byte>>();
         foreach (IntVector3 position in blocksToRemove)
@@ -163,24 +163,24 @@ public class TreeManager : PlantManager
     {
         // Bridson’s algorithm for Poisson-disc sampling
         // https://bost.ocks.org/mike/algorithms/
-        for (double spreadNo = blocks.Count*spreadChance; spreadNo > 0; spreadNo--)
+        for (double spreadNo = plantBlocks.Count*spreadChance; spreadNo > 0; spreadNo--)
         {
             if (spreadNo < 1 && randGen.NextDouble() > spreadNo)
                 return;
 
             // find a tree that still exists
-            int idx = randGen.Next(blocks.Count);
-            IntVector3 block = blocks.ElementAt(idx);
+            int idx = randGen.Next(plantBlocks.Count);
+            IntVector3 block = plantBlocks.ElementAt(idx);
             while (terrain.GetBlock(block + new IntVector3(0, 1, 0)) != treeBlock) // test for tree block above position
             {
-                blocks.Remove(block);
+                plantBlocks.Remove(block);
                 grid[Tuple.Create(block.x/GRID_SIZE, block.z/GRID_SIZE)].Remove(block);
 
-                if (blocks.Count == 0)
+                if (plantBlocks.Count == 0)
                     return;
 
-                idx = randGen.Next(blocks.Count);
-                block = blocks.ElementAt(idx);
+                idx = randGen.Next(plantBlocks.Count);
+                block = plantBlocks.ElementAt(idx);
             }
 
             // generate a candidate tree
@@ -192,14 +192,14 @@ public class TreeManager : PlantManager
             bool candidateExists = false;
             for (int i = 0; i < MIN_DISTANCE / 2; i++)
             {
-                if (Valid(candidate + new IntVector3(0, i, 0)))
+                if (CanSpreadTo(candidate + new IntVector3(0, i, 0)))
                 {
                     candidate += new IntVector3(0, i, 0);
                     candidateExists = true;
                     break;
                 }
 
-                if (i != 0 && Valid(candidate + new IntVector3(0, -i, 0)))
+                if (i != 0 && CanSpreadTo(candidate + new IntVector3(0, -i, 0)))
                 {
                     candidate += new IntVector3(0, -i, 0);
                     candidateExists = true;
@@ -229,7 +229,7 @@ public class TreeManager : PlantManager
                         IntVector3 testTree = testTrees[i];
                         if (terrain.GetBlock(testTree + new IntVector3(0, 1, 0)) == 0) // test for tree block above position
                         {
-                            blocks.Remove(block);
+                            plantBlocks.Remove(block);
                             testTrees.RemoveAt(i);
                             continue;
                         }

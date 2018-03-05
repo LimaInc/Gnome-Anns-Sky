@@ -5,7 +5,8 @@ public abstract class PlantManager
 {
     protected Atmosphere atmosphere;
     protected Terrain terrain;
-    protected HashSet<IntVector3> blocks;
+    protected HashSet<IntVector3> plantBlocks;
+    protected HashSet<IntVector3> plantActiveBlocks;
 
     protected const float LIFECYCLE_TICK_TIME = 1f;
     protected readonly double spreadChance;
@@ -17,12 +18,13 @@ public abstract class PlantManager
     {
         atmosphere = plants.atmosphere;
         terrain = plants.terrain;
-        blocks = new HashSet<IntVector3>();
+        plantBlocks = new HashSet<IntVector3>();
+        plantActiveBlocks = new HashSet<IntVector3>();
         spreadChance = spreadChance_;
         gasDeltas = gasDeltas_;
     }
 
-    abstract protected bool Valid(IntVector3 blockPos);
+    abstract protected bool CanSpreadTo(IntVector3 blockPos);
     abstract public bool PlantOn(IntVector3 blockPos);
 
     abstract public void LifeCycle(float delta);
@@ -31,6 +33,6 @@ public abstract class PlantManager
     public void AdjustGases(float delta)
     {
         foreach (KeyValuePair<Gas, float> entry in gasDeltas)
-            atmosphere.ChangeGasAmt(entry.Key, entry.Value*blocks.Count);
+            atmosphere.ChangeGasAmt(entry.Key, entry.Value * plantBlocks.Count);
     }
 }

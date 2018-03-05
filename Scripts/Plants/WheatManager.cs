@@ -28,7 +28,7 @@ public class WheatManager : PlantManager
         return;
     }
 
-    protected override bool Valid(IntVector3 blockPos)
+    protected override bool CanSpreadTo(IntVector3 blockPos)
     {
         return (terrain.GetBlock(blockPos) == redRock || terrain.GetBlock(blockPos) == grassBlock) &&
                terrain.GetBlock(blockPos + new IntVector3(0, 1, 0)) == 0 &&
@@ -38,7 +38,7 @@ public class WheatManager : PlantManager
 
     public override bool PlantOn(IntVector3 blockPos)
     {
-        if (!Valid(blockPos))
+        if (!CanSpreadTo(blockPos))
             return false;
 
         IntVector3 wheatBlockPos = blockPos + new IntVector3(0, 1, 0);
