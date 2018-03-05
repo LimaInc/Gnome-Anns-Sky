@@ -2,6 +2,7 @@
 
 ## Easy method to run on 64-bit linux
 * Run ./run.sh in the project root.
+* The correct Mono version, as described below is still required.
 * If this doesn't work, you must run it through the Godot editor, as described below.
 
 ## Building
