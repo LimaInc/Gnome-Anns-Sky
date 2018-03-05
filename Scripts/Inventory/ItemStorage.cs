@@ -119,7 +119,15 @@ public class ItemStorage : Node
 
     private static Texture GetTexture(string name)
     {
-        return itemResourceLoader.GetResource(name) as Texture;
+        if (!itemResourceLoader.HasResource(name))
+        {
+            Debug.PrintPlace("Resource missing: " + name);
+            throw new Exception("Resource missing: " + name);
+        }
+        else
+        {
+            return itemResourceLoader.GetResource(name) as Texture;
+        }
     }
 
     public static void RegisterBlockItem(byte id, Item item)

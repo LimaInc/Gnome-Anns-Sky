@@ -121,8 +121,6 @@ public class TreeManager : PlantManager
 
         Vector3 position = (blockPos + new Vector3(0, 5, 0)) * Block.SIZE + new Vector3(0,5,0); //the plus 5 to make it actually seen
         physicsBody.SetTranslation(position);
-        GD.Print("Player position: ", ((PhysicsBody)plants.GetTree().GetRoot().GetNode("Game").GetNode("Player")).GetTranslation().ToString());
-        GD.Print("Planted position: ", position);
 
         physicsBody.AddChild(collisionShape);
 
