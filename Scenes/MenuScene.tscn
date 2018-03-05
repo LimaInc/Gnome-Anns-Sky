@@ -4,7 +4,7 @@
 [ext_resource path="res://Scripts/GUI/Menus/ExitButton.cs" type="Script" id=2]
 [ext_resource path="res://Images/GUI/gnomeAnnsSkyTitle.png" type="Texture" id=3]
 
-[node name="Menus" type="Panel"]
+[node name="Menus" type="Panel" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0

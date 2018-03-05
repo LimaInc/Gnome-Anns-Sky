@@ -4,11 +4,17 @@ using System.Collections.Generic;
 
 public class Interaction : Camera
 {
+    private static readonly byte GRASS_ID = Game.GetBlockId<GrassBlock>();
+    private static readonly byte RED_ROCK_ID = Game.GetBlockId<RedRock>();
+    private const byte AIR_ID = WorldGenerator.AIR_ID;
+
     private PhysicsDirectSpaceState spaceState;
 
     private Terrain terrain;
 
     private Player player;
+
+    private Plants plants;
 
     public override void _Ready()
     {
@@ -21,11 +27,12 @@ public class Interaction : Camera
 
         terrain = GetNode(Game.TERRAIN_PATH) as Terrain;
 
+        plants = GetNode(Game.PLANTS_PATH) as Plants;
     }
 
     float rayLength = 5;
 
-    public bool PlaceBlock(byte b)
+    public bool PlaceBlock(byte blockId)
     {
         var hitInfo = GetHitInfo();
 
@@ -60,7 +67,21 @@ public class Interaction : Camera
                 }
             }
 
-            terrain.SetBlock(blockPos, b);
+            terrain.SetBlock(blockPos, blockId);
+            // UGLY, TODO: fix
+            if (blockPos.y > 0)
+            {
+                IntVector3 under = blockPos + new IntVector3(0, -1, 0);
+                if (terrain.GetBlock(under) == GRASS_ID)
+                {
+                    terrain.SetBlock(under, RED_ROCK_ID);
+                }
+            }
+            if (blockId == GRASS_ID || blockId == RED_ROCK_ID)
+            {
+                GrassManager gm = plants[PlantType.GRASS] as GrassManager;
+                gm.RespondToChangedGrassiness(blockPos);
+            }
             return true;
         }
         return false;
@@ -114,7 +135,6 @@ public class Interaction : Camera
 
         Node animal = HitAnimal(hitInfo);
         if (animal != null)
-
         {
             KillAnimal(animal);   
         }
@@ -125,14 +145,34 @@ public class Interaction : Camera
             if (blockPossible.HasValue)
             {
                 IntVector3 blockPos = blockPossible.Value;
-
-                byte ret = terrain.GetBlock(blockPos);
-
-                if (!Game.GetBlock(ret).Breakable)
+                byte blockId = terrain.GetBlock(blockPos);
+                if (!Game.GetBlock(blockId).Breakable)
+                {
                     return 0;
-
-                terrain.SetBlock(blockPos, 0);
-                return ret;
+                }
+                terrain.SetBlock(blockPos, AIR_ID);
+                // UGLY, TODO: fix
+                if (blockPos.y > 0)
+                {
+                    GrassManager gm = plants[PlantType.GRASS] as GrassManager;
+                    IntVector3 under = blockPos + new IntVector3(0, -1, 0);
+                    if (terrain.GetBlock(under) == RED_ROCK_ID)
+                    {
+                        gm.RespondToChangedGrassiness(under);
+                    }
+                }
+                if (blockId == GRASS_ID)
+                {
+                    GrassManager gm = plants[PlantType.GRASS] as GrassManager;
+                    gm.DeregisterGrassAt(blockPos);
+                    gm.RespondToChangedGrassiness(blockPos);
+                }
+                if (blockId == RED_ROCK_ID)
+                {
+                    GrassManager gm = plants[PlantType.GRASS] as GrassManager;
+                    gm.RespondToChangedGrassiness(blockPos);
+                }
+                return blockId;
             }
         }
         
