@@ -1,4 +1,4 @@
-# SustainableCraft
+# Gnome Ann's Sky
 
 ## Building
 * Install [Godot](https://godotengine.org/download)
