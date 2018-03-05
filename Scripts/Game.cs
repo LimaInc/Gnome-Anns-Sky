@@ -16,7 +16,7 @@ public class Game : Node
     public const string PLANTS_PATH = WORLD_ENVIRO_PATH + "/Plants";
     public const string ATMOSPHERE_PATH = WORLD_ENVIRO_PATH + "/Atmosphere";
     public const string BACTERIAL_STATE_PATH = WORLD_ENVIRO_PATH + "/BacterialState";
-    public const string ANIMAL_SPAWNER_PATH = GAME_PATH + "/AnimalSpawner";
+    public const string ANIMAL_SPAWNER_PATH = WORLD_ENVIRO_PATH + "/AnimalSpawner";
 
     public const string RESOURCE_LOADER_PATH = GAME_PATH + "/ResourceLoaders";
     public const string BLOCK_RESOURCE_LOADER_PATH = RESOURCE_LOADER_PATH + "/BlockResourceLoader";

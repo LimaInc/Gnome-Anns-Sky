@@ -15,6 +15,7 @@ public class Defossiliser : Node
         new DefossiliserAction(NITROGEN_BACTERIA_FOSSIL, NITROGEN_BACTERIA_VIAL, processingTime: 10),
         new DefossiliserAction(CARBON_DIOXIDE_BACTERIA_FOSSIL, CARBON_DIOXIDE_BACTERIA_VIAL, processingTime: 7),
         new DefossiliserAction(GRASS_FOSSIL, GRASS, processingTime: 15),
+        new DefossiliserAction(WHEAT_FOSSIL, WHEAT, processingTime: 20),
         new DefossiliserAction(TREE_FOSSIL, TREE, processingTime: 30, inItemCount: 3),
         new DefossiliserAction(FROG_FOSSIL, FROG_EGG, processingTime: 40, inItemCount: 2),
         new DefossiliserAction(REGULAR_ANIMAL_FOSSIL, REGULAR_EGG, processingTime: 60, inItemCount: 3),

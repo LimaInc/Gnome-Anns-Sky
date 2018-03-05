@@ -272,6 +272,7 @@ script = ExtResource( 64 )
 [node name="PlanetEnvironment" type="WorldEnvironment" parent="." index="5"]
 
 environment = SubResource( 2 )
+<<<<<<< HEAD
 script = ExtResource( 65 )
 
 [node name="Atmosphere" type="Node" parent="PlanetEnvironment" index="0"]
@@ -289,13 +290,40 @@ script = ExtResource( 68 )
 [node name="AnimalSpawner" type="Node" parent="PlanetEnvironment" index="3"]
 
 script = ExtResource( 69 )
+=======
+script = ExtResource( 64 )
+
+[node name="Atmosphere" type="Node" parent="PlanetEnvironment" index="0"]
+
+script = ExtResource( 65 )
+
+[node name="BacterialState" type="Node" parent="PlanetEnvironment" index="1"]
+
+script = ExtResource( 66 )
+
+[node name="Plants" type="Node" parent="PlanetEnvironment" index="2"]
+
+script = ExtResource( 67 )
+
+[node name="AnimalSpawner" type="Node" parent="PlanetEnvironment" index="3"]
+
+script = ExtResource( 68 )
+>>>>>>> origin/animal-spawner-fix
 
 [node name="Base" type="Node" parent="." index="6"]
 
+<<<<<<< HEAD
 script = ExtResource( 70 )
+=======
+script = ExtResource( 69 )
+>>>>>>> origin/animal-spawner-fix
 
 [node name="ItemStorage" type="Node" parent="." index="7"]
 
+<<<<<<< HEAD
 script = ExtResource( 71 )
+=======
+script = ExtResource( 70 )
+>>>>>>> origin/animal-spawner-fix
 
 
