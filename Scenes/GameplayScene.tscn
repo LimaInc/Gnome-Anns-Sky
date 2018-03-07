@@ -218,12 +218,12 @@ directional_shadow_split_1 = 0.1
 directional_shadow_split_2 = 0.2
 directional_shadow_split_3 = 0.5
 directional_shadow_blend_splits = false
-directional_shadow_normal_bias = 0.01
+directional_shadow_normal_bias = 0.05
 directional_shadow_bias_split_scale = 0.5
 directional_shadow_depth_range = 0
 directional_shadow_max_distance = 30.0
 script = ExtResource( 60 )
-_sections_unfolded = [ "Light", "Shadow", "Transform" ]
+_sections_unfolded = [ "Directional Shadow", "Light", "Shadow", "Transform" ]
 
 [node name="Terrain" type="Spatial" parent="." index="2"]
 
