@@ -20,12 +20,12 @@ public class GrassManager : PlantManager
     };
     public static readonly IDictionary<Gas, float> GAS_REQUIREMENTS = new Dictionary<Gas, float>
     {
-        [Gas.OXYGEN] = 0.2f,
-        [Gas.NITROGEN] = 0.8f,
+        [Gas.OXYGEN] = 0.1f,
+        [Gas.NITROGEN] = 0.5f,
         [Gas.CARBON_DIOXIDE] = 0.5f,
     };
 
-    private static IntVector3[] adjacentBlockVectors = new IntVector3[12] {
+    private readonly static IntVector3[] ADJACENT_BLOCK_VECTORS = new IntVector3[12] {
         new IntVector3(-1, -1, 0), new IntVector3(-1, 0, 0), new IntVector3(-1, 1, 0),
         new IntVector3(0, -1, -1), new IntVector3(0, 0, -1), new IntVector3(0, 1, -1),
         new IntVector3(0, -1, 1), new IntVector3(0, 0, 1), new IntVector3(0, 1, 1),
@@ -47,7 +47,7 @@ public class GrassManager : PlantManager
                terrain.GetBlock(blockPos + new IntVector3(0, 1, 0)) == AIR_ID;
     }
     
-    protected override bool CanSpreadTo(IntVector3 blockPos)
+    protected override bool CanGrowOn(IntVector3 blockPos)
     {
         return BlocksAlrightToSpread(blockPos) && 
             GAS_REQUIREMENTS.All(kvPair => atmosphere.GetGasProgress(kvPair.Key) >= kvPair.Value);
@@ -55,18 +55,22 @@ public class GrassManager : PlantManager
 
     public override bool PlantOn(IntVector3 blockPos)
     {
-        List<IntVector3> blockPosList = new List<IntVector3>()
+        if (CanGrowOn(blockPos))
         {
-            blockPos
-        };
-        return PlantOn(blockPosList);
+            terrain.SetBlock(blockPos, GRASS_BLOCK_ID);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void UpdateActive(IntVector3 blockPos)
     {
         if (plantBlocks.Contains(blockPos))
         {
-            if (adjacentBlockVectors.Any(delta => BlocksAlrightToSpread(delta+blockPos)))
+            if (ADJACENT_BLOCK_VECTORS.Any(delta => BlocksAlrightToSpread(delta+blockPos)))
             {
                 plantActiveBlocks.Add(blockPos);
             }
@@ -80,7 +84,7 @@ public class GrassManager : PlantManager
     public void RespondToChangedGrassiness(IntVector3 blockPos)
     {
         UpdateActive(blockPos);
-        foreach(IntVector3 delta in adjacentBlockVectors)
+        foreach(IntVector3 delta in ADJACENT_BLOCK_VECTORS)
         {
             UpdateActive(blockPos + delta);
         }
@@ -89,7 +93,7 @@ public class GrassManager : PlantManager
     public bool PlantOn(List<IntVector3> blockPosList)
     {
         List<IntVector3> validBlocks = (from blockPos in blockPosList
-                                        where CanSpreadTo(blockPos)
+                                        where CanGrowOn(blockPos)
                                         select blockPos).ToList();
         
         if (validBlocks.Count == 0)
@@ -118,7 +122,9 @@ public class GrassManager : PlantManager
     {
         time += delta;
         if (time < LIFECYCLE_TICK_TIME || plantBlocks.Count == 0)
+        {
             return;
+        }
         time = 0;
 
 
@@ -165,9 +171,9 @@ public class GrassManager : PlantManager
 
             // get adjacent blocks
             List<IntVector3> adjacentBlocks = new List<IntVector3>();
-            foreach (IntVector3 v in adjacentBlockVectors)
+            foreach (IntVector3 v in ADJACENT_BLOCK_VECTORS)
             {
-                if (CanSpreadTo(block + v))
+                if (CanGrowOn(block + v))
                 {
                     adjacentBlocks.Add(block + v);
                 }
@@ -180,5 +186,59 @@ public class GrassManager : PlantManager
             }
         }
         PlantOn(blocksToChange);
+    }
+
+
+
+    public override void HandleBlockChange(byte oldId, byte newId, IntVector3 blockPos)
+    {
+        // remove grass
+        if (oldId == GRASS_BLOCK_ID && newId != GRASS_BLOCK_ID)
+        {
+            DeregisterGrassAt(blockPos);
+            RespondToChangedGrassiness(blockPos);
+        }
+
+        // uncover soil
+        if (oldId != AIR_ID && newId == AIR_ID)
+        {
+            if (blockPos.y > 0)
+            {
+                IntVector3 under = blockPos + new IntVector3(0, -1, 0);
+                if (terrain.GetBlock(under) == RED_ROCK_ID)
+                {
+                    RespondToChangedGrassiness(under);
+                }
+            }
+        }
+
+        // add grass
+        if (newId == GRASS_BLOCK_ID)
+        {
+            plantBlocks.Add(blockPos);
+            RespondToChangedGrassiness(blockPos);
+        }
+
+        // add soil
+        if (newId == RED_ROCK_ID)
+        {
+            RespondToChangedGrassiness(blockPos);
+        }
+
+        // cover something that was uncovered before
+        if (oldId == AIR_ID && newId != AIR_ID && blockPos.y > 0)
+        {
+            IntVector3 under = blockPos + new IntVector3(0, -1, 0);
+            byte underBlockId = terrain.GetBlock(under);
+
+            if (underBlockId == GRASS_BLOCK_ID) // cover grass
+            {
+                terrain.SetBlock(under, RED_ROCK_ID);
+            }
+            else if (underBlockId == RED_ROCK_ID) // cover soil
+            {
+                RespondToChangedGrassiness(blockPos);
+            }
+        }
     }
 }

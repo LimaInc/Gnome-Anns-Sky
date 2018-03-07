@@ -40,6 +40,8 @@ public class Terrain : Spatial
 
     private static readonly IntVector2[][] chunkLoadIndices;
 
+    private Action<byte, byte, IntVector3> blockChageCallback;
+
     static Terrain()
     {
         chunkLoadIndices = new IntVector2[CHUNK_INDICES_SIZE][];
@@ -87,6 +89,9 @@ public class Terrain : Spatial
         Vector2 playerPos = new Vector2(player.Translation.x, player.Translation.z) / Block.SIZE;
         float terrainGraphicalHeight = worldGenerator.GetHeightAt(playerPos) * Block.SIZE;
         player.Translation = new Vector3(playerPos.x, terrainGraphicalHeight + Player.INIT_REL_POS.y, playerPos.y);
+
+        Plants p = GetNode(Game.PLANTS_PATH) as Plants;
+        blockChageCallback = (oldBlock, newBlock, blockPos) => p.HandleBlockChange(oldBlock, newBlock, blockPos);
     }
 
     public const float ANIMAL_CHUNK_RANGE = 16.0f;
@@ -259,7 +264,14 @@ public class Terrain : Spatial
 
             IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.SIZE.z);
 
-            chunk.TrySetBlockInChunk(positionInChunk, block);
+            byte? oldBlockId = chunk.TrySetBlockInChunk(positionInChunk, block);
+
+            if (!oldBlockId.HasValue)
+            {
+                throw new Exception("Bad stuff happened here");
+            }
+
+            blockChageCallback(oldBlockId.Value, block, pos);
 
             IntVector2 right = chunkIndex + new IntVector2(1,0);
             IntVector2 left = chunkIndex + new IntVector2(-1,0);
@@ -297,7 +309,14 @@ public class Terrain : Spatial
 
         IntVector3 positionInChunk = new IntVector3(pos.x - chunkIndex.x * Chunk.SIZE.x, pos.y, pos.z - chunkIndex.y * Chunk.SIZE.z);
 
-        chunk.TrySetBlockInChunk(positionInChunk, block);
+        byte? oldBlockId = chunk.TrySetBlockInChunk(positionInChunk, block);
+
+        if (!oldBlockId.HasValue)
+        {
+            throw new Exception("Bad stuff happened here");
+        }
+
+        blockChageCallback(oldBlockId.Value, block, pos);
 
         IntVector2 right = chunkIndex + new IntVector2(1,0);
         IntVector2 left = chunkIndex + new IntVector2(-1,0);
