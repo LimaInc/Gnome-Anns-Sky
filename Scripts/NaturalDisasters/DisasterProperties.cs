@@ -9,17 +9,22 @@ abstract public class DisasterProperties
 	public double Likelihood;
 	public int WarningTime;
 	
-	private float Counter;
+	private float Counter { get; set; }
 
     public DisasterProperties() {
 		Counter = 0;
 	}
 	
 	//call this to runthe counter. Returns true when the counter is full
-    public bool Process(float delta) {
+    public bool IncrementWarningCounter(float delta) {
 		Counter += delta;
 		
 		return (Counter > WarningTime);
+    }
+
+    public void ResetWarningCounter()
+    {
+        Counter = 0;
     }
 
 	//Call this to start the event

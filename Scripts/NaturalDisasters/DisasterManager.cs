@@ -40,7 +40,8 @@ public class DisasterManager : WorldEnvironment
 			}
 		} else {
 			//if a disaster is currently happening. Then run it until it gives you an object.
-			if (currentDisaster.Process(delta)) {
+			if (currentDisaster.IncrementWarningCounter(delta)) {
+                currentDisaster.ResetWarningCounter();
 				AddChild(currentDisaster.StartEvent());
 				disasterHappening = false;
 				currentDisaster = null;
