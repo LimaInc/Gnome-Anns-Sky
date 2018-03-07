@@ -87,7 +87,7 @@ public class Player : KinematicBody
     private Plants plants;
     private BacterialState bacteria;
 
-    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 2, 0);
+    public static readonly Vector3 INIT_REL_POS = new Vector3(0, 20, 0);
 
     private bool noGUIMode;
 
@@ -459,7 +459,7 @@ public class Player : KinematicBody
     {
     }
 
-    public override void _Process(float delta)
+    public override void _PhysicsProcess(float delta)
     {
         if (Dead)
         {
