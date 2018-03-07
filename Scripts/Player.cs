@@ -305,7 +305,8 @@ public class Player : KinematicBody
             {
                 string animal = egg.Preset;
                 int nextSex = BaseComponent.random.Next(0, 2);
-                GetNode(Game.ANIMAL_SPAWNER_PATH).Call("SpawnAnimal", animal, (AnimalBehaviourComponent.AnimalSex)nextSex, graphicalPosition.Value + new Vector3(0,2,0));
+                AnimalSpawner spawner = GetNode(Game.ANIMAL_SPAWNER_PATH) as AnimalSpawner;
+                spawner.SpawnAnimal(animal, (AnimalBehaviourComponent.AnimalSex)nextSex, graphicalPosition.Value + new Vector3(0,2,0));
                 success = true;
             }
                 
