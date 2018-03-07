@@ -68,20 +68,6 @@ public class Interaction : Camera
             }
 
             terrain.SetBlock(blockPos, blockId);
-            // UGLY, TODO: fix
-            if (blockPos.y > 0)
-            {
-                IntVector3 under = blockPos + new IntVector3(0, -1, 0);
-                if (terrain.GetBlock(under) == GRASS_ID)
-                {
-                    terrain.SetBlock(under, RED_ROCK_ID);
-                }
-            }
-            if (blockId == GRASS_ID || blockId == RED_ROCK_ID)
-            {
-                GrassManager gm = plants[PlantType.GRASS] as GrassManager;
-                gm.RespondToChangedGrassiness(blockPos);
-            }
             return true;
         }
         return false;
@@ -151,27 +137,6 @@ public class Interaction : Camera
                     return 0;
                 }
                 terrain.SetBlock(blockPos, AIR_ID);
-                // UGLY, TODO: fix
-                if (blockPos.y > 0)
-                {
-                    GrassManager gm = plants[PlantType.GRASS] as GrassManager;
-                    IntVector3 under = blockPos + new IntVector3(0, -1, 0);
-                    if (terrain.GetBlock(under) == RED_ROCK_ID)
-                    {
-                        gm.RespondToChangedGrassiness(under);
-                    }
-                }
-                if (blockId == GRASS_ID)
-                {
-                    GrassManager gm = plants[PlantType.GRASS] as GrassManager;
-                    gm.DeregisterGrassAt(blockPos);
-                    gm.RespondToChangedGrassiness(blockPos);
-                }
-                if (blockId == RED_ROCK_ID)
-                {
-                    GrassManager gm = plants[PlantType.GRASS] as GrassManager;
-                    gm.RespondToChangedGrassiness(blockPos);
-                }
                 return blockId;
             }
         }

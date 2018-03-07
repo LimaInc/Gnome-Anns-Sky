@@ -35,8 +35,8 @@ public class Game : Node
     public const string ITEM_TEXTURES_DIR_PATH = TEXTURES_PATH + "/Items/";
 
     // multiplicative factor for processes in the world (not directly affecting the player)
-    public const int FOSSIL_SPAWN_MULITPLIER = 30;
-    public const int SPEED = 30;
+    public const int FOSSIL_SPAWN_MULITPLIER = 15;
+    public const int SPEED = 10;
     public const int PLANT_MAX_SPEED = 2; // if plants are spreading too fast bugs happen, this should NOT be a feature, TODO: fix
     
     public static Texture TextureAtlas { get; private set; }

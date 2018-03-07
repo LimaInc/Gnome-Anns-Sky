@@ -6,7 +6,7 @@ public class Sandstorm : Spatial
 {	
 	private Vector2 direction;
 	private Player player;
-	private float lifeTime;
+	private const float LIFE_TIME = 15;
 	private float timeAlive;
 
     public override void _Ready()
@@ -20,23 +20,20 @@ public class Sandstorm : Spatial
 			
 		player = GetNode(Game.PLAYER_PATH) as Player; 
 		
-		lifeTime = 30;      
 		timeAlive = 0; 
     }
 
     public override void _Process(float delta)
     {
-    	Console.WriteLine(this.GetPath());
-
 		timeAlive += delta;
-		if (lifeTime < timeAlive) GetParent().RemoveChild(this);
+		if (LIFE_TIME < timeAlive) GetParent().RemoveChild(this);
     }
 	
 	public override void _PhysicsProcess(float delta) {
 		//So we need to check if the player is in cover
 		//We do this by casting a ray up and in the direction of the wind
 		
-		Vector3 checkDir = new Vector3(
+		Vector3 checkDir = 10 * new Vector3(
 			-direction.x,
 			2,
 			-direction.y
@@ -62,7 +59,7 @@ public class Sandstorm : Spatial
 			
 			//50 is the highest the storm will carry the player upward
 			if (playerYpos < 50)			
-				upThrust = (float) (1 - Math.Cos(timeAlive / lifeTime * 5.0 * Math.PI));
+				upThrust = (float) (1 - Math.Cos(timeAlive / LIFE_TIME * 5.0 * Math.PI));
 						
 			Vector3 pushAmount = new Vector3(
 				direction.x,

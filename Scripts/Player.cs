@@ -159,20 +159,17 @@ public class Player : KinematicBody
     
     private void Initialize()
     {
-        AddItem(ItemID.CAKE, 3);
-        AddItem(ItemID.CHOCOLATE, 10);
-        AddItem(ItemID.WATER, 5);
+        AddItem(ItemID.CAKE, 8);
+        AddItem(ItemID.CHOCOLATE, 4);
+        AddItem(ItemID.WATER, 8);
 
         //TEMP
-        AddItem(ItemID.CARBON_DIOXIDE_BACTERIA_VIAL, 100);
-        AddItem(ItemID.OXYGEN_BACTERIA_VIAL, 100);
-        AddItem(ItemID.NITROGEN_BACTERIA_VIAL, 100);
-        AddItem(ItemID.REGULAR_EGG, 100);
-        AddItem(ItemID.BIG_EGG, 100);
-        AddItem(ItemID.FROG_EGG, 100);
-        AddItem(ItemID.GRASS, 100);
-        AddItem(ItemID.TREE, 100);
-        AddItem(ItemID.WHEAT, 100);
+        AddItem(ItemID.NITROGEN_BACTERIA_VIAL, 30);
+        AddItem(ItemID.FROG_EGG, 30);
+        AddItem(ItemID.REGULAR_EGG, 10);
+        AddItem(ItemID.BIG_EGG, 5);
+        AddItem(ItemID.TREE, 1);
+        AddItem(ItemID.WHEAT, 1);
     }
 
     // maybe a bit hacky, TODO: think about it
