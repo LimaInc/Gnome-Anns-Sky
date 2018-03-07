@@ -7,9 +7,7 @@ public class UniformRandomBlockGenerator : IGenerator
     private readonly int depthMax;
     private readonly float spawnChance;
     private readonly int i;
-
-    private Random random;
-
+    
     public UniformRandomBlockGenerator(byte blockID_, int depthMin_, int depthMax_, float spawnChance_)
     {
         blockID = blockID_;
@@ -22,7 +20,7 @@ public class UniformRandomBlockGenerator : IGenerator
 
     public void GenerateChunk(byte[,,] chunk, int[,] chunkTerrainHeight, IntVector2 chunkIndex, IntVector3 chunkSize)
     {
-        this.random = new Random(new IntVector3(this.i, chunkIndex.x, chunkIndex.y).GetHashCode());
+        Random random = new Random(new IntVector3(this.i, chunkIndex.x, chunkIndex.y).GetHashCode());
 
         for (int i = 0; i < chunkSize.x; i++)
         {

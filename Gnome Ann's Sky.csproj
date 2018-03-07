@@ -155,14 +155,19 @@
     <Compile Include="Scripts\World\PlanetEnvironment.cs" />
     <Compile Include="Scripts\World\Sun.cs" />
     <Compile Include="Scripts\World\Terrain.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\BaseGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\HillLandscapeTM.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\IceGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\IGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\ITerrainModifier.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\RockGenerator.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\SmoothingTM.cs" />
-    <Compile Include="Scripts\World\WorldGeneration\UniformRandomBlockGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\TerrainFeatures\FeatureRandomGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\BaseGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\TerrainFeatures\Spire.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\TerrainFeatures\SpireGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\TerrainFeatures\WorldFeatureGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\TerrainModifiers\HillLandscapeTM.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\IceGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\IGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\TerrainModifiers\ITerrainModifier.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\RockGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\TerrainModifiers\SmoothingTM.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\UniformRandomBlockGenerator.cs" />
+    <Compile Include="Scripts\World\WorldGeneration\Generators\TerrainFeatures\WorldFeature.cs" />
     <Compile Include="Scripts\World\WorldGeneration\WorldGenerator.cs" />
   </ItemGroup>
   <ItemGroup>

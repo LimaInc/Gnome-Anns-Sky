@@ -14,30 +14,27 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
 
     public static IntVector2 operator +(IntVector2 left, IntVector2 right)
     {
-        left.x += right.x;
-        left.y += right.y;
-        return left;
+        return new IntVector2(left.x + right.x, left.x + right.x);
     }
 
     public static IntVector2 operator -(IntVector2 left, IntVector2 right)
     {
-        left.x -= right.x;
-        left.y -= right.y;
-        return left;
+        return new IntVector2(left.x - right.x, left.x - right.x);
     }
 
     public static IntVector2 operator -(IntVector2 vec)
     {
-        vec.x = -vec.x;
-        vec.y = -vec.y;
-        return vec;
+        return new IntVector2(- vec.x, -vec.y);
+    }
+
+    public static IntVector2 operator *(IntVector2 left, int factor)
+    {
+        return new IntVector2(left.x * factor, left.y * factor);
     }
 
     public static IntVector2 operator *(IntVector2 left, IntVector2 right)
     {
-        left.x *= right.x;
-        left.y *= right.y;
-        return left;
+        return new IntVector2(left.x * right.x, left.y * right.y);
     }
 
     public static Vector2 operator *(IntVector2 left, Vector2 right)
@@ -48,6 +45,16 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
     public static Vector2 operator *(Vector2 left, IntVector2 right)
     {
         return new Vector2(left.x * right.x, left.y * right.y);
+    }
+
+    public static IntVector2 operator /(IntVector2 left, int factor)
+    {
+        return new IntVector2(left.x / factor, left.y / factor);
+    }
+
+    public static IntVector2 operator /(IntVector2 left, IntVector2 right)
+    {
+        return new IntVector2(left.x / right.x, left.y / right.y);
     }
 
     public static bool operator ==(IntVector2 left, IntVector2 right)
@@ -77,7 +84,7 @@ public struct IntVector2 : IEquatable<IntVector2> //Used for chunk/block positio
 
     public override int GetHashCode()
     {
-        return 31 * y.GetHashCode() + x.GetHashCode();
+        return Tuple.Create(x, y).GetHashCode();
     }
 
     public override string ToString()
